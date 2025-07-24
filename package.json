@@ -1,0 +1,40 @@
+{
+     "name": "yini-cli",
+  "version": "0.1.0",
+  "description": "CLI tool for parsing and validating YINI configuration files", 
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "yini": "./bin/yini.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+    "devDependencies": {
+        "@eslint/js": "^9.31.0",
+        "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
+        "@types/node": "^22.15.3",
+        "@typescript-eslint/eslint-plugin": "^8.37.0",
+        "@typescript-eslint/parser": "^8.37.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^9.31.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.4.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.0.0",
+        "prettier": "^3.5.3",
+        "tsx": "^4.7.0",
+        "typescript": "^5.8.3",
+    "yini-parser": "^1.0.0-alpha.7"
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
+            "prettier --config ./.prettierrc --write"
+        ]
+    },
+    "engines": {
+        "node": ">=16"
+    }
+}
