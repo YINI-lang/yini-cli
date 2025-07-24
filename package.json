@@ -12,6 +12,10 @@
       "import": "./dist/index.js"
     }
   },
+   "dependencies": {
+    "commander": "^11.0.0",
+    "yini-parser": "^1.0.0-alpha.7"
+  },
     "devDependencies": {
         "@eslint/js": "^9.31.0",
         "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
@@ -26,8 +30,8 @@
         "lint-staged": "^16.0.0",
         "prettier": "^3.5.3",
         "tsx": "^4.7.0",
-        "typescript": "^5.8.3",
-    "yini-parser": "^1.0.0-alpha.7"
+        "typescript": "^5.8.3"
+    
     },
     "lint-staged": {
         "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
