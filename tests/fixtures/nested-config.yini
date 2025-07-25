@@ -1,0 +1,7 @@
+@yini
+
+^ App
+name = "Nested"
+
+    ^^ Database
+    host = "localhost"
