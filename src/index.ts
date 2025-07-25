@@ -2,8 +2,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { Command } from 'commander'
-// import YINI from 'yini-parser'
-import * as YINI from 'yini-parser'
+import YINI from 'yini-parser'
+
+//below works
+// import * as YINI from 'yini-parser'
 
 interface ICLIParseOptions {
     strict?: boolean
@@ -54,11 +56,16 @@ function parseFile(file: string, options: ICLIParseOptions) {
     console.log('File = ' + file)
 
     // try {
-    const raw = fs.readFileSync(file, 'utf-8')
+    // const raw = fs.readFileSync(file, 'utf-8')
     // const parsed = YINI.parseFile(
     //const parsed = YINI.parseFile(file)
-    // const parsed = YINI.parse(raw, strictMode, bailSensitivity, includeMetaData)
-    const parsed = YINI.parse(raw)
+    const parsed = YINI.parseFile(
+        file,
+        strictMode,
+        bailSensitivity,
+        includeMetaData,
+    )
+    // const parsed = YINI.parse(raw)
 
     const output = options.pretty
         ? JSON.stringify(parsed, null, 2)
