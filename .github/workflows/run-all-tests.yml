@@ -11,16 +11,16 @@ jobs:
         #    runs-on: windows-latest
         strategy:
             matrix:
+                node: [13, 20, 22]
                 # Available GitHub-hosted runner types see:
                 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
-                os:
-                    [
+                os: [
                         windows-latest,
                         windows-2022,
-                        windows-11-arm,
+                        #windows-11-arm, # Not supported yet on private
                         ubuntu-latest,
                         ubuntu-24.04,
-                        ubuntu-24.04-arm,
+                        #ubuntu-24.04-arm, # Not supported yet on private
                         macos-latest,
                         macos-13,
                     ]
