@@ -18,6 +18,11 @@ export const devPrint = (str: any = '') => {
     console.log('DEV: ' + str)
 }
 
+export const toJSON = (obj: any): string => {
+    const str = JSON.stringify(obj)
+    return str
+}
+
 export const toPrettyJSON = (obj: any): string => {
     const str = JSON.stringify(obj, null, 4)
     return str

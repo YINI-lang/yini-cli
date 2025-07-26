@@ -15,8 +15,11 @@
     "scripts": {
         "start:dev": "tsx src/index.ts",
         "start": "node ./bin/yini.js",
-        "test": "vitest",
+        "test:smoke": "vitest tests/smoke",
+        "test": "vitest run",
         "test:watch": "vitest --watch",
+        "ci:test": "vitest run --reporter=verbose",
+        "ci:test:smoke": "vitest run tests/smoke --reporter=verbose",
         "lint": "eslint src --ext .ts",
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
@@ -26,7 +29,7 @@
     },
     "dependencies": {
         "commander": "^11.0.0",
-        "yini-parser": "^1.0.0-alpha.7x"
+        "yini-parser": "^1.0.0-beta.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.31.0",

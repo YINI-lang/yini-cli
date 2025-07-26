@@ -19,7 +19,7 @@ yini-cli/
 │   │   └── convert.ts
 │   └── index.ts
 ├── tests/
-│   ├── cli-basic.test.ts
+│   ├── smoke.test.ts
 │   └── fixtures/
 ├── package.json
 ├── tsconfig.json
