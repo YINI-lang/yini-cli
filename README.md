@@ -1,28 +1,4 @@
 # YINI-CLI
 Command-line tool for working with YINI configuration files.
 
-## Project Setup
-- Source in TypeScript.
-- In full ESM (ECMAScript Modules) (as opposed to CommonJS).
-- Commander
-- Vitest (good for ESM and TypeScript)
-
-## Project Dir Structure
-```txt
-yini-cli/
-├── bin/
-│   └── yini.js         # CLI entry point
-├── src/
-│   ├── commands/
-│   │   └── parse.ts
-│   │   └── validate.ts
-│   │   └── convert.ts
-│   └── index.ts
-├── tests/
-│   ├── smoke.test.ts
-│   └── fixtures/
-├── package.json
-├── tsconfig.json
-├── vitest.config.ts
-└── README.md
-```
+[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)

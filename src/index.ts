@@ -1,19 +1,9 @@
-#!/usr/bin/env node
 import fs from 'node:fs'
 import path from 'node:path'
 import { Command } from 'commander'
 import YINI from 'yini-parser'
+import { ICLIParseOptions, TBailSensitivity } from './types'
 import { toPrettyJSON } from './utils/print'
-
-//below works
-// import * as YINI from 'yini-parser'
-
-interface ICLIParseOptions {
-    strict?: boolean
-    pretty?: boolean
-    output?: string
-}
-type TBailSensitivity = 'auto' | 0 | 1 | 2
 
 const program = new Command()
 
