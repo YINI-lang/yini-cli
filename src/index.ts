@@ -5,6 +5,48 @@ import { validateFile } from './commands/validate'
 
 const program = new Command()
 
+/*
+
+Idea/suggestion
+yini [parse] [--strict] [--pretty] [--output]
+
+Current suggestion:
+* yini parse config.yini
+	JS-style object using printObject()
+	to stdout
+* yini parse config.yini --pretty
+	Pretty JSON	using JSON.stringify(obj, null, 4)
+	to stdout
+* yini parse config.yini --output out.txt
+	JS-style object	
+	to out.txt
+* yini parse config.yini --pretty --output out.json
+	Pretty JSON	
+	to out.json
+
+New suggestion:
+Current suggestion:
+* yini parse config.yini
+	JS-style object using printObject(obj) (using using util.inspect)
+	to stdout
+* yini parse config.yini --pretty
+	Pretty JSON	using JSON.stringify(obj, null, 4) (formatted, readable)
+	to stdout
+* yini parse config.yini --log
+	Intended for quick output using console.log (nested object may get compacted/abbreviate)
+	to stdout
+* yini parse config.yini --json
+	Stringigies JSON using using JSON.stringify(obj) (compact, machine-parseable)
+	to stdout
+* yini parse config.yini --output out.txt
+	JS-style object	
+	to out.txt
+* yini parse config.yini --pretty --output out.json
+	Pretty JSON	
+	to out.json
+
+*/
+
 program
     .name('yini')
     .description(
