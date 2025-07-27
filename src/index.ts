@@ -108,6 +108,7 @@ program
         validateFile(file, options)
     })
 
+// In here other formats than json and js should go.
 /**
  * To handle command convert, e.g.:
  *      yini convert config.yini --json
