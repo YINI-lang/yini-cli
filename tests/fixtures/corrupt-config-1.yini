@@ -1,8 +1,0 @@
-/*
-    corrupt yini
-    In strict should throw error, while lenient should pass.
-*/
-
-^ Section
-value = 42
-= missing_key_name

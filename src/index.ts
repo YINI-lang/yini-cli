@@ -54,11 +54,20 @@ program
     .description('CLI for parsing and validating YINI config files')
     .version(pkg.version)
 
+// Command info
+program
+    .command('info')
+    .description('Prints more detailed info')
+    .action(() => {
+        printInfo()
+    })
+
 // Default command: parse
 program
-    .argument('', 'Parse a YINI file and print the result')
+    .argument('<file>', 'File to parse')
+    .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
-    .option('--log', 'Use console.log output format (compact, quick view)')
+    // .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify')
     .option('--output ', 'Write output to a specified file')
     .action((file, options) => {
@@ -69,20 +78,14 @@ program
         }
     })
 
-// Command info
-program
-    .command('info')
-    .description('Prints more detailed info')
-    .action(() => {
-        printInfo()
-    })
-
 // Explicit "parse" command
 program
-    .command('parse <file>')
+    .command('parse')
     .description('Parse a YINI file and print the result')
+    .argument('<file>', 'File to parse')
+    .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
-    .option('--log', 'Use console.log output format (compact, quick view)')
+    // .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify')
     .option('--output ', 'Write output to a specified file')
     .action((file, options) => {
