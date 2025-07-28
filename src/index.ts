@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 import pkg from '../package.json'
 import { convertFile } from './commands/convert'
+import { printInfo } from './commands/info'
 import { parseFile } from './commands/parse'
 import { validateFile } from './commands/validate'
 
@@ -71,13 +72,9 @@ program
 // Command info
 program
     .command('info')
-    .description('Print detailed info')
-    .action((file, options) => {
-        console.log(`${pkg.name} version:    ${pkg.version}`)
-        console.log(
-            `yini-parser version: ${pkg.dependencies['yini-parser'].replace('^', '')}`,
-        )
-        console.log(`Author:              ${pkg.author}`)
+    .description('Prints more detailed info')
+    .action(() => {
+        printInfo()
     })
 
 // Explicit "parse" command
