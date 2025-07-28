@@ -55,7 +55,7 @@ program
 
 // Default command: parse
 program
-    .argument('', 'YINI file to parse')
+    .argument('', 'Parse a YINI file and print the result')
     .option('--pretty', 'Pretty-print output as JSON')
     .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify')
@@ -70,7 +70,7 @@ program
 
 // Explicit "parse" command
 program
-    .command('parse ')
+    .command('parse <file>')
     .description('Parse a YINI file and print the result')
     .option('--pretty', 'Pretty-print output as JSON')
     .option('--log', 'Use console.log output format (compact, quick view)')
