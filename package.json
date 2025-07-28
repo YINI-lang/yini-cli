@@ -12,6 +12,8 @@
             "import": "./dist/index.js"
         }
     },
+    "homepage": "https://m4se.com/yini-lang.org/",
+    "license": "Apache-2.0",
     "scripts": {
         "start:dev": "tsx src/index.ts",
         "start": "node ./bin/yini.js",
@@ -27,6 +29,7 @@
         "clean": "rm -rf dist",
         "prepare": "npm run build"
     },
+    "author": "Marko K. Seppänen",
     "dependencies": {
         "commander": "^11.0.0",
         "yini-parser": "^1.0.0-beta.1"

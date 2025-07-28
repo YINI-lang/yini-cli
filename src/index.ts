@@ -68,6 +68,18 @@ program
         }
     })
 
+// Command info
+program
+    .command('info')
+    .description('Print detailed info')
+    .action((file, options) => {
+        console.log(`${pkg.name} version:    ${pkg.version}`)
+        console.log(
+            `yini-parser version: ${pkg.dependencies['yini-parser'].replace('^', '')}`,
+        )
+        console.log(`Author:              ${pkg.author}`)
+    })
+
 // Explicit "parse" command
 program
     .command('parse <file>')
