@@ -1,4 +1,5 @@
 import { Command } from 'commander'
+import pkg from '../package.json'
 import { convertFile } from './commands/convert'
 import { parseFile } from './commands/parse'
 import { validateFile } from './commands/validate'
@@ -49,17 +50,16 @@ Current suggestion:
 
 program
     .name('yini')
-    .description(
-        'A CLI for parsing, validating, and working with YINI configuration files',
-    )
-    .version('0.1.0')
+    .description('CLI for parsing and validating YINI config files')
+    .version(pkg.version)
 
-// Default action: if only a file is passed, treat it like `parse`
+// Default command: parse
 program
-    .argument('[file]', 'YINI file to parse')
-    .option('--strict', 'Enable strict mode')
-    .option('--pretty', 'Pretty-print the output')
-    .option('--output <file>', 'Write JSON output to file instead of stdout')
+    .argument('', 'YINI file to parse')
+    .option('--pretty', 'Pretty-print output as JSON')
+    .option('--log', 'Use console.log output format (compact, quick view)')
+    .option('--json', 'Compact JSON output using JSON.stringify')
+    .option('--output ', 'Write output to a specified file')
     .action((file, options) => {
         if (file) {
             parseFile(file, options)
@@ -68,13 +68,14 @@ program
         }
     })
 
-// Explicit `parse` command (same as above, for clarity)
+// Explicit "parse" command
 program
-    .command('parse <file>')
-    .description('Parse a YINI file and output JSON')
-    .option('--strict', 'Enable strict mode')
-    .option('--pretty', 'Pretty-print the output')
-    .option('--output <file>', 'Write JSON output to file instead of stdout')
+    .command('parse ')
+    .description('Parse a YINI file and print the result')
+    .option('--pretty', 'Pretty-print output as JSON')
+    .option('--log', 'Use console.log output format (compact, quick view)')
+    .option('--json', 'Compact JSON output using JSON.stringify')
+    .option('--output ', 'Write output to a specified file')
     .action((file, options) => {
         parseFile(file, options)
     })
