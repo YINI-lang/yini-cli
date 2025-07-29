@@ -1,26 +1,109 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { Command } from 'commander'
-import YINI from 'yini-parser'
-import { ICLIParseOptions, TBailSensitivity } from './types'
-import { toPrettyJSON } from './utils/print'
+import pkg from '../package.json'
+import { printInfo } from './commands/info'
+import { parseFile } from './commands/parse'
+import { validateFile } from './commands/validate'
 
 const program = new Command()
 
+/*
+
+Idea/suggestion
+yini [parse] [--strict] [--pretty] [--output]
+
+Current suggestion:
+* yini parse config.yini
+	JS-style object using printObject()
+	to stdout
+* yini parse config.yini --pretty
+	Pretty JSON	using JSON.stringify(obj, null, 4)
+	to stdout
+* yini parse config.yini --output out.txt
+	JS-style object	
+	to out.txt
+* yini parse config.yini --pretty --output out.json
+	Pretty JSON	
+	to out.json
+
+New suggestion:
+Current suggestion:
+* yini parse config.yini
+	JS-style object using printObject(obj) (using using util.inspect)
+	to stdout
+* yini parse config.yini --pretty
+	Pretty JSON	using JSON.stringify(obj, null, 4) (formatted, readable)
+	to stdout
+* yini parse config.yini --log
+	Intended for quick output using console.log (nested object may get compacted/abbreviate)
+	to stdout
+* yini parse config.yini --json
+	Stringigies JSON using using JSON.stringify(obj) (compact, machine-parseable)
+	to stdout
+* yini parse config.yini --output out.txt
+	JS-style object	
+	to out.txt
+* yini parse config.yini --pretty --output out.json
+	Pretty JSON	
+	to out.json
+
+*/
+
+// display help for command
 program
     .name('yini')
-    .description(
-        'A CLI for parsing, validating, and working with YINI configuration files',
-    )
-    .version('0.1.0')
+    .description('CLI for parsing and validating YINI config files')
+    .version(pkg.version)
 
-// Default action: if only a file is passed, treat it like `parse`
+program.addHelpText(
+    'after',
+    `
+Examples:
+  $ yini parse config.yini
+  $ yini validate config.yini --strict
+  $ yini parse config.yini --pretty --output out.json
+
+More info: https://github.com/YINI-lang/yini-parser
+`,
+)
+
+//program.command('help [command]').description('Display help for command')
+
+// Command info
 program
-    .argument('[file]', 'YINI file to parse')
-    .option('--strict', 'Enable strict mode')
-    .option('--pretty', 'Pretty-print the output')
-    .option('--output <file>', 'Write JSON output to file instead of stdout')
+    .command('info')
+    .description('Show extended information (details, links, etc.)')
+    .action(printInfo)
+
+/**
+ *
+ * Maybe later, to as default command: parse <parse>
+ */
+// program
+//     .argument('<file>', 'File to parse')
+//     .option('--strict', 'Parse YINI in strict-mode')
+//     .option('--pretty', 'Pretty-print output as JSON')
+//     // .option('--log', 'Use console.log output format (compact, quick view)')
+//     .option('--json', 'Compact JSON output using JSON.stringify')
+//     .option('--output <file>', 'Write output to a specified file')
+//     .action((file, options) => {
+//         if (file) {
+//             parseFile(file, options)
+//         } else {
+//             program.help()
+//         }
+//     })
+
+// Explicit "parse" command
+program
+    .command('parse <file>')
+    .description('Parse a YINI file and print the result')
+    .option('--strict', 'Parse YINI in strict-mode')
+    .option('--pretty', 'Pretty-print output as JSON')
+    // .option('--log', 'Use console.log output format (compact, quick view)')
+    .option('--json', 'Compact JSON output using JSON.stringify')
+    .option('--output <file>', 'Write output to a specified file')
     .action((file, options) => {
+        //@todo add debugPrint
         if (file) {
             parseFile(file, options)
         } else {
@@ -28,52 +111,41 @@ program
         }
     })
 
-// Explicit `parse` command (same as above, for clarity)
+/**
+ * To handle command validate, e.g.:
+ *      yini validate config.yini
+ *      yini validate config.yini --strict
+ *      yini validate config.yini --details
+ *      yini validate config.yini --silent
+ *
+ * If details:
+ * Details:
+ * - YINI version: 1.0.0-beta.6
+ * - Mode: strict
+ * - Keys: 42
+ * - Sections: 6
+ * - Nesting depth: 3
+ * - Has @yini: true
+ */
 program
-    .command('parse <file>')
-    .description('Parse a YINI file and output JSON')
-    .option('--strict', 'Enable strict mode')
-    .option('--pretty', 'Pretty-print the output')
-    .option('--output <file>', 'Write JSON output to file instead of stdout')
+    .command('validate <file>')
+    .description('Checks if the file can be parsed as valid YINI')
+    .option('--strict', 'Enable parsing in strict-mode')
+    .option(
+        '--details',
+        'Print detailed meta-data info (e.g., key count, nesting, etc.)',
+    )
+    .option('--silent', 'Suppress output')
     .action((file, options) => {
-        parseFile(file, options)
+        //@todo add debugPrint
+        if (file) {
+            validateFile(file, options)
+        } else {
+            program.help()
+        }
     })
 
-function parseFile(file: string, options: ICLIParseOptions) {
-    let strictMode = !!options.strict
-    let bailSensitivity: TBailSensitivity = 'auto'
-    let includeMetaData = false
-
-    console.log('File = ' + file)
-
-    try {
-        // const raw = fs.readFileSync(file, 'utf-8')
-        // const parsed = YINI.parseFile(
-        //const parsed = YINI.parseFile(file)
-        const parsed = YINI.parseFile(
-            file,
-            strictMode,
-            bailSensitivity,
-            includeMetaData,
-        )
-        // const parsed = YINI.parse(raw)
-
-        const output = options.pretty
-            ? // ? JSON.stringify(parsed, null, 2)
-              toPrettyJSON(parsed)
-            : JSON.stringify(parsed)
-
-        if (options.output) {
-            // Write JSON output to file instead of stdout.
-            fs.writeFileSync(path.resolve(options.output), output, 'utf-8')
-            console.log(`Output written to ${options.output}`)
-        } else {
-            console.log(output)
-        }
-    } catch (err: any) {
-        console.error(`Error: ${err.message}`)
-        process.exit(1)
-    }
-}
+// NOTE: Converting YINI files to other formats than json and js.
+// Other format should go into a new CLI-command called 'yini-convert'.
 
 program.parseAsync()

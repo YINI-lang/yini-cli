@@ -1,6 +1,8 @@
 export interface ICLIParseOptions {
     strict?: boolean
     pretty?: boolean
+    log?: boolean
+    json?: boolean
     output?: string
 }
 

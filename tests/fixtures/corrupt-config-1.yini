@@ -5,4 +5,4 @@
 
 ^ Section
 value = 42
-= missing_key_name
+333 = missing_key_name	// (!) Invalid key!
