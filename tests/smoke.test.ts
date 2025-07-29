@@ -99,7 +99,7 @@ describe('Test yini CLI basic usage:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
         debugPrint('Test: 2:')
         debugPrint('stdout:')
         printObject(stdout)
@@ -116,7 +116,7 @@ describe('Test yini CLI basic usage:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath}`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
         debugPrint('Test: 6.a:')
         debugPrint('stdout:')
         printObject(stdout)
