@@ -62,9 +62,12 @@ program
         printInfo()
     })
 
-// Default command: parse
+/**
+ *
+ * Maybe later, to as default command: parse <parse>
+ */
 program
-    .argument('<file>', 'File to parse')
+    //.argument('<file>', 'File to parse')
     .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
     // .option('--log', 'Use console.log output format (compact, quick view)')
