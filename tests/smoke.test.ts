@@ -39,7 +39,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain('enabled: true')
     })
 
-    it('2. Parses nested sections and print as JS object..', async () => {
+    it('2. Parses nested sections and print as JS object.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -57,7 +57,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain("host: 'localhost'")
     })
 
-    it('3. Shows error on invalid YINI with some garbage.', async () => {
+    it('3. Shows error on invalid YINI that has some garbage.', async () => {
         // Arrange.
         const fileName = 'invalid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -75,14 +75,49 @@ describe('Test yini CLI basic usage:', () => {
         expect(stderr.toLowerCase()).toContain('syntax error')
     })
 
-    it('4.a. Should pass parsing corrupt YINI in lenient (default) mode.', async () => {
+    it('4. Parse and print as pretty JSON.', async () => {
+        // Arrange.
+        const fileName = 'nested-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        debugPrint('Test: 2:')
+        debugPrint('stdout:')
+        printObject(stdout)
+
+        // Assert.
+        expect(stdout).toContain('    "App": {')
+        expect(stdout).toContain('        "name": "Nested",')
+        expect(stdout).toContain('        "Database": {')
+        expect(stdout).toContain('            "host": "localhost"')
+    })
+
+    it('5. Parse and print as JSON string.', async () => {
+        // Arrange.
+        const fileName = 'nested-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        debugPrint('Test: 2:')
+        debugPrint('stdout:')
+        printObject(stdout)
+
+        // Assert.
+        expect(stdout).toContain(
+            '{"App":{"name":"Nested","Database":{"host":"localhost"}}}',
+        )
+    })
+
+    it('6.a. Should pass parsing corrupt YINI in lenient (default) mode.', async () => {
         // Arrange.
         const fileName = 'corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const { stdout } = await yiniCLI(`parse ${fullPath}`)
-        debugPrint('Test: 4.a:')
+        debugPrint('Test: 6.a:')
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -91,14 +126,14 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain(toJSON(jsObj))
     })
 
-    it.skip('4.b. Show error on corrupt YINI in strict-mode.', async () => {
+    it.skip('6.b. Show error on corrupt YINI in strict-mode.', async () => {
         // Arrange.
         const fileName = 'corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const { stderr, exitCode } = await yiniCLI(`parse ${fullPath} strict`)
-        debugPrint('Test: 4.b:')
+        debugPrint('Test: 6.b:')
         debugPrint('stderr:')
         printObject(stderr)
         debugPrint('exitCode:')
