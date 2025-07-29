@@ -19,10 +19,9 @@ const DIR_OF_FIXTURES = 'fixtures/'
 describe('Test yini CLI basic usage:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
-    it('1. Parses a valid YINI file.', async () => {
+    it('1. Parses a valid YINI file and print as JS object.', async () => {
         // Arrange.
-        // const file = path.resolve('tests/fixtures/valid-config.yini')
-        const fileName = 'valid-config.yini'
+        const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
@@ -34,13 +33,15 @@ describe('Test yini CLI basic usage:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).toContain('"title":"My App"')
-        expect(stdout).toContain(',"enabled":true')
+        expect(stdout).toContain('{ App:')
+        expect(stdout).toContain('title: ')
+        expect(stdout).toContain('My App')
+        expect(stdout).toContain('enabled: true')
     })
 
-    it('2. Parses nested sections correctly.', async () => {
+    it('2. Parses nested sections and print as JS object..', async () => {
         // Arrange.
-        const fileName = 'nested-config.yini'
+        const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
@@ -50,10 +51,10 @@ describe('Test yini CLI basic usage:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).toContain('{"App":')
-        expect(stdout).toContain('"name":"Nested"')
-        expect(stdout).toContain('"Database":{')
-        expect(stdout).toContain('"host":"localhost"}')
+        expect(stdout).toContain('{ App:')
+        expect(stdout).toContain("name: 'Nested'")
+        expect(stdout).toContain('Database: {')
+        expect(stdout).toContain("host: 'localhost'")
     })
 
     it('3. Shows error on invalid YINI with some garbage.', async () => {

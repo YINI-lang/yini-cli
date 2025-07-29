@@ -48,10 +48,25 @@ Current suggestion:
 
 */
 
+// display help for command
 program
     .name('yini')
     .description('CLI for parsing and validating YINI config files')
     .version(pkg.version)
+
+program.addHelpText(
+    'after',
+    `
+Examples:
+  $ yini parse config.yini
+  $ yini validate config.yini --strict
+  $ yini parse config.yini --pretty --output out.json
+
+More info: https://github.com/YINI-lang/yini-parser
+`,
+)
+
+//program.command('help [command]').description('Display help for command')
 
 // Command info
 program
