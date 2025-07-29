@@ -12,11 +12,12 @@ interface IValidateOptions {
 export const validateFile = (file: string, options: IValidateOptions = {}) => {
     try {
         const content = fs.readFileSync(file, 'utf-8')
+        const isMeta = true
         const parsed = YINI.parse(
             content,
             options.strict ?? false,
             'auto',
-            options.meta ?? false,
+            isMeta,
         )
 
         if (!options.silent) {

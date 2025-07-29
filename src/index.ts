@@ -1,6 +1,5 @@
 import { Command } from 'commander'
 import pkg from '../package.json'
-import { convertFile } from './commands/convert'
 import { printInfo } from './commands/info'
 import { parseFile } from './commands/parse'
 import { validateFile } from './commands/validate'
@@ -57,42 +56,44 @@ program
 // Command info
 program
     .command('info')
-    .description('Prints more detailed info')
-    .action(() => {
-        printInfo()
-    })
+    .description('Show extended information (details, links, etc.)')
+    .action(printInfo)
 
 /**
  *
  * Maybe later, to as default command: parse <parse>
  */
+// program
+//     .argument('<file>', 'File to parse')
+//     .option('--strict', 'Parse YINI in strict-mode')
+//     .option('--pretty', 'Pretty-print output as JSON')
+//     // .option('--log', 'Use console.log output format (compact, quick view)')
+//     .option('--json', 'Compact JSON output using JSON.stringify')
+//     .option('--output <file>', 'Write output to a specified file')
+//     .action((file, options) => {
+//         if (file) {
+//             parseFile(file, options)
+//         } else {
+//             program.help()
+//         }
+//     })
+
+// Explicit "parse" command
 program
-    //.argument('<file>', 'File to parse')
+    .command('parse <file>')
+    .description('Parse a YINI file and print the result')
     .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
     // .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify')
-    .option('--output ', 'Write output to a specified file')
+    .option('--output <file>', 'Write output to a specified file')
     .action((file, options) => {
+        //@todo add debugPrint
         if (file) {
             parseFile(file, options)
         } else {
             program.help()
         }
-    })
-
-// Explicit "parse" command
-program
-    .command('parse')
-    .description('Parse a YINI file and print the result')
-    .argument('<file>', 'File to parse')
-    .option('--strict', 'Parse YINI in strict-mode')
-    .option('--pretty', 'Pretty-print output as JSON')
-    // .option('--log', 'Use console.log output format (compact, quick view)')
-    .option('--json', 'Compact JSON output using JSON.stringify')
-    .option('--output ', 'Write output to a specified file')
-    .action((file, options) => {
-        parseFile(file, options)
     })
 
 /**
@@ -113,33 +114,23 @@ program
  */
 program
     .command('validate <file>')
-    .description('Validate a YINI file against the specification')
-    .option('--strict', 'Enable strict mode')
+    .description('Checks if the file can be parsed as valid YINI')
+    .option('--strict', 'Enable parsing in strict-mode')
     .option(
         '--details',
-        'Print detailed validation info (e.g., key count, nesting, etc.)',
+        'Print detailed meta-data info (e.g., key count, nesting, etc.)',
     )
-    .option('--silent', 'Will suppress output.')
+    .option('--silent', 'Suppress output')
     .action((file, options) => {
-        validateFile(file, options)
+        //@todo add debugPrint
+        if (file) {
+            validateFile(file, options)
+        } else {
+            program.help()
+        }
     })
 
-// In here other formats than json and js should go.
-/**
- * To handle command convert, e.g.:
- *      yini convert config.yini --json
- *      yini convert config.yini --yaml --output config.yaml
- *      yini convert config.yini --xml
- */
-// program
-//     .command('convert <file>')
-//     .description('Convert a YINI file to JSON, YAML, or XML')
-//     .option('--json', 'Convert to JSON (default)')
-//     .option('--yaml', 'Convert to YAML')
-//     .option('--xml', 'Convert to XML')
-//     .option('--output <file>', 'Write converted output to a file')
-//     .action((file, options) => {
-//         convertFile(file, options)
-//     })
+// NOTE: Converting YINI files to other formats than json and js.
+// Other format should go into a new CLI-command called 'yini-convert'.
 
 program.parseAsync()
