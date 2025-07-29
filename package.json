@@ -15,10 +15,12 @@
     "homepage": "https://m4se.com/yini-lang.org/",
     "license": "Apache-2.0",
     "scripts": {
-        "start:dev": "tsx src/index.ts",
         "start": "node ./bin/yini.js",
+        "start:dev": "cross-env NODE_ENV=development isDev=1 tsx src/index.ts",
+        "start:dev:debug": "cross-env isDebug=1 npm run start:dev",
         "test:smoke": "vitest tests/smoke",
         "test": "vitest run",
+        "test:debug": "cross-env isDebug=1 vitest run --reporter=verbose",
         "test:watch": "vitest --watch",
         "ci:test": "vitest run --reporter=verbose",
         "ci:test:smoke": "vitest run tests/smoke --reporter=verbose",
@@ -58,6 +60,6 @@
         ]
     },
     "engines": {
-        "node": ">=16"
+        "node": ">=13"
     }
 }

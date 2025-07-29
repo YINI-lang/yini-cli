@@ -3,6 +3,8 @@ import pkg from '../package.json'
 import { printInfo } from './commands/info'
 import { parseFile } from './commands/parse'
 import { validateFile } from './commands/validate'
+import { isDebug } from './config/env'
+import { debugPrint, toPrettyJSON } from './utils/print'
 
 const program = new Command()
 
@@ -103,7 +105,12 @@ program
     .option('--json', 'Compact JSON output using JSON.stringify')
     .option('--output <file>', 'Write output to a specified file')
     .action((file, options) => {
-        //@todo add debugPrint
+        debugPrint('Run command "parse"')
+        debugPrint(`<file> = ${file}`)
+        if (isDebug()) {
+            console.log('options:')
+            console.log(toPrettyJSON(options))
+        }
         if (file) {
             parseFile(file, options)
         } else {

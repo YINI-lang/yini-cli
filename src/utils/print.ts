@@ -3,18 +3,17 @@
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
 import util from 'util'
+import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
 
 // import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
 
 export const debugPrint = (str: any = '') => {
-    //@todo Uncomment below line, after implemnted envs
-    // isDebug() && console.debug('DEBUG: ' + str)
+    isDebug() && console.debug('DEBUG: ' + str)
     console.debug('DEBUG: ' + str)
 }
 
 export const devPrint = (str: any = '') => {
-    //@todo Uncomment below line, after implemnted envs
-    // isDev() && !isTestEnv() && console.log('DEV: ' + str)
+    isDev() && !isTestEnv() && console.log('DEV: ' + str)
     console.log('DEV: ' + str)
 }
 
@@ -32,8 +31,7 @@ export const toPrettyJSON = (obj: any): string => {
  * Strict JSON, all keys are enclosed in ", etc.
  */
 export const printJSON = (obj: any) => {
-    //@todo Uncomment below line, after implemnted envs
-    // if (isProdEnv() || (isTestEnv() && !isDebug())) return
+    if (isProdEnv() || (isTestEnv() && !isDebug())) return
 
     const str = toPrettyJSON(obj)
     console.log(str)
@@ -45,8 +43,7 @@ export const printJSON = (obj: any) => {
  * @param isColors If true, the output is styled with ANSI color codes.
  */
 export const printObject = (obj: any, isColors = true) => {
-    //@todo Uncomment below line, after implemnted envs
-    // if (isProdEnv() || (isTestEnv() && !isDebug())) return
+    if (isProdEnv() || (isTestEnv() && !isDebug())) return
 
     console.log(util.inspect(obj, { depth: null, colors: isColors }))
 }
