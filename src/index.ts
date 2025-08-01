@@ -71,8 +71,17 @@ More info: https://github.com/YINI-lang/yini-parser
 // Command info
 program
     .command('info')
+    // .command('')
     .description(descripts['For-command-info'])
-    .action(printInfo)
+    // .option('info')
+    .action((options) => {
+        debugPrint('Run command "info"')
+        if (isDebug()) {
+            console.log('options:')
+            console.log(toPrettyJSON(options))
+        }
+        printInfo()
+    })
 
 /**
  *

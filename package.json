@@ -5,7 +5,7 @@
     "type": "module",
     "main": "dist/index.js",
     "bin": {
-        "yini": "./bin/yini.js"
+        "yini": "./dist/src/index.js"
     },
     "exports": {
         ".": {
