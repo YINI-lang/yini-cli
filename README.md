@@ -26,7 +26,7 @@ The `parse` command supports multiple output styles:
 >💡 Tip: You can combine --output with any style flag to control both formatting and destination.
 
 ## Links
-- ➡️ [Why YINI? Why another format!?](./RATIONALE.md) (rationale)
+- ➡️ [Why YINI? Why another format!?](https://github.com/YINI-lang/YINI-spec/blob/develop/RATIONALE.md) (rationale)
 - ➡️ [Intro to YINI Config Format](https://github.com/YINI-lang/yini-parser-typescript?tab=readme-ov-file#intro-to-yini-config-format) (learn YINI)
 - ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/develop/YINI-Specification.md#table-of-contents) (spec)
 - ➡️ [Official YINI Parser on npm](https://www.npmjs.com/package/yini-parser) (npm)
