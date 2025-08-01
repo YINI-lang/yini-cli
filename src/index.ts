@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+// (!) NOTE: Leave above shebang as first line!
+
 // import pkg from '../package.json'
 import { createRequire } from 'module'
 import { Command } from 'commander'
