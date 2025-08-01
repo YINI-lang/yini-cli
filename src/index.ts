@@ -4,6 +4,7 @@ import { printInfo } from './commands/info'
 import { parseFile } from './commands/parse'
 import { validateFile } from './commands/validate'
 import { isDebug } from './config/env'
+import { descriptions as descripts } from './descriptions'
 import { debugPrint, toPrettyJSON } from './utils/print'
 
 const program = new Command()
@@ -51,10 +52,7 @@ Current suggestion:
 */
 
 // display help for command
-program
-    .name('yini')
-    .description('CLI for parsing and validating YINI config files')
-    .version(pkg.version)
+program.name('yini').description(descripts.yini).version(pkg.version)
 
 program.addHelpText(
     'after',
@@ -73,7 +71,7 @@ More info: https://github.com/YINI-lang/yini-parser
 // Command info
 program
     .command('info')
-    .description('Show extended information (details, links, etc.)')
+    .description(descripts['For-command-info'])
     .action(printInfo)
 
 /**
@@ -98,7 +96,7 @@ program
 // Explicit "parse" command
 program
     .command('parse <file>')
-    .description('Parse a YINI file and print the result')
+    .description(descripts['For-command-parse'])
     .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
     // .option('--log', 'Use console.log output format (compact, quick view)')
@@ -136,7 +134,7 @@ program
  */
 program
     .command('validate <file>')
-    .description('Checks if the file can be parsed as valid YINI')
+    .description(descripts['For-command-validate'])
     .option('--strict', 'Enable parsing in strict-mode')
     .option(
         '--details',

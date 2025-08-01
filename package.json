@@ -18,6 +18,7 @@
         "start": "node ./bin/yini.js",
         "start:dev": "cross-env NODE_ENV=development isDev=1 tsx src/index.ts",
         "start:dev:debug": "cross-env isDebug=1 npm run start:dev",
+        "version": "npm run start -- --version",
         "test:smoke": "vitest tests/smoke",
         "test:general": "vitest tests/general",
         "test": "vitest run",
