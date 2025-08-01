@@ -1,3 +1,7 @@
+WIP
+
+--
+
 # YINI-CLI
 Command-line tool for working with YINI configuration files.
 
@@ -20,3 +24,23 @@ The `parse` command supports multiple output styles:
 | `yini parse config.yini --pretty --output out.json`| File (Pretty JSON)    | Formatted JSON written to file.                                              |
 
 >💡 Tip: You can combine --output with any style flag to control both formatting and destination.
+
+## Links
+- ➡️ [Why YINI? Why another format!?](./RATIONALE.md) (rationale)
+- ➡️ [Intro to YINI Config Format](https://github.com/YINI-lang/yini-parser-typescript?tab=readme-ov-file#intro-to-yini-config-format) (learn YINI)
+- ➡️ [Read the YINI Specification](./YINI-Specification.md#table-of-contents) (spec)
+- ➡️ [Official YINI Parser on npm](https://www.npmjs.com/package/yini-parser) (npm)
+- ➡️ [YINI Parser GitHub Repo](https://github.com/YINI-lang/yini-parser-typescript) (GitHub)
+- ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Examples%20of%20YINI%20vs%20Other%20Formats.md)
+- ➡️ [YINI Project](https://github.com/YINI-lang) (home)
+
+---
+
+## License
+This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LICENSE>) file for details.
+
+In this project on GitHub, the `libs` directory contains third party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
+
+---
+
+~ **YINI ≡** • [https://yini-lang.org](https://yini-lang.org)
