@@ -13,7 +13,6 @@ import {
 } from '../src/utils/print'
 import { yiniCLI } from './test-helpers'
 
-// const CLI_PATH = path.resolve('src/index.ts')
 const DIR_OF_FIXTURES = 'fixtures/'
 
 describe('Test yini CLI basic usage:', () => {
