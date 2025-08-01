@@ -2,8 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
 import YINI from 'yini-parser'
-import { ICLIParseOptions, TBailSensitivity } from '../types'
-import { printObject, toPrettyJSON } from '../utils/print'
+import { ICLIParseOptions, TBailSensitivity } from '../types.js'
+import { printObject, toPrettyJSON } from '../utils/print.js'
 
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 

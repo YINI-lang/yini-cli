@@ -1,18 +1,25 @@
 /**
  * General Tests.
  */
+
+// import pkg from '../package.json'
+import { createRequire } from 'module'
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import pkg from '../package.json'
-import { descriptions as descripts } from '../src/descriptions'
+import { descriptions as descripts } from '../src/descriptions.js'
 import {
     debugPrint,
     printObject,
     toJSON,
     toPrettyJSON,
-} from '../src/utils/print'
-import { yiniCLI } from './test-helpers'
+} from '../src/utils/print.js'
+import { yiniCLI } from './test-helpers.js'
+
+const require = createRequire(import.meta.url)
+const pkg = require('../package.json')
+
+// import pkg from '../package.json' assert { type: 'json' }
 
 const DIR_OF_FIXTURES = 'fixtures/'
 

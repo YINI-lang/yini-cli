@@ -1,11 +1,15 @@
+// import pkg from '../package.json'
+import { createRequire } from 'module'
 import { Command } from 'commander'
-import pkg from '../package.json'
-import { printInfo } from './commands/info'
-import { parseFile } from './commands/parse'
-import { validateFile } from './commands/validate'
-import { isDebug } from './config/env'
-import { descriptions as descripts } from './descriptions'
-import { debugPrint, toPrettyJSON } from './utils/print'
+import { printInfo } from './commands/info.js'
+import { parseFile } from './commands/parse.js'
+import { validateFile } from './commands/validate.js'
+import { isDebug } from './config/env.js'
+import { descriptions as descripts } from './descriptions.js'
+import { debugPrint, toPrettyJSON } from './utils/print.js'
+
+const require = createRequire(import.meta.url)
+const pkg = require('../package.json')
 
 const program = new Command()
 

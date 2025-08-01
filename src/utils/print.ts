@@ -3,7 +3,7 @@
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
 import util from 'util'
-import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
+import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env.js'
 
 // import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
 

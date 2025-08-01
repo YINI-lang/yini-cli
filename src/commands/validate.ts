@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { exit } from 'node:process'
 import YINI from 'yini-parser'
-import { printObject } from '../utils/print'
+import { printObject } from '../utils/print.js'
 
 interface IValidateOptions {
     strict?: boolean
