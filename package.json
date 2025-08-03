@@ -1,19 +1,41 @@
 {
     "name": "yini-cli",
-    "version": "0.1.0",
+    "version": "1.0.0-alpha.1",
     "description": "CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
+    "keywords": [
+        "yini",
+        "cli",
+        "config",
+        "configuration",
+        "parser",
+        "validator",
+        "ini",
+        "ini alternative",
+        "json",
+        "type-safe",
+        "nested sections",
+        "command-line",
+        "strict mode",
+        "nodejs",
+        "typescript"
+    ],
     "type": "module",
     "main": "dist/index.js",
-    "bin": {
-        "yini": "./dist/src/index.js"
-    },
     "exports": {
         ".": {
-            "import": "./dist/src/index.js"
+            "import": "./dist/index.js"
         }
     },
-    "homepage": "https://m4se.com/yini-lang.org/",
+    "bin": {
+        "yini": "./dist/index.js"
+    },
+    "homepage": "https://github.com/YINI-lang",
     "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/YINI-lang/yini-cli.git"
+    },
+    "private": false,
     "scripts": {
         "start": "node ./bin/yini.js",
         "start:dev": "cross-env NODE_ENV=development isDev=1 tsx src/index.ts",
@@ -34,7 +56,8 @@
         "format:fix": "prettier --write .",
         "build": "tsc",
         "clean": "rm -rf dist",
-        "prepare": "npm run build"
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "author": "Marko K. Seppänen",
     "dependencies": {
