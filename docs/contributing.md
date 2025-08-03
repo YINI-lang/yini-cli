@@ -3,7 +3,7 @@
 - First things first: welcome!
 - Feedback, bug reports, suggestions, or even a bit of roasting are all welcome.
 - Feel free to open a [discussion](https://github.com/YINI-lang/yini-cli/discussions) or [issue](https://github.com/YINI-lang/yini-cli/issues).
-- 
+
 ---
 
 Even though `yini-cli` is in beta, your feedback, suggestions, and contributions are **highly valued**.
