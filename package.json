@@ -1,7 +1,24 @@
 {
     "name": "yini-cli",
-    "version": "1.0.0.alpha.1",
+    "version": "1.0.0-alpha.1",
     "description": "CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
+    "keywords": [
+        "yini",
+        "cli",
+        "config",
+        "configuration",
+        "parser",
+        "validator",
+        "ini",
+        "ini alternative",
+        "json",
+        "type-safe",
+        "nested sections",
+        "command-line",
+        "strict mode",
+        "nodejs",
+        "typescript"
+    ],
     "type": "module",
     "main": "dist/index.js",
     "exports": {
@@ -39,7 +56,8 @@
         "format:fix": "prettier --write .",
         "build": "tsc",
         "clean": "rm -rf dist",
-        "prepare": "npm run build"
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "author": "Marko K. Seppänen",
     "dependencies": {
