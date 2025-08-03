@@ -58,9 +58,18 @@ Current suggestion:
 
 */
 
-// display help for command
+// Display help for command
 program.name('yini').description(descripts.yini).version(pkg.version)
 
+program.addHelpText(
+    'before',
+    `YINI CLI (Yet another INI)
+For parsing and validating YINI config files.    
+A human-friendly config format - like INI, but with type-safe values, nested
+sections, comments, minimal syntax noise, and optional strict mode.
+
+Crafted for clarity, consistency, and simply for the joy of it. :)`,
+)
 program.addHelpText(
     'after',
     `

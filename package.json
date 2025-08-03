@@ -1,7 +1,7 @@
 {
     "name": "yini-cli",
     "version": "0.1.0",
-    "description": "CLI tool for parsing and validating YINI configuration files",
+    "description": "CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
     "type": "module",
     "main": "dist/index.js",
     "bin": {
