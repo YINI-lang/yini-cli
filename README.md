@@ -30,6 +30,27 @@ Command-line tool for working with YINI configuration files. A human-friendly co
 
 ## Usage
 
+### Installation
+
+1. **Install it globally from npm**  
+    Open your terminal and run:
+    ```
+    npm install -g yini-cli
+    ```
+
+2. **Verify installation**  
+    Run this in your terminal:
+    ```
+    yini --version
+    ```
+    Should print the version (e.g., 1.0.0).
+
+    Then you may try:
+    ```
+    yini --help
+    ```
+    Should show you the CLI help for YINI.
+
 ### 📤 Output Modes for `yini parse`
 
 The `parse` command supports multiple output styles:
