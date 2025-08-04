@@ -12,7 +12,7 @@ Command-line tool for working with YINI configuration files. A human-friendly co
     * Uses minimal syntax for humans, especially for nested sections.
     * Uses a concise syntax, aims to not have too much syntax noise.
     * Supports commonly used configuration structures.
-- *Originated from practical needs for configuration **clarity, simplicity, minimalism, and flexibility**.
+- *Originated from practical needs **for configuration clarity, simplicity, minimalism, and flexibility**.
 
 ---
 
