@@ -1,6 +1,6 @@
 {
     "name": "yini-cli",
-    "version": "1.0.0-alpha.2",
+    "version": "1.0.0-alpha.3",
     "description": "CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
     "keywords": [
         "yini",
@@ -34,7 +34,8 @@
     "files": [
         "dist/",
         "README.md",
-        "LICENSE"
+        "LICENSE",
+        "sample.yini"
     ],
     "repository": {
         "type": "git",
