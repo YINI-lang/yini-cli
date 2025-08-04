@@ -19,7 +19,7 @@ Command-line tool for working with YINI configuration files. A human-friendly co
 ## 💡 What is YINI?
 - **INI-inspired** — with added support for typing, comments, and nested sections.
 - **Uses minimal syntax** — minimal syntax noise, maximum clarity.
-- **No indentation or dot-delimited keys** — section nesting support.
+- Section nesting **without requiring indentation or dot-delimited keys**.
 - **Supports strict and lenient modes**, and all major data types.
 - Designed for compatibility with both **manual editing** and **automation**.
 - 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
