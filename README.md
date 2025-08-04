@@ -28,6 +28,13 @@ Command-line tool for working with YINI configuration files. A human-friendly co
 
 ---
 
+## Intro to YINI Config Format
+**YINI** is a simple and readable configuration format. Sections are defined with `^ SectionName`, and values are assigned using `key = value`. The format supports common data types (same as those found in JSON), including strings, numbers, booleans, nulls, and lists. 
+
+To learn more, see the [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md) tutorial.
+
+---
+
 ## Usage
 
 ### Installation
@@ -69,13 +76,26 @@ The `parse` command supports multiple output styles:
 ---
 
 ## Links
-- ➡️ [Why YINI? Why another format!?](https://github.com/YINI-lang/YINI-spec/blob/develop/RATIONALE.md) (rationale)
-- ➡️ [Intro to YINI Config Format](https://github.com/YINI-lang/yini-parser-typescript?tab=readme-ov-file#intro-to-yini-config-format) (learn YINI)
-- ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/develop/YINI-Specification.md#table-of-contents) (spec)
-- ➡️ [Official YINI Parser on npm](https://www.npmjs.com/package/yini-parser) (npm)
-- ➡️ [YINI Parser GitHub Repo](https://github.com/YINI-lang/yini-parser-typescript) (GitHub)
-- ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Examples%20of%20YINI%20vs%20Other%20Formats.md)
-- ➡️ [YINI Project](https://github.com/YINI-lang) (home)
+- ➡️ [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md)  
+  *Beginner-friendly walkthrough and basic usage examples.*
+
+- ➡️ [YINI Parser on npm](https://www.npmjs.com/package/yini-parser)  
+  *Install and view package details.*
+
+- ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/release/YINI-Specification.md#table-of-contents)  
+  *Full formal spec for the YINI format, including syntax and features.*
+
+- ➡️ [YINI Parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)  
+  *TypeScript source code, issue tracker, and contributing guide.*
+
+- ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/tree/release#-summary-difference-with-other-formats)  
+  *How does YINI differ: comparison with INI, YAML, and JSON.*
+  
+- ➡️ [Why YINI? (Project Rationale)](https://github.com/YINI-lang/YINI-spec/blob/release/RATIONALE.md)  
+  *Learn about the motivations and design decisions behind YINI.*
+
+- ➡️ [YINI Project](https://github.com/YINI-lang)  
+  *YINI home.*
 
 ---
 
