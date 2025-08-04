@@ -7,22 +7,21 @@ Command-line tool for working with YINI configuration files. A human-friendly co
 
 ## 🙋‍♀️ Why YINI?
 - **YINI is an alternative** to other great config formats like INI, JSON, YAML, XML, and TOML — designed for clarity, simplicity, and straightforward section nesting.
-- **Started as a personal project and a research challenge:** Aiming for something more readable than JSON, more structured than INI, and less surprising than YAML.
+- **Started as a personal project and a research challenge:** Provides structure similar to INI, with features inspired by JSON and YAML.
 - **Built for clarity:**
-    * Easy to read and write for humans, especially for nested sections.
-    * Not too much syntax noise.
-    * Just enough structure for real-world configs.
-- **A little bit of fun and joy:**
-    * Created to scratch our own itch — if you like it too, that's a bonus!
+    * Uses minimal syntax for humans, especially for nested sections.
+    * Uses a concise syntax, aims to not have too much syntax noise.
+    * Supports commonly used configuration structures.
+- *Originated from practical needs for configuration **clarity, simplicity, minimalism, and flexibility**.
 
 ---
 
 ## 💡 What is YINI?
-- **Simple like INI** — but with strong typing, comments, and nested sections.
-- **Easy to read and write** — minimal syntax noise, maximum clarity.
-- **Clear, minimal section nesting** — no painful indentation or long dot-delimited keys.
+- **INI-inspired** — with added support for typing, comments, and nested sections.
+- **Uses minimal syntax** — minimal syntax noise, maximum clarity.
+- **No indentation or dot-delimited keys** — section nesting support.
 - **Supports strict and lenient modes**, and all major data types.
-- Both **human-friendly** and **machine-friendly**.
+- Designed for compatibility with both **manual editing** and **automation**.
 - 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
 - Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
 
