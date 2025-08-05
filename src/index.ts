@@ -59,7 +59,10 @@ Current suggestion:
 */
 
 // Display help for command
-program.name('yini').description(descripts.yini).version(pkg.version)
+program
+    .name('yini')
+    .description(descripts.yini)
+    .version(pkg.version, '-v, --version', 'Output the version number.')
 
 program.addHelpText(
     'before',
