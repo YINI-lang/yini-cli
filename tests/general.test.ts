@@ -48,9 +48,9 @@ describe('Test general yini CLI usage:', () => {
     /*
      * Note: --version and -V are generated automatically by Commander.
      */
-    it('1.b) The yini command "-V" (uppecase) correctly outputs version.', async () => {
+    it('1.b) The yini command "-v" (lowercase) correctly outputs version.', async () => {
         // Arrange and Act.
-        const { stdout } = await yiniCLI(`-V`)
+        const { stdout } = await yiniCLI(`-v`)
         debugPrint('Test: 1:')
         debugPrint('stdout:')
         printObject(stdout)
