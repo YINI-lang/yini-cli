@@ -1,10 +1,7 @@
-// import pkg from '../../package.json'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const pkg = require('../../package.json')
-
-// import pkg from '../../package.json' assert { type: 'json' }
 
 export const printInfo = () => {
     console.log(`** YINI CLI **`)

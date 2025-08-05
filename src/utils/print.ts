@@ -5,8 +5,6 @@
 import util from 'util'
 import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env.js'
 
-// import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
-
 export const debugPrint = (str: any = '') => {
     isDebug() && console.debug('DEBUG: ' + str)
     console.debug('DEBUG: ' + str)
@@ -27,7 +25,8 @@ export const toPrettyJSON = (obj: any): string => {
     return str
 }
 
-/** Pretty-prints a JavaScript object as formatted JSON to the console.
+/**
+ * Pretty-prints a JavaScript object as formatted JSON to the console.
  * Strict JSON, all keys are enclosed in ", etc.
  */
 export const printJSON = (obj: any) => {

@@ -48,18 +48,47 @@ To learn more, see the [Getting Started: Intro to YINI Config Format](https://gi
 
 2. **Verify installation**  
     Run this in your terminal:
-    ```
+    ```bash
     yini --version
     ```
     Should print the version (e.g., 1.0.0).
 
     Then you may try:
-    ```
+    ```bash
     yini --help
     ```
     Should show you the CLI help for YINI.
 
-### 📤 Output Modes for `yini parse`
+3. **Test functionality**  
+    Create a simple test file, for example: `config.yini`:
+    ```yini
+    ^ App
+    name = "My App Title"
+    version = "1.2.3"
+    pageSize = 25
+    darkTheme = off
+    ```
+
+    Then run:
+    ```bash
+    yini parse config.yini
+    ```
+
+    Expected result, your CLI should output a parsed version of the config and output something similar to:
+    ```js
+    {
+        App: {
+            name: 'My App Title',
+            version: '1.2.3',
+            pageSize: 25,
+            darkTheme: false
+        }
+    }    
+    ```
+
+---
+
+## 📤 Output Modes for `yini parse`
 
 The `parse` command supports multiple output styles:
 
@@ -67,7 +96,6 @@ The `parse` command supports multiple output styles:
 |----------------------------------------------------|----------------------|------------------------------------------------------------------------------|
 | `yini parse config.yini`                           | JS-style object       | Uses Node’s `util.inspect` — human-readable, shows types, nesting, etc.     |
 | `yini parse config.yini --pretty`                  | Pretty JSON           | Formatted and indented with `JSON.stringify(obj, null, 4)`.                  |
-| `yini parse config.yini --log`                     | Console log           | Uses `console.log` — quick output but may truncate deep structures.          |
 | `yini parse config.yini --json`                    | Compact JSON          | Compact and machine-friendly `JSON.stringify(obj)`.                          |
 | `yini parse config.yini --output out.txt`          | File (JS-style)       | Default style, written to specified file.                                    |
 | `yini parse config.yini --pretty --output out.json`| File (Pretty JSON)    | Formatted JSON written to file.                                              |

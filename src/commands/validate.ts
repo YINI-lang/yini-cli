@@ -22,7 +22,7 @@ export const validateFile = (file: string, options: IValidateOptions = {}) => {
 
         if (!options.silent) {
             console.log(
-                `✔ File is valid${options.strict ? ' (strict mode)' : ''}.`,
+                `✔ File is valid ${options.strict ? ' (strict mode)' : ''}.`,
             )
 
             if (options.details) {
