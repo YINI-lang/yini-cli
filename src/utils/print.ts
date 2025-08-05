@@ -7,12 +7,10 @@ import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env.js'
 
 export const debugPrint = (str: any = '') => {
     isDebug() && console.debug('DEBUG: ' + str)
-    console.debug('DEBUG: ' + str)
 }
 
 export const devPrint = (str: any = '') => {
     isDev() && !isTestEnv() && console.log('DEV: ' + str)
-    console.log('DEV: ' + str)
 }
 
 export const toJSON = (obj: any): string => {

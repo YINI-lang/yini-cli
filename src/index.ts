@@ -7,7 +7,7 @@ import { Command } from 'commander'
 import { printInfo } from './commands/info.js'
 import { parseFile } from './commands/parse.js'
 import { validateFile } from './commands/validate.js'
-import { isDebug } from './config/env.js'
+import { isDebug, isDev } from './config/env.js'
 import { descriptions as descr } from './descriptions.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
 
@@ -72,10 +72,10 @@ program.addHelpText(
     `YINI CLI (Yet another INI)
 
 For parsing and validating YINI configuration files.
-A human-friendly config format - like INI, but with type-safe values,
-nested sections, comments, minimal syntax noise, and optional strict mode.
+A config format, inspired by INI, with type-safe values, nested
+sections, comments, minimal syntax noise, and optional strict mode.
 
-Crafted for clarity, consistency, and the simple joy of it. :)`,
+Designed for clarity and consistency. :)\n`,
 )
 program.addHelpText(
     'after',
@@ -85,8 +85,27 @@ Examples:
   $ yini validate config.yini --strict
   $ yini parse config.yini --pretty --output out.json
 
-More info: https://github.com/YINI-lang/yini-parser
-`,
+Example of "config.yini":
+    ^ App
+    title = 'My App'
+    items = 10
+    debug = ON
+
+    ^ Server
+    host = 'localhost'
+    port = 8080
+    useTLS = OFF
+
+        // Sub-section of Server.
+        ^^ Login
+        username = 'user'
+        password = 'secret'
+
+More info:
+https://github.com/YINI-lang/yini-cli
+
+Into to YINI Config:
+https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md`,
 )
 
 //program.command('help [command]').description('Display help for command')
@@ -114,13 +133,15 @@ More info: https://github.com/YINI-lang/yini-parser
 program
     .command('parse <file>')
     .description(descr['For-command-parse'])
-    .option('--strict', 'Parse YINI in strict-mode')
-    .option('--pretty', 'Pretty-print output as JSON')
+    .option('--strict', 'Parse YINI in strict-mode.')
+    .option('--pretty', 'Pretty-print output as JSON.')
     // .option('--log', 'Use console.log output format (compact, quick view)')
-    .option('--json', 'Compact JSON output using JSON.stringify')
-    .option('--output <file>', 'Write output to a specified file')
+    .option('--json', 'Compact JSON output using JSON.stringify.')
+    .option('--output <file>', 'Write output to a specified file.')
     .action((file, options) => {
         debugPrint('Run command "parse"')
+        debugPrint('isDebug(): ' + isDebug())
+        debugPrint('isDev()  : ' + isDev())
         debugPrint(`<file> = ${file}`)
         if (isDebug()) {
             console.log('options:')
