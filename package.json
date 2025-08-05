@@ -67,7 +67,7 @@
     },
     "author": "Marko K. Seppänen",
     "dependencies": {
-        "commander": "^11.0.0",
+        "commander": "^14.0.0",
         "yini-parser": "^1.0.1-beta"
     },
     "devDependencies": {
