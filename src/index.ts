@@ -8,7 +8,7 @@ import { printInfo } from './commands/info.js'
 import { parseFile } from './commands/parse.js'
 import { validateFile } from './commands/validate.js'
 import { isDebug } from './config/env.js'
-import { descriptions as descripts } from './descriptions.js'
+import { descriptions as descr } from './descriptions.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
 
 const require = createRequire(import.meta.url)
@@ -59,7 +59,13 @@ Current suggestion:
 */
 
 // Display help for command
-program.name('yini').description(descripts.yini).version(pkg.version)
+program
+    .name('yini')
+    .description(descr.yini)
+    // Below will replace all auto-registered items (especially the descriptions starting with a capital and ending with a period).
+    .version(pkg.version, '-v, --version', 'Output the version number.')
+    .helpOption('-h, --help', 'Display help for command.')
+    .helpCommand('help [command]', 'Display help for command.')
 
 program.addHelpText(
     'before',
@@ -85,21 +91,6 @@ More info: https://github.com/YINI-lang/yini-parser
 
 //program.command('help [command]').description('Display help for command')
 
-// Command info
-program
-    .command('info')
-    // .command('')
-    .description(descripts['For-command-info'])
-    // .option('info')
-    .action((options) => {
-        debugPrint('Run command "info"')
-        if (isDebug()) {
-            console.log('options:')
-            console.log(toPrettyJSON(options))
-        }
-        printInfo()
-    })
-
 /**
  *
  * Maybe later, to as default command: parse <parse>
@@ -122,7 +113,7 @@ program
 // Explicit "parse" command
 program
     .command('parse <file>')
-    .description(descripts['For-command-parse'])
+    .description(descr['For-command-parse'])
     .option('--strict', 'Parse YINI in strict-mode')
     .option('--pretty', 'Pretty-print output as JSON')
     // .option('--log', 'Use console.log output format (compact, quick view)')
@@ -160,11 +151,11 @@ program
  */
 program
     .command('validate <file>')
-    .description(descripts['For-command-validate'])
+    .description(descr['For-command-validate'])
     .option('--strict', 'Enable parsing in strict-mode')
     .option(
         '--details',
-        'Print detailed meta-data info (e.g., key count, nesting, etc.)',
+        'Print detailed meta-data info (e.g., key count, nesting, etc.).',
     )
     .option('--silent', 'Suppress output')
     .action((file, options) => {
@@ -174,6 +165,21 @@ program
         } else {
             program.help()
         }
+    })
+
+// Command info
+program
+    .command('info')
+    // .command('')
+    .description(descr['For-command-info'])
+    // .option('info')
+    .action((options) => {
+        debugPrint('Run command "info"')
+        if (isDebug()) {
+            console.log('options:')
+            console.log(toPrettyJSON(options))
+        }
+        printInfo()
     })
 
 // NOTE: Converting YINI files to other formats than json and js.
