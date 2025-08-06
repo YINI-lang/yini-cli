@@ -2,13 +2,15 @@
 
 Here you'll find some info for install/setup/directory structure.
 
-## Project Setup
-- Source in TypeScript.
-- Node.js, in full ESM (ECMAScript Modules) (as opposed to CommonJS).
-- Commander
-- Vitest (good for ESM and TypeScript)
-- GitHub Actions (CI/CD)
-- ESLint (code style / linting)
+## Main Techs
+- Source in **TypeScript**
+- **Node.js** - In full ESM (ECMAScript Modules) (as opposed to CommonJS)
+- **Commander.js** - CLI tooling
+- **Vitest** - Test framework, good for ESM and TypeScript
+- **CI/CD** - GitHub Actions for automated tests and build processes
+- **Prettier / ESLint** - Code formatting and linting
+- **YINI Parsing** - Uses the yini-parser library
+- **cross-env** - Environment variable management
 
 ## Project Dir Structure
 ```txt
