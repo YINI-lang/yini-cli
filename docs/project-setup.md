@@ -4,7 +4,7 @@ Here you'll find some info for install/setup/directory structure.
 
 ## Project Setup
 - Source in TypeScript.
-- In full ESM (ECMAScript Modules) (as opposed to CommonJS).
+- Node.js, in full ESM (ECMAScript Modules) (as opposed to CommonJS).
 - Commander
 - Vitest (good for ESM and TypeScript)
 - GitHub Actions (CI/CD)

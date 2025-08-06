@@ -4,16 +4,16 @@
     Example of a YINI document.
 */
 
-^ Service               // Defines a section named Service.
+^ Service                   // Defines a section named Service.
 Enabled = true
 
-    ^^ Cache
-    Type = "redis"          // Defines Cache, a sub-section of Server.
+    ^^ Cache                // Defines Cache, a sub-section of Server.
+    Type = "redis"
     TTL = 3600
 
-        ^^^ Options             // Defines Options, a sub-section of Cache.
+        ^^^ Options         // Defines Options, a sub-section of Cache.
         Host = "127.0.0.1"
         Port = 6379
 
-^ Env                   // Defines a section named Env.
+^ Env                       // Defines a section named Env.
 code = "dev"
