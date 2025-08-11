@@ -9,12 +9,16 @@
         ```
    - Test `npm publish --dry-run` locally before going to the publish step.
 
-2. **Make a Release on GitHub**
+2. Then:
+   * Check and update `CHANGELOG.md` so it's update with the latest changes.
+   * Update the version in `package.json`.
+
+3. **Make a Release on GitHub**
    - Go to **Releases** tab in the repo (`yini-cli`, https://github.com/YINI-lang/yini-cli).
    - Click **"Draft a new release"**, write new tag, version, etc.
    - Click Publish release.
 
-3. **Done!**  
+4. **Done!**  
    The package should now be published to the NPM Registry ([www.npmjs.com](https://www.npmjs.com/))
 
 ### Test the Published Package
