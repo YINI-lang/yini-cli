@@ -62,10 +62,10 @@ To learn more, see the [Getting Started: Intro to YINI Config Format](https://gi
     Create a simple test file, for example: `config.yini`:
     ```yini
     ^ App
-    name = "My App Title"
-    version = "1.2.3"
-    pageSize = 25
-    darkTheme = off
+      name = "My App Title"
+      version = "1.2.3"
+      pageSize = 25
+      darkTheme = off
     ```
 
     Then run:
