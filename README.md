@@ -107,7 +107,7 @@ To learn more, see the [Getting Started: Intro to YINI Config Format](https://gi
 
 ### Installation
 
-1. **Install it globally from npm**  
+1. **Install it globally from npm — (requires Node.js)**  
     Open your terminal and run:
     ```
     npm install -g yini-cli
