@@ -30,15 +30,23 @@
 
 ## Quick Into to YINI Format
 
-A small example using YINI in TypeScript:
-```ts
-import YINI from 'yini-parser'
-
-const config = YINI.parse(`
+YINI code looks like this:
+```yini
+    // This is a comment in YINI
     // YINI is a simple, human-readable configuration file format.
 
-    // Note: In YINI, spaces and tabs don't change meaning - 
-    // indentation is just for readability.
+    // Note: In YINI, spaces and tabs don't change meaning - indentation is just
+    // for readability.
+
+    /*  This is a block comment
+
+        In YINI, section headers use repeated characters "^" at the start to
+        show their level: (Section header names are case-sensitive.)
+
+        ^ SectionLevel1
+        ^^ SectionLevel2
+        ^^^ SectionLevel3
+    */
 
     ^ App                      // Definition of section (group) "App" 
       name     = 'My Title'    // Keys and values are written as key = value
@@ -49,22 +57,10 @@ const config = YINI.parse(`
         ^^ Special
            primaryColor = #336699   // Hex number format
            isCaching    = false     // "OFF" and "NO" works too
-`)
-
-// To parse from a file instead:
-// const config = YINI.parseFile('./config.yini')
-
-console.log(config.App.name)                // My Title
-console.log(config.App.Special.isCaching)   // false
-console.log()
-console.log(config)
 ```
 
-**Output:**
+**The above YINI converted to a JS object:**
 ```js
-My Title
-false
-
 {
   App: {
     name: 'My Title',
