@@ -28,6 +28,63 @@
 
 ---
 
+## Quick Into to YINI Format
+
+A small example using YINI in TypeScript:
+```ts
+import YINI from 'yini-parser'
+
+const config = YINI.parse(`
+    // YINI is a simple, human-readable configuration file format.
+
+    // Note: In YINI, spaces and tabs don't change meaning - 
+    // indentation is just for readability.
+
+    ^ App                      // Definition of section (group) "App" 
+      name     = 'My Title'    // Keys and values are written as key = value
+      items    = 25
+      darkMode = true          // "ON" and "YES" works too
+
+        // Sub-section of the "App" section
+        ^^ Special
+           primaryColor = #336699   // Hex number format
+           isCaching    = false     // "OFF" and "NO" works too
+`)
+
+// To parse from a file instead:
+// const config = YINI.parseFile('./config.yini')
+
+console.log(config.App.name)                // My Title
+console.log(config.App.Special.isCaching)   // false
+console.log()
+console.log(config)
+```
+
+**Output:**
+```js
+My Title
+false
+
+{
+  App: {
+    name: 'My Title',
+    items: 25,
+    darkMode: true,
+    Special: { 
+      primaryColor: 3368601,
+      isCaching: false
+    }
+  }
+}
+```
+
+That's it!
+
+- ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
+- ▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
+
+---
+
 ## Intro to YINI Config Format
 **YINI** is a simple and readable configuration format. Sections are defined with `^ SectionName`, and values are assigned using `key = value`. The format supports common data types (same as those found in JSON), including strings, numbers, booleans, nulls, and lists. 
 
