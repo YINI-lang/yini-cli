@@ -62,15 +62,30 @@ YINI code looks like this:
 **The above YINI converted to a JS object:**
 ```js
 {
-  App: {
-    name: 'My Title',
-    items: 25,
-    darkMode: true,
-    Special: { 
-      primaryColor: 3368601,
-      isCaching: false
+    App: {
+        name: 'My Title',
+        items: 25,
+        darkMode: true,
+        Special: { 
+            primaryColor: 3368601,
+            isCaching: false
+        }
     }
-  }
+}
+```
+
+**In JSON:**
+```json
+{
+   "App":{
+      "name":"My Title",
+      "items":25,
+      "darkMode":true,
+      "Special":{
+         "primaryColor":3368601,
+         "isCaching":false
+      }
+   }
 }
 ```
 
@@ -81,7 +96,7 @@ That's it!
 
 ---
 
-## Intro to YINI Config Format
+## Bigger Intro into YINI Config Format
 **YINI** is a simple and readable configuration format. Sections are defined with `^ SectionName`, and values are assigned using `key = value`. The format supports common data types (same as those found in JSON), including strings, numbers, booleans, nulls, and lists. 
 
 To learn more, see the [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md) tutorial.
