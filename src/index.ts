@@ -5,10 +5,14 @@
 import { createRequire } from 'module'
 import { Command } from 'commander'
 import { printInfo } from './commands/info.js'
-import { parseFile } from './commands/parse.js'
-import { validateFile } from './commands/validate.js'
+import { parseFile } from './commands/parseCommand.js'
+import { validateFile } from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
 import { descriptions as descr } from './descriptions.js'
+import {
+    getHelpTextAfter,
+    getHelpTextBefore,
+} from './main-options/helpOption.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
 
 const require = createRequire(import.meta.url)
@@ -67,46 +71,8 @@ program
     .helpOption('-h, --help', 'Display help for command.')
     .helpCommand('help [command]', 'Display help for command.')
 
-program.addHelpText(
-    'before',
-    `YINI CLI (Yet another INI)
-
-For parsing and validating YINI configuration files.
-A config format, inspired by INI, with type-safe values, nested
-sections, comments, minimal syntax noise, and optional strict mode.
-
-Designed for clarity and consistency. :)\n`,
-)
-program.addHelpText(
-    'after',
-    `
-Examples:
-  $ yini parse config.yini
-  $ yini validate config.yini --strict
-  $ yini parse config.yini --pretty --output out.json
-
-Example of "config.yini":
-    ^ App
-    title = 'My App'
-    items = 10
-    debug = ON
-
-    ^ Server
-    host = 'localhost'
-    port = 8080
-    useTLS = OFF
-
-        // Sub-section of Server.
-        ^^ Login
-        username = 'user'
-        password = 'secret'
-
-More info:
-https://github.com/YINI-lang/yini-cli
-
-Into to YINI Config:
-https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md`,
-)
+program.addHelpText('before', getHelpTextBefore())
+program.addHelpText('after', getHelpTextAfter())
 
 //program.command('help [command]').description('Display help for command')
 
