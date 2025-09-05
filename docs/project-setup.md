@@ -1,6 +1,6 @@
 # Project Setup
 
-Here you'll find some info for install/setup/directory structure.
+Here you will find some **more detailed info** for install/setup/directory structure.
 
 ## Main Techs
 - Source in **TypeScript**

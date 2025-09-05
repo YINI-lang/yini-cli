@@ -17,3 +17,5 @@ Enabled = true
 
 ^ Env                       // Defines a section named Env.
 code = "dev"
+
+/End                        // The document terminator '/END' is optional.

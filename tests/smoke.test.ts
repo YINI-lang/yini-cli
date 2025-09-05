@@ -15,10 +15,10 @@ import { yiniCLI } from './test-helpers'
 
 const DIR_OF_FIXTURES = 'fixtures/'
 
-describe('Test yini CLI basic usage:', () => {
+describe('Smoke test yini CLI basic usage:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
-    it('1. Parses a valid YINI file and print as JS object.', async () => {
+    it('1. Parses (command "parse") a valid YINI file and print as JS object.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -38,7 +38,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain('enabled: true')
     })
 
-    it('2. Parses nested sections and print as JS object.', async () => {
+    it('2. Parses (command "parse") nested sections and print as JS object.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -56,7 +56,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain("host: 'localhost'")
     })
 
-    it('3. Shows error on invalid YINI that has some garbage.', async () => {
+    it('3. Shows error on parsing (command "parse") an invalid YINI (containing some garbage).', async () => {
         // Arrange.
         const fileName = 'invalid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -74,7 +74,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stderr.toLowerCase()).toContain('syntax error')
     })
 
-    it('4. Parse and print as pretty JSON.', async () => {
+    it('4. Parse (command "parse", with "--pretty") and print as pretty JSON.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -92,7 +92,7 @@ describe('Test yini CLI basic usage:', () => {
         expect(stdout).toContain('            "host": "localhost"')
     })
 
-    it('5. Parse and print as JSON string.', async () => {
+    it('5. Parse (command "parse", with "--json") and print as JSON string.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -109,7 +109,7 @@ describe('Test yini CLI basic usage:', () => {
         )
     })
 
-    it('6.a. Should pass parsing corrupt YINI in lenient (default) mode.', async () => {
+    it('6.a. Should pass parsing (command "parse", with "--json") a corrupt YINI in lenient (default) mode.', async () => {
         // Arrange.
         const fileName = 'corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)

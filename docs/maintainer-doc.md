@@ -1,13 +1,18 @@
 # Maintainer-Doc.md
 
+In here is **internal-only notes**: Release process, package testing, etc.
+
 ## Making/Publishing a New Release on GitHub
 
 1. **First:**
-   - Make sure all tests pass by running:
-        ```bash
-        npm run ci:test
-        ```
-   - Test `npm publish --dry-run` locally before going to the publish step.
+   - **1. a)** Make sure all tests pass by running:
+      ```bash
+      npm run ci:test
+      ```
+   - **1. b)** Run below, locally before going to the publishing step: 
+      ```bash
+      npm publish --dry-run
+      ```
 
 2. Then:
    * Check and update `CHANGELOG.md` so it's update with the latest changes.

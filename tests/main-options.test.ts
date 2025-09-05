@@ -20,13 +20,13 @@ const pkg = require('../package.json')
 
 const DIR_OF_FIXTURES = 'fixtures/'
 
-describe('Test general yini CLI usage:', () => {
+describe('Test main (global) options in yini CLI:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
     /*
      * Note: --version and -V are generated automatically by Commander.
      */
-    it('1.a) The yini command "--version" correctly outputs version.', async () => {
+    it('1.a) The yini option "--version" correctly outputs version.', async () => {
         // Arrange.
         // const fileName = 'valid-config-1.yini'
         // const fullPath = path.join(baseDir, fileName)
@@ -48,7 +48,7 @@ describe('Test general yini CLI usage:', () => {
     /*
      * Note: --version and -V are generated automatically by Commander.
      */
-    it('1.b) The yini command "-v" (lowercase) correctly outputs version.', async () => {
+    it('1.b) The yini option "-v" (lowercase) correctly outputs version.', async () => {
         // Arrange and Act.
         const { stdout } = await yiniCLI(`-v`)
         debugPrint('Test: 1:')
@@ -62,7 +62,7 @@ describe('Test general yini CLI usage:', () => {
     /*
      * Note: --help and -h are generated automatically by Commander.
      */
-    it('2.a) The yini command "--help" correctly outputs help/usage message.', async () => {
+    it('2.a) The yini option "--help" correctly outputs help/usage message.', async () => {
         // Arrange and Act.
         const { stdout } = await yiniCLI(`--help`)
         debugPrint('Test: 1:')
@@ -79,7 +79,7 @@ describe('Test general yini CLI usage:', () => {
     /*
      * Note: --help and -h are generated automatically by Commander.
      */
-    it('2.b) The yini command "-h" correctly outputs help/usage message.', async () => {
+    it('2.b) The yini option "-h" correctly outputs help/usage message.', async () => {
         // Arrange and Act.
         const { stdout } = await yiniCLI(`-h`)
         debugPrint('Test: 1:')

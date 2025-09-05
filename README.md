@@ -17,6 +17,13 @@
 
 ---
 
+## Requirements
+YINI CLI requires Node.js **v20 or later**.  
+
+(It has also been tested with Node.js v13+, but v20+ is recommended for best compatibility.)
+
+---
+
 ## 💡 What is YINI?
 - **INI-inspired** — with added support for typing, comments, and nested sections.
 - **Uses minimal syntax** — yet aims to keep maximum clarity.
