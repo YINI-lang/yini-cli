@@ -3,8 +3,7 @@
 
 // import pkg from '../package.json'
 import { createRequire } from 'module'
-import { Command } from 'commander'
-import { printInfo } from './commands/info.js'
+import { Command, Option } from 'commander'
 import { parseFile } from './commands/parseCommand.js'
 import { validateFile } from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
@@ -13,6 +12,7 @@ import {
     getHelpTextAfter,
     getHelpTextBefore,
 } from './main-options/helpOption.js'
+import { printInfo } from './main-options/infoOption.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
 
 const require = createRequire(import.meta.url)
@@ -20,7 +20,7 @@ const pkg = require('../package.json')
 
 const program = new Command()
 
-/*
+    /*
 
 Idea/suggestion
 yini [parse] [--strict] [--pretty] [--output]
@@ -62,8 +62,7 @@ Current suggestion:
 
 */
 
-// Display help for command
-program
+    // Display help for command
     .name('yini')
     .description(descr.yini)
     // Below will replace all auto-registered items (especially the descriptions starting with a capital and ending with a period).
@@ -73,6 +72,18 @@ program
 
 program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
+
+// Main (global) option info
+program
+    .option('-i, --info', 'Show extended information (details, links, etc.).')
+    .action((options) => {
+        debugPrint('Run (global) option "info"')
+        if (isDebug()) {
+            console.log('options:')
+            console.log(toPrettyJSON(options))
+        }
+        printInfo()
+    })
 
 //program.command('help [command]').description('Display help for command')
 
@@ -154,7 +165,8 @@ program
         }
     })
 
-// Command info
+// About to get deleted, moved to main option --info
+//@todo Delete
 program
     .command('info')
     // .command('')
@@ -166,6 +178,7 @@ program
             console.log('options:')
             console.log(toPrettyJSON(options))
         }
+        console.warn('Deprecated: use `yini --info` instead of `yini info`.')
         printInfo()
     })
 
