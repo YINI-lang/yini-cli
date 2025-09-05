@@ -1,6 +1,6 @@
 {
     "name": "yini-cli",
-    "version": "1.0.2-beta",
+    "version": "1.0.3-beta",
     "description": "CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
     "keywords": [
         "yini",
@@ -68,7 +68,7 @@
     "author": "Marko K. Seppänen",
     "dependencies": {
         "commander": "^14.0.0",
-        "yini-parser": "^1.0.2-beta"
+        "yini-parser": "^1.1.0-beta"
     },
     "devDependencies": {
         "@eslint/js": "^9.31.0",
