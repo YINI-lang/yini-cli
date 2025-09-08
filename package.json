@@ -50,6 +50,7 @@
         "run:version": "npm run start -- --version",
         "run:info": "npm run start -- info",
         "run:parse": "npm run start -- parse sample.yini",
+        "run:validate": "npm run start -- validate sample.yini",
         "test:smoke": "vitest tests/smoke",
         "test:general": "vitest tests/general",
         "test": "vitest run",

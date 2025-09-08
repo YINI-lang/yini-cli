@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
 import YINI from 'yini-parser'
-import { ICLIParseOptions, TBailSensitivity } from '../types.js'
+import { ICLIParseOptions, TPreferredFailLevel } from '../types.js'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
@@ -37,7 +37,7 @@ const doParseFile = (
     outputFile = '',
 ) => {
     // let strictMode = !!options.strict
-    let bailSensitivity: TBailSensitivity = 'auto'
+    let bailSensitivity: TPreferredFailLevel = 'auto'
     let includeMetaData = false
 
     debugPrint('File = ' + file)
