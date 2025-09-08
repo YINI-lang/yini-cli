@@ -2,11 +2,11 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 import { exit } from 'node:process'
 import YINI from 'yini-parser'
-import { IResultMetaData } from '../types.js'
+import { ICLIGlobalCommandOptions, IResultMetaData } from '../types.js'
 import { printObject } from '../utils/print.js'
 
 // --- CLI command "validate" options --------------------------------------------------------
-export interface ICLIValidateOptions {
+export interface ICLIValidateOptions extends ICLIGlobalCommandOptions {
     strict?: boolean
     report?: boolean
     details?: boolean

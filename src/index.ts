@@ -21,6 +21,42 @@ import { debugPrint, toPrettyJSON } from './utils/print.js'
 const require = createRequire(import.meta.url)
 const pkg = require('../package.json')
 
+// --- Helper functions --------------------------------------------------------
+function appendGlobalOptionsTo(cmd: Command) {
+    const help = program.createHelp()
+    const globals = help.visibleOptions(program)
+    if (!globals.length) return
+
+    const lines = globals
+        // .map(
+        //     (opt) =>
+        //         `  ${help.optionTerm(opt)}  ${help.optionDescription(opt)}`,
+        // )
+        // .join('\n')
+        .map((option: Option) => {
+            const optName = option.name()
+            if (
+                optName === 'version' ||
+                optName === 'info' ||
+                optName === 'help'
+            ) {
+                debugPrint(
+                    'Skip patching option.name() = ' +
+                        option.name() +
+                        ' into per-command help',
+                )
+            } else {
+                return `  ${help.optionTerm(option)}  ${help.optionDescription(option)}`
+            }
+        })
+        .join('\n')
+        .trim()
+
+    cmd.addHelpText('after', `\nGlobal options:\n  ${lines}`)
+    // cmd.addHelpText('after', `  ${lines}`)
+}
+// -------------------------------------------------------------------------
+
 const program = new Command()
 
     .name('yini')
@@ -34,14 +70,20 @@ program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The (main/global) option: "--info"
+ * The (main/global) option: "--info, --strict, --quite, --silent"
  */
 program
     .option('-i, --info', 'Show extended information (details, links, etc.).')
+    .option('-s, --strict', 'Enable strict parsing mode.')
+    .option('-q, --quiet', ' Reduce output (show only errors).')
+    .option(
+        '--silent',
+        '    Suppress all output (even errors, exit code only).',
+    )
     .action((options) => {
-        debugPrint('Run (global) option "info"')
+        debugPrint('Run global options')
         if (isDebug()) {
-            console.log('options:')
+            console.log('Global options:')
             console.log(toPrettyJSON(options))
         }
         printInfo()
@@ -64,37 +106,38 @@ program
 /**
  * The command: "parse <file>"
  */
-program
+const parseCmd = program
     .command('parse <file>')
     .description(descr['For-command-parse'])
-    // .option('--strict', 'Parse YINI in strict-mode.')
     .option('--pretty', 'Pretty-print output as JSON.')
-    // .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify.')
     .option('--output <file>', 'Write output to a specified file.')
     .action((file, options: ICLIParseOptions) => {
+        const globals = program.opts() // Global options.
+        const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
+
         debugPrint('Run command "parse"')
         debugPrint('isDebug(): ' + isDebug())
         debugPrint('isDev()  : ' + isDev())
         debugPrint(`<file> = ${file}`)
         if (isDebug()) {
-            console.log('options:')
-            console.log(toPrettyJSON(options))
+            console.log('mergedOptions:')
+            console.log(toPrettyJSON(mergedOptions))
         }
         if (file) {
-            parseFile(file, options)
+            parseFile(file, mergedOptions)
         } else {
             program.help()
         }
     })
+appendGlobalOptionsTo(parseCmd)
 
 /**
  * The command: "validate <file>"
  */
-program
+const validateCmd = program
     .command('validate <file>')
     .description(descr['For-command-validate'])
-    // .option('--strict', 'Enable parsing in strict-mode')
     .option(
         '--report',
         'Print detailed meta-data info (e.g., key count, nesting, etc.).',
@@ -105,24 +148,30 @@ program
     )
     // .option('--silent', 'Suppress output')
     .action((file, options: ICLIValidateOptions) => {
-        //@todo add debugPrint
-        console.log('"validate" options:')
-        console.log(options)
+        const globals = program.opts() // Global options.
+        const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 
+        debugPrint('Run command "parse"')
+        debugPrint('isDebug(): ' + isDebug())
+        debugPrint('isDev()  : ' + isDev())
+        debugPrint(`<file> = ${file}`)
+        if (isDebug()) {
+            console.log('mergedOptions:')
+            console.log(toPrettyJSON(mergedOptions))
+        }
         if (file) {
-            validateFile(file, options)
+            validateFile(file, mergedOptions)
         } else {
             program.help()
         }
     })
+appendGlobalOptionsTo(validateCmd)
 
 // About to get deleted, moved to main option --info
 //@todo Delete
 program
     .command('info')
-    // .command('')
     .description(descr['For-command-info'])
-    // .option('info')
     .action((options) => {
         debugPrint('Run command "info"')
         if (isDebug()) {

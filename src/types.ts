@@ -2,6 +2,14 @@
 export type TPreferredFailLevel = 'auto' | 0 | 1 | 2 // Preferred bail sensitivity level.
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
 
+// --- CLI Plobal Command Options --------------------------------------------------------
+export interface ICLIGlobalCommandOptions {
+    strict?: boolean // Enable strict parsing mode.
+    quiet?: boolean // Reduce output (show only errors).
+    silent?: boolean // Suppress all output (even errors, exit code only).
+}
+// -------------------------------------------------------------------------
+
 // --- Parser Options --------------------------------------------------------
 /*
  * Based on yini-parser options:
