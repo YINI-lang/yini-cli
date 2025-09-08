@@ -5,14 +5,19 @@ import YINI from 'yini-parser'
 import { IResultMetaData } from '../types.js'
 import { printObject } from '../utils/print.js'
 
-export interface IValidateOptions {
+// --- CLI command "validate" options --------------------------------------------------------
+export interface ICLIValidateOptions {
     strict?: boolean
     report?: boolean
     details?: boolean
     silent?: boolean
 }
+// -------------------------------------------------------------------------
 
-export const validateFile = (file: string, options: IValidateOptions = {}) => {
+export const validateFile = (
+    file: string,
+    options: ICLIValidateOptions = {},
+) => {
     let parsedResult: any
     let isCatchedError: boolean = true
 

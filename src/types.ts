@@ -2,14 +2,6 @@
 export type TPreferredFailLevel = 'auto' | 0 | 1 | 2 // Preferred bail sensitivity level.
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
 
-export interface ICLIParseOptions {
-    strict?: boolean
-    pretty?: boolean
-    log?: boolean
-    json?: boolean
-    output?: string
-}
-
 // --- Parser Options --------------------------------------------------------
 /*
  * Based on yini-parser options:

@@ -2,10 +2,20 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
 import YINI from 'yini-parser'
-import { ICLIParseOptions, TPreferredFailLevel } from '../types.js'
+import { TPreferredFailLevel } from '../types.js'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
+
+// --- CLI command "parse" options --------------------------------------------------------
+export interface ICLIParseOptions {
+    strict?: boolean
+    pretty?: boolean
+    log?: boolean
+    json?: boolean
+    output?: string
+}
+// -------------------------------------------------------------------------
 
 export const parseFile = (file: string, options: ICLIParseOptions) => {
     const outputFile = options.output || ''

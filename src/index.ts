@@ -4,8 +4,11 @@
 //
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
-import { parseFile } from './commands/parseCommand.js'
-import { IValidateOptions, validateFile } from './commands/validateCommand.js'
+import { ICLIParseOptions, parseFile } from './commands/parseCommand.js'
+import {
+    ICLIValidateOptions,
+    validateFile,
+} from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
 import { descriptions as descr } from './descriptions.js'
 import {
@@ -31,7 +34,7 @@ program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The option (main/global): "--info"
+ * The (main/global) option: "--info"
  */
 program
     .option('-i, --info', 'Show extended information (details, links, etc.).')
@@ -45,17 +48,31 @@ program
     })
 
 /**
+ * The (main/global) option: "--info"
+ */
+// program
+//     .option('-s, --strict', 'Enable parsing in strict-mode.')
+//     .action((options) => {
+//         debugPrint('Run (global) option "strict"')
+//         if (isDebug()) {
+//             console.log('options:')
+//             console.log(toPrettyJSON(options))
+//         }
+//         printInfo()
+//     })
+
+/**
  * The command: "parse <file>"
  */
 program
     .command('parse <file>')
     .description(descr['For-command-parse'])
-    .option('--strict', 'Parse YINI in strict-mode.')
+    // .option('--strict', 'Parse YINI in strict-mode.')
     .option('--pretty', 'Pretty-print output as JSON.')
     // .option('--log', 'Use console.log output format (compact, quick view)')
     .option('--json', 'Compact JSON output using JSON.stringify.')
     .option('--output <file>', 'Write output to a specified file.')
-    .action((file, options) => {
+    .action((file, options: ICLIParseOptions) => {
         debugPrint('Run command "parse"')
         debugPrint('isDebug(): ' + isDebug())
         debugPrint('isDev()  : ' + isDev())
@@ -72,29 +89,12 @@ program
     })
 
 /**
- * To handle command validate, e.g.:
- *      yini validate config.yini
- *      yini validate config.yini --strict
- *      yini validate config.yini --report
- *      yini validate config.yini --details
- *      yini validate config.yini --silent
- *
- * If details:
- * Details:
- * - YINI version: 1.0.0-beta.6
- * - Mode: strict
- * - Keys: 42
- * - Sections: 6
- * - Nesting depth: 3
- * - Has @yini: true
- */
-/**
  * The command: "validate <file>"
  */
 program
     .command('validate <file>')
     .description(descr['For-command-validate'])
-    .option('--strict', 'Enable parsing in strict-mode')
+    // .option('--strict', 'Enable parsing in strict-mode')
     .option(
         '--report',
         'Print detailed meta-data info (e.g., key count, nesting, etc.).',
@@ -103,8 +103,8 @@ program
         '--details',
         'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
     )
-    .option('--silent', 'Suppress output')
-    .action((file, options: IValidateOptions) => {
+    // .option('--silent', 'Suppress output')
+    .action((file, options: ICLIValidateOptions) => {
         //@todo add debugPrint
         console.log('"validate" options:')
         console.log(options)
