@@ -1,9 +1,9 @@
 import assert from 'node:assert'
 import fs from 'node:fs'
 import { exit } from 'node:process'
-import YINI from 'yini-parser'
-import { ICLIGlobalCommandOptions, IResultMetaData } from '../types.js'
-import { printObject } from '../utils/print.js'
+import YINI, { ResultMetadata, YiniParseResult } from 'yini-parser'
+import { ICLIGlobalCommandOptions } from '../types.js'
+import { printObject, toPrettyJSON } from '../utils/print.js'
 
 // --- CLI command "validate" options --------------------------------------------------------
 export interface ICLIValidateOptions extends ICLIGlobalCommandOptions {
@@ -18,15 +18,16 @@ export const validateFile = (
     file: string,
     options: ICLIValidateOptions = {},
 ) => {
-    let parsedResult: any
+    let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
     try {
-        const content = fs.readFileSync(file, 'utf-8')
-        const isMeta = true
-        parsedResult = YINI.parse(content, {
+        // const content = fs.readFileSync(file, 'utf-8')
+        // parsedResult = YINI.parse(content, {
+        parsedResult = YINI.parseFile(file, {
             strictMode: options.strict ?? false,
-            includeMetaData: true,
+            failLevel: 'errors',
+            includeMetadata: true,
             includeDiagnostics: true,
         })
 
@@ -35,18 +36,19 @@ export const validateFile = (
         isCatchedError = true
     }
 
-    let metaData: IResultMetaData | null = null
+    let metadata: ResultMetadata | null = null
     let errors = 0
     let warnings = 0
     let notices = 0
     let infos = 0
 
     if (parsedResult?.meta) {
-        metaData = parsedResult?.meta
-        assert(metaData) // Make sure there is metaData!
-        // printObject(metaData, true)
+        metadata = parsedResult?.meta
+        assert(metadata) // Make sure there is metadata!
+        // printObject(metadata, true)
 
-        const diag = metaData.diagnostics
+        assert(metadata.diagnostics)
+        const diag = metadata.diagnostics
 
         errors = diag!.errors.errorCount
         warnings = diag!.warnings.warningCount
@@ -54,30 +56,39 @@ export const validateFile = (
         infos = diag!.infos.infoCount
     }
 
-    console.log('metaData = ' + metaData)
+    console.log()
+    console.log('isCatchedError = ' + isCatchedError)
+    console.log('TEMP OUTPUT')
+    console.log('isCatchedError = ' + isCatchedError)
+    console.log('  errors = ' + errors)
+    console.log('warnings = ' + warnings)
+    console.log(' notices = ' + notices)
+    console.log('   infor = ' + infos)
+    console.log('metadata = ' + metadata)
     console.log(
-        'includeMetaData = ' +
-            metaData?.diagnostics?.optionsUsed.includeMetaData,
+        'includeMetadata = ' +
+            metadata?.diagnostics?.effectiveOptions.includeMetadata,
     )
-    console.log('options.report = ' + !options.report)
+    console.log('options.report = ' + options?.report)
+    console.log()
 
     if (!options.silent) {
         if (options.report) {
-            if (!metaData) {
+            if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
-            assert(metaData) // Make sure there is metaData!
+            assert(metadata) // Make sure there is metadata!
 
-            console.log(formatToReport(file, metaData))
+            console.log(formatToReport(file, metadata))
         }
 
         if (options.details) {
-            if (!metaData) {
+            if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
-            assert(metaData) // Make sure there is metaData!
+            assert(metadata) // Make sure there is metadata!
 
-            console.log(formatToDetails(file, metaData))
+            console.log(formatToDetails(file, metadata))
         }
     }
 
@@ -86,34 +97,59 @@ export const validateFile = (
     // - finished (with warnings, no errors) / or - passed with warnings
     // - failed (errors),
 
-    if (!isCatchedError) {
-        // green ✔
-        console.log(
-            `✔  Validation passed (${99} errors, ${99} warnings, ${99} total messages)`,
+    if (isCatchedError) {
+        errors = 1
+    }
+    if (errors) {
+        // red ✖
+        console.error(
+            formatToStatus('Failed', errors, warnings, notices, infos),
         )
 
+        exit(1)
+    } else if (warnings) {
         // yellow ⚠️
-        console.log(
-            `⚠️ Validation finished (${99} errors, ${99} warnings, ${99} total messages)`,
+        console.warn(
+            formatToStatus(
+                'Passed-with-Warnings',
+                errors,
+                warnings,
+                notices,
+                infos,
+            ),
         )
 
         exit(0)
     } else {
-        // red ✖
-        console.error(
-            `✖ Validation failed (${99} errors, ${99} warnings, ${99} total messages)`,
-        )
-        exit(1)
+        // green ✔
+        console.log(formatToStatus('Passed', errors, warnings, notices, infos))
+
+        exit(0)
     }
 }
 
-//@todo
 const formatToStatus = (
-    isCatchedError: boolean,
-    metaData: IResultMetaData | null,
+    statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
+    errors: number,
+    warnings: number,
+    notices: number,
+    infos: number,
 ): string => {
-    const str: string = ``
+    let str = ``
 
+    switch (statusType) {
+        case 'Passed':
+            str = '✔  Validation passed'
+            break
+        case 'Passed-with-Warnings':
+            str = '⚠️ Validation finished'
+            break
+        case 'Failed':
+            str = '✖  Validation failed'
+            break
+    }
+
+    str += ` (${errors} errors, ${warnings} warnings, ${notices + infos} total messages)`
     return str
 }
 
@@ -134,23 +170,35 @@ const formatToStatus = (
 */
 const formatToReport = (
     fileWithPath: string,
-    metaData: IResultMetaData,
+    metadata: ResultMetadata,
 ): string => {
     console.log('formatToReport(..)')
-    printObject(metaData)
+    printObject(metadata)
     console.log()
 
-    const diag = metaData.diagnostics
+    assert(metadata.diagnostics)
+    const diag = metadata.diagnostics
 
-    const str: string = `Validation report
+    const str = `Validation report
 -----------------
-For file "${fileWithPath}"
 
-  Errors: ${diag!.errors.errorCount}
-Warnings: ${diag!.warnings.warningCount}
- Notices: ${diag!.notices.noticeCount}
-   Infos: ${diag!.infos.infoCount}
+   For file "${fileWithPath}"
 
+         Mode: ${metadata.mode}
+       Strict: ${metadata.mode === 'strict'}
+       Errors: ${diag.errors.errorCount}
+     Warnings: ${diag.warnings.warningCount}
+      Notices: ${diag.notices.noticeCount}
+        Infos: ${diag.infos.infoCount}
+
+   Line Count: ${metadata.source.lineCount}
+Section Count: ${metadata.structure.sectionCount}
+ Member Count: ${metadata.structure.memberCount}
+Nesting Depth: ${metadata.structure.maxDepth}
+
+    Has @YINI: ${metadata.source.hasYiniMarker}
+     Has /END: ${metadata.source.hasDocumentTerminator}
+    Byte Size: ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
 `
 
     return str
@@ -171,10 +219,11 @@ Warnings: ${diag!.warnings.warningCount}
 */
 const formatToDetails = (
     fileWithPath: string,
-    metaData: IResultMetaData,
+    metadata: ResultMetadata,
 ): string => {
     console.log('formatToDetails(..)')
-    printObject(metaData)
+    printObject(metadata)
+    console.log(toPrettyJSON(metadata))
     console.log()
 
     const str: string = ``

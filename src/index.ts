@@ -17,9 +17,10 @@ import {
 } from './globalOptions/helpOption.js'
 import { printInfo } from './globalOptions/infoOption.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
+import { getPackageVersion } from './utils/yiniCliHelpers.js'
 
 const require = createRequire(import.meta.url)
-const pkg = require('../package.json')
+// const pkg = require('../package.json')
 
 // --- Helper functions --------------------------------------------------------
 function appendGlobalOptionsTo(cmd: Command) {
@@ -62,7 +63,7 @@ const program = new Command()
     .name('yini')
     .description(descr.yini)
     // Below will replace all auto-registered items (especially the descriptions starting with a capital and ending with a period).
-    .version(pkg.version, '-v, --version', 'Output the version number.')
+    .version(getPackageVersion(), '-v, --version', 'Output the version number.')
     .helpOption('-h, --help', 'Display help for command.')
     .helpCommand('help [command]', 'Display help for command.')
 
@@ -72,6 +73,7 @@ program.addHelpText('after', getHelpTextAfter())
 /**
  * The (main/global) option: "--info, --strict, --quite, --silent"
  */
+// Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
     .option('-i, --info', 'Show extended information (details, links, etc.).')
     .option('-s, --strict', 'Enable strict parsing mode.')

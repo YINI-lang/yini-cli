@@ -2,13 +2,16 @@
  * The main (global) option help.
  */
 
+import { getPackageName, getPackageVersion } from '../utils/yiniCliHelpers.js'
+
 /**
  * Text to be displayed BEFORE the built-in help text block.
  */
 export const getHelpTextBefore = () => {
-    return `YINI CLI (Yet another INI)
+    return `${getPackageName()} ${getPackageVersion()}
+YINI CLI (Yet another INI)
 
-For parsing and validating YINI configuration files.
+Parse and validate YINI configuration files.
 A config format, inspired by INI, with type-safe values, nested
 sections, comments, minimal syntax noise, and optional strict mode.
 
@@ -25,7 +28,10 @@ Examples:
   $ yini validate config.yini --strict
   $ yini parse config.yini --pretty --output out.json
 
-Example of "config.yini":
+For help with a specific command, use -h or --help. For example:
+  $ yini validate --help
+
+Sample "config.yini":
     ^ App
     title = 'My App'
     items = 10

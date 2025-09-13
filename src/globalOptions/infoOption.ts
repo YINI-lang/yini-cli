@@ -1,5 +1,7 @@
 import { createRequire } from 'module'
 
+// import pkg from '../../package.json' with { type: 'json' } // NOTE: Must use { type: 'json' } when in ESM mode.
+
 const require = createRequire(import.meta.url)
 const pkg = require('../../package.json')
 

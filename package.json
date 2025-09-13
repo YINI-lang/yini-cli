@@ -48,7 +48,7 @@
         "start:dev:debug": "cross-env isDebug=1 npm run start:dev",
         "run:help": "npm run start -- --help",
         "run:version": "npm run start -- --version",
-        "run:info": "npm run start -- info",
+        "run:info": "npm run start -- --info",
         "run:parse": "npm run start -- parse sample.yini",
         "run:validate": "npm run start -- validate sample.yini",
         "test:smoke": "vitest tests/smoke",
@@ -70,7 +70,7 @@
     "author": "Marko K. Seppänen",
     "dependencies": {
         "commander": "^14.0.0",
-        "yini-parser": "^1.1.0-beta"
+        "yini-parser": "^1.2.0-beta"
     },
     "devDependencies": {
         "@eslint/js": "^9.31.0",
