@@ -179,26 +179,27 @@ const formatToReport = (
     assert(metadata.diagnostics)
     const diag = metadata.diagnostics
 
-    const str = `Validation report
+    const str = `Validation Report
 -----------------
 
-   For file "${fileWithPath}"
+File      "${fileWithPath}"
 
-         Mode: ${metadata.mode}
-       Strict: ${metadata.mode === 'strict'}
-       Errors: ${diag.errors.errorCount}
-     Warnings: ${diag.warnings.warningCount}
-      Notices: ${diag.notices.noticeCount}
-        Infos: ${diag.infos.infoCount}
+Mode:     '${metadata.mode}'
+Strict:   ${metadata.mode === 'strict'}
 
-   Line Count: ${metadata.source.lineCount}
+Errors:   ${diag.errors.errorCount}
+Warnings: ${diag.warnings.warningCount}
+Notices:  ${diag.notices.noticeCount}
+Infos:    ${diag.infos.infoCount}
+
+Line Count:    ${metadata.source.lineCount}
 Section Count: ${metadata.structure.sectionCount}
- Member Count: ${metadata.structure.memberCount}
+Member Count:  ${metadata.structure.memberCount}
 Nesting Depth: ${metadata.structure.maxDepth}
 
-    Has @YINI: ${metadata.source.hasYiniMarker}
-     Has /END: ${metadata.source.hasDocumentTerminator}
-    Byte Size: ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
+Has @YINI: ${metadata.source.hasYiniMarker}
+Has /END:  ${metadata.source.hasDocumentTerminator}
+Byte Size: ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
 `
 
     return str
