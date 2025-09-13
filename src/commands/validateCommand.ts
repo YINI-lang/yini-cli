@@ -180,10 +180,12 @@ const formatToReport = (
     const diag = metadata.diagnostics
 
     const str = `Validation Report
------------------
+=================
 
 File      "${fileWithPath}"
 
+Summary
+-------
 Mode:     '${metadata.mode}'
 Strict:   ${metadata.mode === 'strict'}
 
@@ -192,14 +194,16 @@ Warnings: ${diag.warnings.warningCount}
 Notices:  ${diag.notices.noticeCount}
 Infos:    ${diag.infos.infoCount}
 
+Stats
+-----
 Line Count:    ${metadata.source.lineCount}
 Section Count: ${metadata.structure.sectionCount}
 Member Count:  ${metadata.structure.memberCount}
 Nesting Depth: ${metadata.structure.maxDepth}
 
-Has @YINI: ${metadata.source.hasYiniMarker}
-Has /END:  ${metadata.source.hasDocumentTerminator}
-Byte Size: ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
+Has @YINI:     ${metadata.source.hasYiniMarker}
+Has /END:      ${metadata.source.hasDocumentTerminator}
+Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
 `
 
     return str
@@ -227,7 +231,7 @@ const formatToDetails = (
     console.log(toPrettyJSON(metadata))
     console.log()
 
-    const str: string = ``
+    const str = `Details`
 
     return str
 }
