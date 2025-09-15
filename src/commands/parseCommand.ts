@@ -2,13 +2,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
 import YINI, { PreferredFailLevel } from 'yini-parser'
-import { ICLIGlobalCommandOptions } from '../types.js'
+import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 
 // --- CLI command "parse" options --------------------------------------------------------
-export interface ICLIParseOptions extends ICLIGlobalCommandOptions {
+export interface ICLIParseOptions extends IGlobalOptions {
     pretty?: boolean
     json?: boolean
     output?: string
