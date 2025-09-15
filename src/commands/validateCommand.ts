@@ -1,33 +1,39 @@
 import assert from 'node:assert'
 import fs from 'node:fs'
 import { exit } from 'node:process'
-import YINI, { ResultMetadata, YiniParseResult } from 'yini-parser'
+import YINI, {
+    AllUserOptions,
+    ResultMetadata,
+    YiniParseResult,
+} from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
 import { printObject, toPrettyJSON } from '../utils/print.js'
 
-// --- CLI command "validate" options --------------------------------------------------------
-export interface ICLIValidateOptions extends IGlobalOptions {
-    strict?: boolean
+// --- CLI command "validate" commandOptions --------------------------------------------------------
+export interface IValidateCommandOptions extends IGlobalOptions {
     report?: boolean
     details?: boolean
-    silent?: boolean
 }
 // -------------------------------------------------------------------------
 
 export const validateFile = (
     file: string,
-    options: ICLIValidateOptions = {},
+    commandOptions: IValidateCommandOptions = {},
 ) => {
     let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
+    const parseOptions: AllUserOptions = {
+        strictMode: commandOptions.strict ?? false,
+        // failLevel: 'errors',
+        failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
+        // failLevel: 'ignore-errors',
+        includeMetadata: true,
+        includeDiagnostics: true,
+    }
+
     try {
-        parsedResult = YINI.parseFile(file, {
-            strictMode: options.strict ?? false,
-            failLevel: 'errors',
-            includeMetadata: true,
-            includeDiagnostics: true,
-        })
+        parsedResult = YINI.parseFile(file, parseOptions)
 
         isCatchedError = false
     } catch (err: any) {
@@ -40,7 +46,7 @@ export const validateFile = (
     let notices = 0
     let infos = 0
 
-    if (parsedResult?.meta) {
+    if (!isCatchedError && parsedResult?.meta) {
         metadata = parsedResult?.meta
         assert(metadata) // Make sure there is metadata!
         // printObject(metadata, true)
@@ -67,11 +73,11 @@ export const validateFile = (
         'includeMetadata = ' +
             metadata?.diagnostics?.effectiveOptions.includeMetadata,
     )
-    console.log('options.report = ' + options?.report)
+    console.log('commandOptions.report = ' + commandOptions?.report)
     console.log()
 
-    if (!options.silent) {
-        if (options.report) {
+    if (!commandOptions.silent && !isCatchedError) {
+        if (commandOptions.report) {
             if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
@@ -80,7 +86,7 @@ export const validateFile = (
             console.log(formatToReport(file, metadata))
         }
 
-        if (options.details) {
+        if (commandOptions.details) {
             if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
@@ -201,7 +207,7 @@ Nesting Depth: ${metadata.structure.maxDepth}
 
 Has @YINI:     ${metadata.source.hasYiniMarker}
 Has /END:      ${metadata.source.hasDocumentTerminator}
-Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
+Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize + ' bytes'}
 `
 
     return str

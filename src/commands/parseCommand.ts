@@ -1,70 +1,73 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
-import YINI, { PreferredFailLevel } from 'yini-parser'
+import YINI, { AllUserOptions, PreferredFailLevel } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 
-// --- CLI command "parse" options --------------------------------------------------------
-export interface ICLIParseOptions extends IGlobalOptions {
+// --- CLI command "parse" commandOptions --------------------------------------------------------
+export interface IParseCommandOptions extends IGlobalOptions {
     pretty?: boolean
     json?: boolean
     output?: string
 }
 // -------------------------------------------------------------------------
 
-export const parseFile = (file: string, options: ICLIParseOptions) => {
-    const outputFile = options.output || ''
-    const isStrictMode = !!options.strict
+export const parseFile = (
+    file: string,
+    commandOptions: IParseCommandOptions,
+) => {
+    const outputFile = commandOptions.output || ''
+    const isStrictMode = !!commandOptions.strict
     let outputStyle: TOutputStype = 'JS-style'
 
     debugPrint('file = ' + file)
-    debugPrint('output = ' + options.output)
-    debugPrint('options:')
-    printObject(options)
+    debugPrint('output = ' + commandOptions.output)
+    debugPrint('commandOptions:')
+    printObject(commandOptions)
 
-    if (options.pretty) {
+    if (commandOptions.pretty) {
         outputStyle = 'Pretty-JSON'
-    } else if (options.json) {
+    } else if (commandOptions.json) {
         outputStyle = 'JSON-compact'
     } else {
         outputStyle = 'JS-style'
     }
 
-    doParseFile(file, outputStyle, isStrictMode, outputFile)
+    doParseFile(file, commandOptions, outputStyle, outputFile)
 }
 
 const doParseFile = (
     file: string,
+    commandOptions: IParseCommandOptions,
     outputStyle: TOutputStype,
-    isStrictMode = false,
     outputFile = '',
 ) => {
-    // let strictMode = !!options.strict
+    // let strictMode = !!commandOptions.strict
     let preferredFailLevel: PreferredFailLevel = 'auto'
     let includeMetaData = false
 
     debugPrint('File = ' + file)
     debugPrint('outputStyle = ' + outputStyle)
 
-    try {
-        // const raw = fs.readFileSync(file, 'utf-8')
-        // const parsed = YINI.parseFile(
-        //const parsed = YINI.parseFile(file)
-        const parsed = YINI.parseFile(
-            file,
-            isStrictMode,
-            preferredFailLevel,
-            includeMetaData,
-        )
-        // const parsed = YINI.parse(raw)
+    const parseOptions: AllUserOptions = {
+        strictMode: commandOptions.strict ?? false,
+        // failLevel: 'errors',
+        failLevel: preferredFailLevel,
+        // failLevel: 'ignore-errors',
+        includeMetadata: includeMetaData,
+    }
 
-        // const output = options.pretty
-        //     ? // ? JSON.stringify(parsed, null, 2)
-        //       toPrettyJSON(parsed)
-        //     : JSON.stringify(parsed)
+    // If --force then override fail-level.
+    if (commandOptions.force) {
+        parseOptions.failLevel = 'ignore-errors'
+    }
+
+    try {
+        const parsed = YINI.parseFile(file, parseOptions)
+
         let output = ''
         switch (outputStyle) {
             case 'Pretty-JSON':

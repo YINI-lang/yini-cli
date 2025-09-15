@@ -5,6 +5,7 @@
 // --- CLI Global Command Options --------------------------------------------------------
 export interface IGlobalOptions {
     strict?: boolean // Enable strict parsing mode.
+    force?: boolean // Force parsing even during errors.
     quiet?: boolean // Reduce output (show only errors).
     silent?: boolean // Suppress all output (even errors, exit code only).
 }
