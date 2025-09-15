@@ -22,8 +22,6 @@ export const validateFile = (
     let isCatchedError: boolean = true
 
     try {
-        // const content = fs.readFileSync(file, 'utf-8')
-        // parsedResult = YINI.parse(content, {
         parsedResult = YINI.parseFile(file, {
             strictMode: options.strict ?? false,
             failLevel: 'errors',
