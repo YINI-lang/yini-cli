@@ -5,10 +5,11 @@ on:
     push:
     pull_request:
     schedule:
-        - cron: '0 1 * * 1' # weekly
+        - cron: '0 1 * * 1'
 
 permissions:
     contents: read
+    security-events: write # needed for SARIF upload
 
 jobs:
     gitleaks:
@@ -19,17 +20,29 @@ jobs:
               with:
                   fetch-depth: 0
 
-            # Skip on PRs from forks (secrets aren't provided to forked workflows)
             - name: Gitleaks scan
               if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
               uses: gitleaks/gitleaks-action@v2
+              continue-on-error: true # allow next steps to run even if leaks found
               env:
-                  # For org repos: provide the license if present; user repos don't need it.
-                  GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+                  GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # empty for user repos (ok)
               with:
-                  args: detect --source . --no-git --redact
+                  # Write SARIF explicitly into the workspace
+                  args: >
+                      detect --source . --no-git --redact --verbose
+                      --report-format sarif
+                      --report-path ${{ github.workspace }}/gitleaks.sarif
 
-            # (Optional) Make the skip explicit in logs for forked PRs
+            # (Optional) Inspect whether the file was created
+            # - name: Debug: list files
+            #   run: ls -la ${{ github.workspace }}
+
+            - name: Upload SARIF to GitHub Security
+              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('gitleaks.sarif') != '' }}
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: gitleaks.sarif
+
             - name: Skipped on forked PRs
               if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
               run: echo "Skipping Gitleaks on forked PRs (no secrets available)."
