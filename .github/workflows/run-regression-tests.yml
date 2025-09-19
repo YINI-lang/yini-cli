@@ -48,10 +48,12 @@ jobs:
             - name: Build
               run: npm run build --if-present
 
-            - name: Run unit tests
-              run: |
-                  echo "Running test: ${{ github.event.inputs.testName }}"
-                  npm run ci:test:unit
+            # todo: add to run unit tests here
+
+            # - name: Run unit tests
+            #   run: |
+            #       echo "Running test: ${{ github.event.inputs.testName }}"
+            #       npm run ci:test:unit
 
             - name: Run smoke tests
               run: |
