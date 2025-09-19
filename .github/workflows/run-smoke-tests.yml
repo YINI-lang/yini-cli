@@ -1,8 +1,7 @@
 name: Run Smoke Tests
 
 on:
-    push:
-        branches: ['main']
+    pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)
     workflow_dispatch: # allows manual run from GitHub UI
 
 jobs:
@@ -21,13 +20,21 @@ jobs:
             - name: Print Node.js version
               run: node --version
 
-            - name: Install dependencies
-              run: npm ci # npm clean-install (installs without changing package-lock.json)
+            - name: Install dependencies (no scripts)
+              run: npm ci --ignore-scripts # npm clean-install (installs without changing package-lock.json)
+
+            - name: Typecheck
+              run: npm run typecheck --if-present
+
+            - name: Lint
+              run: npm run lint --if-present
 
             - name: Build # So that dist/ gets updated too.
               run: npm run build
 
-            - name: Run Specific Test
+            # todo: add to run unit tests here
+
+            - name: Run smoke tests
               run: |
                   echo "Running test: ${{ github.event.inputs.testName }}"
                   npm run ci:test:smoke
