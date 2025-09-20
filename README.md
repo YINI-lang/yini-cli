@@ -15,7 +15,7 @@
     * Supports commonly used configuration structures.
 - *Developed to meet practical needs, driven by curiosity and a desire **for configuration clarity, simplicity, minimalism, and flexibility**.
 
-⭐ **Enjoying yini-cli?** If you like this project, click [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
+⭐ **Enjoying yini-cli?** If you like this project, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
 
 ---
 
