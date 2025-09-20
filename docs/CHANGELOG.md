@@ -5,6 +5,11 @@
 - Added --strict as global option, to enable parsing in strict mode.
 - Added -q, --quiet as global option, to reduce output (show only errors).
 - Added --silent as global option, will suppress all output (even errors, exit code only).
+- **CI/Tooling (GitHub Actions):** Added security and quality checks:
+  - **Security:** CodeQL, dependency checke (`npm audit`) + lockfile-lint, Gitleaks (SARIF), Semgrep (SARIF).
+  - CI CLI test.
+  - **Regression tests:** run across a Node/OS matrix.
+  - **Releases:** npm publish with provenance (tag-driven).
 
 ## 1.0.3-beta - 2025 Sep
 - **Updated:** Now uses latest `yini-parser` library `v1.1.0-beta`, for greatly improved parsing, compatibility, and error handling with more descriptive and accurate error messages.

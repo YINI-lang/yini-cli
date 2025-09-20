@@ -1,0 +1,59 @@
+name: CLI Test CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+concurrency:
+    group: cli-ci-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    build-smoke:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [18, 20, 22]
+                os: [ubuntu-latest, windows-latest, macos-latest]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+                  cache: npm
+
+            - name: Install
+              run: npm ci --ignore-scripts
+
+            - name: Build
+              run: npm run build --if-present
+
+            # Should work uniformly on Linux/Windows/macOS.
+            - name: Pack (capture tarball filename)
+              shell: bash # Set shell to bash, since Windows defaults to PowerShell.
+              run: |
+                  set -euo pipefail
+                  TARBALL="$(npm pack --silent)"
+                  echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+
+            # Should work uniformly on Linux/Windows/macOS.
+            - name: Install globally from tarball
+              shell: bash # Set shell to bash, since Windows defaults to PowerShell.
+              run: npm i -g "$TARBALL"
+
+            - name: Smoke test --help
+              run: |
+                  yini --help || yini-cli --help
+
+            # todo: In future, so below works.
+            # - name: CLI smoke test parse sample
+            #   run: |
+            #       echo "^ App\n  name = 'Demo'\n" > sample.yini
+            #       (yini parse sample.yini || yini-cli parse sample.yini)
