@@ -18,7 +18,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                node: [18, 20, 22]
+                node: [16, 18, 20, 22]
                 os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
@@ -35,18 +35,22 @@ jobs:
             - name: Build
               run: npm run build --if-present
 
-            - name: Pack tarball
-              run: npm pack
-            - name: Install from tarball
+            - name: Pack (capture tarball filename)
+              shell: bash
               run: |
-                  TARBALL=$(ls -1 *.tgz | head -n1)
-                  npm i -g "$TARBALL"
+                  set -euo pipefail
+                  TARBALL="$(npm pack --silent)"
+                  echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+
+            - name: Install globally from tarball
+              shell: bash
+              run: npm i -g "$TARBALL"
 
             - name: Smoke test --help
               run: |
                   yini --help || yini-cli --help
 
-            - name: Smoke test parse sample
+            - name: CLI smoke test parse sample
               run: |
                   echo "^ App\n  name = 'Demo'\n" > sample.yini
                   (yini parse sample.yini || yini-cli parse sample.yini)
