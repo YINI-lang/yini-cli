@@ -18,7 +18,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                node: [16, 18, 20, 22]
+                node: [18, 20, 22]
                 os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
@@ -35,15 +35,17 @@ jobs:
             - name: Build
               run: npm run build --if-present
 
+            # Should work uniformly on Linux/Windows/macOS.
             - name: Pack (capture tarball filename)
-              shell: bash
+              shell: bash # Set shell to bash, since Windows defaults to PowerShell.
               run: |
                   set -euo pipefail
                   TARBALL="$(npm pack --silent)"
                   echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
 
+            # Should work uniformly on Linux/Windows/macOS.
             - name: Install globally from tarball
-              shell: bash
+              shell: bash # Set shell to bash, since Windows defaults to PowerShell.
               run: npm i -g "$TARBALL"
 
             - name: Smoke test --help
