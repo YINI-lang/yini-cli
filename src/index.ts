@@ -4,9 +4,9 @@
 //
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
-import { ICLIParseOptions, parseFile } from './commands/parseCommand.js'
+import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
-    ICLIValidateOptions,
+    IValidateCommandOptions,
     validateFile,
 } from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
@@ -77,11 +77,9 @@ program.addHelpText('after', getHelpTextAfter())
 program
     .option('-i, --info', 'Show extended information (details, links, etc.).')
     .option('-s, --strict', 'Enable strict parsing mode.')
-    .option('-q, --quiet', ' Reduce output (show only errors).')
-    .option(
-        '--silent',
-        '    Suppress all output (even errors, exit code only).',
-    )
+    .option('-f, --force', 'Continue parsing even if errors occur.')
+    .option('-q, --quiet', 'Reduce output (show only errors).')
+    .option('--silent', 'Suppress all output (even errors, exit code only).')
     .action((options) => {
         debugPrint('Run global options')
         if (isDebug()) {
@@ -114,7 +112,7 @@ const parseCmd = program
     .option('--pretty', 'Pretty-print output as JSON.')
     .option('--json', 'Compact JSON output using JSON.stringify.')
     .option('--output <file>', 'Write output to a specified file.')
-    .action((file, options: ICLIParseOptions) => {
+    .action((file, options: IParseCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 
@@ -149,7 +147,7 @@ const validateCmd = program
         'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
     )
     // .option('--silent', 'Suppress output')
-    .action((file, options: ICLIValidateOptions) => {
+    .action((file, options: IValidateCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 

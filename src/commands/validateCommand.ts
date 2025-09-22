@@ -1,35 +1,42 @@
 import assert from 'node:assert'
 import fs from 'node:fs'
 import { exit } from 'node:process'
-import YINI, { ResultMetadata, YiniParseResult } from 'yini-parser'
-import { ICLIGlobalCommandOptions } from '../types.js'
+import YINI, {
+    AllUserOptions,
+    IssuePayload,
+    ResultMetadata,
+    YiniParseResult,
+} from 'yini-parser'
+import { IGlobalOptions } from '../types.js'
 import { printObject, toPrettyJSON } from '../utils/print.js'
 
-// --- CLI command "validate" options --------------------------------------------------------
-export interface ICLIValidateOptions extends ICLIGlobalCommandOptions {
-    strict?: boolean
+const IS_DEBUG: boolean = false // For local debugging purposes, etc.
+
+// --- CLI command "validate" commandOptions --------------------------------------------------------
+export interface IValidateCommandOptions extends IGlobalOptions {
     report?: boolean
     details?: boolean
-    silent?: boolean
 }
 // -------------------------------------------------------------------------
 
 export const validateFile = (
     file: string,
-    options: ICLIValidateOptions = {},
+    commandOptions: IValidateCommandOptions = {},
 ) => {
     let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
+    const parseOptions: AllUserOptions = {
+        strictMode: commandOptions.strict ?? false,
+        // failLevel: 'errors',
+        failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
+        // failLevel: 'ignore-errors',
+        includeMetadata: true,
+        includeDiagnostics: true,
+    }
+
     try {
-        // const content = fs.readFileSync(file, 'utf-8')
-        // parsedResult = YINI.parse(content, {
-        parsedResult = YINI.parseFile(file, {
-            strictMode: options.strict ?? false,
-            failLevel: 'errors',
-            includeMetadata: true,
-            includeDiagnostics: true,
-        })
+        parsedResult = YINI.parseFile(file, parseOptions)
 
         isCatchedError = false
     } catch (err: any) {
@@ -42,7 +49,7 @@ export const validateFile = (
     let notices = 0
     let infos = 0
 
-    if (parsedResult?.meta) {
+    if (!isCatchedError && parsedResult?.meta) {
         metadata = parsedResult?.meta
         assert(metadata) // Make sure there is metadata!
         // printObject(metadata, true)
@@ -56,39 +63,42 @@ export const validateFile = (
         infos = diag!.infos.infoCount
     }
 
-    console.log()
-    console.log('isCatchedError = ' + isCatchedError)
-    console.log('TEMP OUTPUT')
-    console.log('isCatchedError = ' + isCatchedError)
-    console.log('  errors = ' + errors)
-    console.log('warnings = ' + warnings)
-    console.log(' notices = ' + notices)
-    console.log('   infor = ' + infos)
-    console.log('metadata = ' + metadata)
-    console.log(
-        'includeMetadata = ' +
-            metadata?.diagnostics?.effectiveOptions.includeMetadata,
-    )
-    console.log('options.report = ' + options?.report)
-    console.log()
+    IS_DEBUG && console.log()
+    IS_DEBUG && console.log('isCatchedError = ' + isCatchedError)
+    IS_DEBUG && console.log('TEMP OUTPUT')
+    IS_DEBUG && console.log('isCatchedError = ' + isCatchedError)
+    IS_DEBUG && console.log('  errors = ' + errors)
+    IS_DEBUG && console.log('warnings = ' + warnings)
+    IS_DEBUG && console.log(' notices = ' + notices)
+    IS_DEBUG && console.log('   infor = ' + infos)
+    IS_DEBUG && console.log('metadata = ' + metadata)
+    IS_DEBUG &&
+        console.log(
+            'includeMetadata = ' +
+                metadata?.diagnostics?.effectiveOptions.includeMetadata,
+        )
+    IS_DEBUG && console.log('commandOptions.report = ' + commandOptions?.report)
+    IS_DEBUG && console.log()
 
-    if (!options.silent) {
-        if (options.report) {
+    if (!commandOptions.silent && !isCatchedError) {
+        if (commandOptions.report) {
             if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
             assert(metadata) // Make sure there is metadata!
 
-            console.log(formatToReport(file, metadata))
+            console.log()
+            console.log(formatToReport(file, metadata).trim())
         }
 
-        if (options.details) {
+        if (commandOptions.details) {
             if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
             assert(metadata) // Make sure there is metadata!
 
-            console.log(formatToDetails(file, metadata))
+            console.log()
+            printDetailsOnAllIssue(file, metadata)
         }
     }
 
@@ -100,6 +110,8 @@ export const validateFile = (
     if (isCatchedError) {
         errors = 1
     }
+    console.log()
+
     if (errors) {
         // red ✖
         console.error(
@@ -135,6 +147,7 @@ const formatToStatus = (
     notices: number,
     infos: number,
 ): string => {
+    const totalMsgs: number = errors + warnings + notices + infos
     let str = ``
 
     switch (statusType) {
@@ -149,7 +162,7 @@ const formatToStatus = (
             break
     }
 
-    str += ` (${errors} errors, ${warnings} warnings, ${notices + infos} total messages)`
+    str += ` (${errors} errors, ${warnings} warnings, ${totalMsgs} total messages)`
     return str
 }
 
@@ -172,21 +185,27 @@ const formatToReport = (
     fileWithPath: string,
     metadata: ResultMetadata,
 ): string => {
-    console.log('formatToReport(..)')
-    printObject(metadata)
-    console.log()
+    // console.log('formatToReport(..)')
+    // printObject(metadata)
+    // console.log()
 
     assert(metadata.diagnostics)
     const diag = metadata.diagnostics
 
+    const issuesCount: number =
+        diag.errors.errorCount +
+        diag.warnings.warningCount +
+        diag.notices.noticeCount +
+        diag.infos.infoCount
     const str = `Validation Report
 =================
 
 File      "${fileWithPath}"
+Issues:   ${issuesCount}
 
 Summary
 -------
-Mode:     '${metadata.mode}'
+Mode:     ${metadata.mode}
 Strict:   ${metadata.mode === 'strict'}
 
 Errors:   ${diag.errors.errorCount}
@@ -203,7 +222,7 @@ Nesting Depth: ${metadata.structure.maxDepth}
 
 Has @YINI:     ${metadata.source.hasYiniMarker}
 Has /END:      ${metadata.source.hasDocumentTerminator}
-Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize}
+Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize + ' bytes'}
 `
 
     return str
@@ -222,17 +241,59 @@ Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.sour
     Warning at line 10, column 3: Section level skipped (0 → 2)
     Notice at line 1: Unused @yini directive
 */
-const formatToDetails = (
+const printDetailsOnAllIssue = (
     fileWithPath: string,
     metadata: ResultMetadata,
-): string => {
-    console.log('formatToDetails(..)')
-    printObject(metadata)
-    console.log(toPrettyJSON(metadata))
+): void => {
+    // console.log('printDetails(..)')
+    // printObject(metadata)
+    // console.log(toPrettyJSON(metadata))
+    // console.log()
+
+    assert(metadata.diagnostics)
+    const diag = metadata.diagnostics
+
+    console.log('Details')
+    console.log('-------')
     console.log()
 
-    const str = `Details`
+    const errors: IssuePayload[] = diag.errors.payload
+    printIssues('Error  ', 'E', errors)
 
-    return str
+    const warnings: IssuePayload[] = diag.warnings.payload
+    printIssues('Warning', 'W', warnings)
+
+    const notices: IssuePayload[] = diag.notices.payload
+    printIssues('Notice ', 'N', notices)
+
+    const infos: IssuePayload[] = diag.infos.payload
+    printIssues('Info   ', 'I', infos)
+
+    return
 }
+
 // -------------------------------------------------------------------------
+
+const printIssues = (
+    typeLabel: string,
+    prefix: string,
+    issues: IssuePayload[],
+): void => {
+    const leftPadding = '        '
+
+    issues.forEach((iss: IssuePayload, i: number) => {
+        const id: string = '#' + prefix + '-0' + (i + 1)
+        // const id: string = '' + prefix + '-0' + (i+1) + ':'
+
+        let str = `${typeLabel} [${id}]:\n`
+        str +=
+            leftPadding +
+            `At line ${iss.line}, column ${iss.column}: ${iss.message}`
+
+        if (iss.advice) str += '\n' + leftPadding + iss.advice
+        if (iss.hint) str += '\n' + leftPadding + iss.hint
+
+        console.log(str)
+        console.log()
+    })
+}

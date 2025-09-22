@@ -58,7 +58,7 @@ describe('Smoke test yini CLI basic usage:', () => {
 
     it('3. Shows error on parsing (command "parse") an invalid YINI (containing some garbage).', async () => {
         // Arrange.
-        const fileName = 'invalid-config-1.yini'
+        const fileName = 'invalid/invalid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
@@ -111,7 +111,7 @@ describe('Smoke test yini CLI basic usage:', () => {
 
     it('6.a. Should pass parsing (command "parse", with "--json") a corrupt YINI in lenient (default) mode.', async () => {
         // Arrange.
-        const fileName = 'corrupt-config-1.yini'
+        const fileName = 'invalid/corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
