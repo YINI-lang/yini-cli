@@ -2,8 +2,8 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 import { exit } from 'node:process'
 import YINI, {
-    AllUserOptions,
     IssuePayload,
+    ParseOptions,
     ResultMetadata,
     YiniParseResult,
 } from 'yini-parser'
@@ -26,13 +26,14 @@ export const validateFile = (
     let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
-    const parseOptions: AllUserOptions = {
+    const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
         // failLevel: 'errors',
         failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
         // failLevel: 'ignore-errors',
         includeMetadata: true,
         includeDiagnostics: true,
+        silent: true,
     }
 
     try {
@@ -110,7 +111,7 @@ export const validateFile = (
     if (isCatchedError) {
         errors = 1
     }
-    console.log()
+    // console.log()
 
     if (errors) {
         // red ✖
