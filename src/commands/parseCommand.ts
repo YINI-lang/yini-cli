@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'util'
-import YINI, { AllUserOptions, PreferredFailLevel } from 'yini-parser'
+import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 
@@ -52,7 +52,7 @@ const doParseFile = (
     debugPrint('File = ' + file)
     debugPrint('outputStyle = ' + outputStyle)
 
-    const parseOptions: AllUserOptions = {
+    const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
         // failLevel: 'errors',
         failLevel: preferredFailLevel,
