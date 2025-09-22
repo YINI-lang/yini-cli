@@ -2,12 +2,12 @@
 
 ## ## 1.1.0-beta - 2025 Sep
 - **New command:** New command `validate` to validate parsing of a YINI file.
-- Added --strict as global option, to enable parsing in strict mode.
-- Added -q, --quiet as global option, to reduce output (show only errors).
-- Added --silent as global option, will suppress all output (even errors, exit code only).
+- **Added** --strict as global option, to enable parsing in strict mode.
+- **Added** -q, --quiet as global option, to reduce output (show only errors).
+- **Added** --silent as global option, will suppress all output (even errors, exit code only).
 - **CI/Tooling (GitHub Actions):** Added security and quality checks:
   - **Security:** CodeQL, dependency checke (`npm audit`) + lockfile-lint, Gitleaks (SARIF), Semgrep (SARIF).
-  - CI CLI test.
+  - **CI CLI test**.
   - **Regression tests:** run across a Node/OS matrix.
   - **Releases:** npm publish with provenance (tag-driven).
 - Removed per-command --strict flags.
