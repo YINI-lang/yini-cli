@@ -213,6 +213,17 @@ The `parse` command supports multiple output styles:
 
 ---
 
+## 🛠 Roadmap
+Areas of planned and possible future expansion:
+
+1. **Improve existing commands** — Continued functionality improvements, better diagnostics, and expanded QA for `parse` and `validate` and their options.
+2. Command `format`: Pretty-print or normalize a `.yini` file.
+3. Command `lint`: Stricter stylistic checks (like `validate`, but opinionated).
+4. Command `diff`: Compare two YINI files and show structural/config differences.
+5. Command `convert`: Convert a `JSON` or `XML` file into YINI format.
+
+---
+
 ## Links
 - ➡️ [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md)  
   *Beginner-friendly walkthrough and basic usage examples.*
