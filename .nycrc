@@ -1,0 +1,14 @@
+{
+    "all": true,
+    "extension": [".ts", ".js"],
+    "include": ["src/**"],
+    "exclude": ["dist/**", "node_modules/**", "tests/**", "**/*.d.ts"],
+    "reporter": ["text", "html", "lcov"],
+    "check-coverage": true,
+    "branches": 80,
+    "functions": 85,
+    "lines": 85,
+    "statements": 85,
+    "sourceMap": true,
+    "instrument": true
+}

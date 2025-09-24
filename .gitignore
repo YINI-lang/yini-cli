@@ -27,3 +27,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 *.local
+
+# Ignore generated nyc (Instanbul) coverage (test).
+coverage
+.nyc_output
