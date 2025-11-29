@@ -91,3 +91,10 @@ In here is **internal-only notes**: Release process, package testing, etc.
    ```bash
    npm uninstall -g yini-cli
    ```
+
+---
+
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
