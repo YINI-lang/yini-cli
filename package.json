@@ -29,7 +29,7 @@
     "bin": {
         "yini": "./dist/index.js"
     },
-    "homepage": "https://github.com/YINI-lang",
+    "homepage": "https://yini-lang.org/",
     "license": "Apache-2.0",
     "files": [
         "dist/",
