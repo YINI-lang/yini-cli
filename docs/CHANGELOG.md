@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## ## 1.1.0-beta - 2025 Sep
+## 1.1.1-beta - 2025 Dec
+- **Updated:** Updated to use the latest YINI Parser version `1.3.2-beta` from `1.3.0-beta`.
+
+## 1.1.0-beta - 2025 Sep
 - **New command:** New command `validate` to validate parsing of a YINI file.
 - **Added** --strict as global option, to enable parsing in strict mode.
 - **Added** -q, --quiet as global option, to reduce output (show only errors).

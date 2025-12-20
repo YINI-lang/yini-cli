@@ -1,19 +1,18 @@
 # YINI-CLI
-**Command-line tool for working with YINI configuration files. Validate, inspect, and convert to JSON with pretty output.**
+**Command-line tool for validating, inspecting, and converting YINI configuration files to JSON.**
 
-*YINI aims to be a human-friendly config format: like INI, but with type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.*
+*YINI is an INI-inspired configuration format designed for clarity and predictability. It supports nesting, comments, and a formally defined syntax—so configuration files stay easy to read and reason about as they grow.*
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
 
 ---
 
 ## 🙋‍♀️ Why YINI?
-- **YINI is an alternative** to other great config formats like INI, JSON, YAML, XML, and TOML — designed for clarity, simplicity, and straightforward section nesting.
-- **Started as a personal project and a research challenge:** Provides structure similar to INI, with features inspired by JSON and YAML.
-- **Built for clarity:**
-    * Uses concise syntax designed for clarity, especially in nested sections.
-    * Supports commonly used configuration structures.
-- *Developed to meet practical needs, driven by curiosity and a desire **for configuration clarity, simplicity, minimalism, and flexibility**.
+- **No "Indentation" Hell:** The YINI config format is indentation-independent, meaning you wont' break your app with a single misplaces space.
+- **Simple Nesting:** It uses clear header markers (e.g. `^`, `^^`, `^^^`) to create hierarchy/sub-sections (like in Markdown), and avoid long multip chained dotted section head names.
+- **Multiple Data Types:** It supports boolean literals (`true` / `false`, `Yes` / `No`, `On` / `Off`), numbers, arrays, and even JS-style objects natively.
+- **Comments Support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
+- **Predictable Validation:** It offers specified rules for strict and lenient parsing modes.
 
 ⭐ **Enjoying yini-cli?** If you like this project, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
 
@@ -26,14 +25,55 @@ YINI CLI requires Node.js **v20 or later**.
 
 ---
 
-## 💡 What is YINI?
-- **INI-inspired** — with added support for typing, comments, and nested sections.
-- **Uses minimal syntax** — yet aims to keep maximum clarity.
-- Section nesting **without requiring indentation or dot-delimited keys**.
-- **Supports strict and lenient modes**, and all major data types.
-- Designed for compatibility with both **manual editing** and **automation**.
-- 👉 See [how YINI differs from JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
-- Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
+## Quick Start
+
+### Installation
+
+1. **Install it globally from npm — (requires Node.js)**  
+    Open your terminal and run:
+    ```
+    npm install -g yini-cli
+    ```
+
+2. **Verify installation**  
+    Run this in your terminal:
+    ```bash
+    yini --version
+    ```
+    Should print the version (e.g., 1.0.0).
+
+    Then you may try:
+    ```bash
+    yini --help
+    ```
+    Should show you the CLI help for YINI.
+
+3. **Test functionality**  
+    Create a simple test file, for example: `config.yini`:
+    ```yini
+    ^ App
+      name = "My App Title"
+      version = "1.2.3"
+      pageSize = 25
+      darkTheme = off
+    ```
+
+    Then run:
+    ```bash
+    yini parse config.yini
+    ```
+
+    Expected result, your CLI should output a parsed version of the config and output something similar to:
+    ```js
+    {
+        App: {
+            name: 'My App Title',
+            version: '1.2.3',
+            pageSize: 25,
+            darkTheme: false
+        }
+    }    
+    ```
 
 ---
 
@@ -112,58 +152,6 @@ To learn more, see the [Getting Started: Intro to YINI Config Format](https://gi
 
 ---
 
-## Usage
-
-### Installation
-
-1. **Install it globally from npm — (requires Node.js)**  
-    Open your terminal and run:
-    ```
-    npm install -g yini-cli
-    ```
-
-2. **Verify installation**  
-    Run this in your terminal:
-    ```bash
-    yini --version
-    ```
-    Should print the version (e.g., 1.0.0).
-
-    Then you may try:
-    ```bash
-    yini --help
-    ```
-    Should show you the CLI help for YINI.
-
-3. **Test functionality**  
-    Create a simple test file, for example: `config.yini`:
-    ```yini
-    ^ App
-      name = "My App Title"
-      version = "1.2.3"
-      pageSize = 25
-      darkTheme = off
-    ```
-
-    Then run:
-    ```bash
-    yini parse config.yini
-    ```
-
-    Expected result, your CLI should output a parsed version of the config and output something similar to:
-    ```js
-    {
-        App: {
-            name: 'My App Title',
-            version: '1.2.3',
-            pageSize: 25,
-            darkTheme: false
-        }
-    }    
-    ```
-
----
-
 ## Usage of command `yini`
 
 ```bash
@@ -225,26 +213,17 @@ Areas of planned and possible future expansion:
 ---
 
 ## Links
-- ➡️ [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md)  
-  *Beginner-friendly walkthrough and basic usage examples.*
-
 - ➡️ [YINI Parser on npm](https://www.npmjs.com/package/yini-parser)  
   *Install and view package details.*
 
-- ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/release/YINI-Specification.md#table-of-contents)  
-  *Full formal spec for the YINI format, including syntax and features.*
-
-- ➡️ [YINI Parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)  
-  *TypeScript source code, issue tracker, and contributing guide.*
-
-- ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/tree/release#-summary-difference-with-other-formats)  
-  *How does YINI differ: comparison with INI, YAML, and JSON.*
-  
-- ➡️ [Why YINI? (Project Rationale)](https://github.com/YINI-lang/YINI-spec/blob/release/RATIONALE.md)  
-  *Learn about the motivations and design decisions behind YINI.*
-
 - ➡️ [YINI Project](https://github.com/YINI-lang)  
-  *YINI home.*
+  *YINI home on gitHub.*
+
+---
+
+## Contribution & Involvement
+Interested in contributing or trying ideas?
+Issues, feedback, and experiments are welcome — even small ones.
 
 ---
 
@@ -256,6 +235,6 @@ In this project on GitHub, the `libs` directory contains third party software an
 ---
 
 **^YINI ≡**  
-> A simple, structured, and human-friendly configuration format.  
+> YINI — Clear, Structured Configuration Files.  
 
 [yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
