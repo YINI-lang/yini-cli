@@ -90,7 +90,7 @@ YINI CLI requires Node.js **v20 or later**.
 ```bash
 Usage: yini [options] [command]
 
-CLI for parsing and validating YINI config files.
+Official CLI for parsing and validating YINI config files.
 
 Options:
   -v, --version              Output the version number.
@@ -105,7 +105,7 @@ Commands:
   parse [options] <file>     Parse a YINI file (*.yini) and print the result.
   validate [options] <file>  Checks if the file can be parsed as valid YINI.
   info                       Deprecated: Use `yini --info` or `yini -i` instead.
-  help [command]             Display help for command.
+  help <command>             Display help for command.
 
 Examples:
   $ yini parse config.yini

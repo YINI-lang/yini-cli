@@ -1,3 +1,5 @@
+// helpOption.ts
+
 /*
  * The main (global) option help.
  */
@@ -23,7 +25,9 @@ Designed for clarity and consistency. :)\n`
  */
 export const getHelpTextAfter = () => {
     return `
-Examples:
+========================================================
+
+Quick Examples:
   $ yini parse config.yini
   $ yini validate --strict config.yini
   $ yini parse config.yini --pretty --output out.json
@@ -31,7 +35,9 @@ Examples:
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help
 
-Sample "config.yini":
+========================================================
+Example YINI configuration file (config.yini)
+========================================================
     ^ App
     title = 'My App'
     items = 10
@@ -46,10 +52,12 @@ Sample "config.yini":
         ^^ Login
         username = 'user'
         password = 'secret'
+========================================================
 
 More info:
-https://github.com/YINI-lang/yini-cli
+  https://github.com/YINI-lang/yini-cli
 
-Into to YINI Config:
-https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md`
+YINI homepage:
+  https://yini-lang.org
+`
 }

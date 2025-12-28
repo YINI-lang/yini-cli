@@ -87,7 +87,7 @@ In here is **internal-only notes**: Release process, package testing, etc.
    ```
 
 6. **Uninstall when Done**  
-   Clean up after::
+   Clean up after:
    ```bash
    npm uninstall -g yini-cli
    ```

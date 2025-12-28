@@ -4,6 +4,7 @@
 //
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
+import { enableHelpAll } from './cli/helpAll.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
     IValidateCommandOptions,
@@ -64,8 +65,8 @@ const program = new Command()
     .description(descr.yini)
     // Below will replace all auto-registered items (especially the descriptions starting with a capital and ending with a period).
     .version(getPackageVersion(), '-v, --version', 'Output the version number.')
-    .helpOption('-h, --help', 'Display help for command.')
-    .helpCommand('help [command]', 'Display help for command.')
+    .helpOption('-h, --help', 'Display full help for all commands.')
+    .helpCommand('help <command>', 'Display help for a specific command.')
 
 program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
@@ -185,6 +186,8 @@ program
     })
 
 // NOTE: Converting YINI files to other formats than json and js.
-// Other format should go into a new CLI-command called 'yini-convert'.
+// Other format should go into a new CLI-command called 'yini-convert' to not let this command grow too large.
+
+enableHelpAll(program)
 
 program.parseAsync()
