@@ -1,3 +1,5 @@
+// helpOption.ts
+
 /*
  * The main (global) option help.
  */
@@ -31,7 +33,10 @@ Examples:
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help
 
-Sample "config.yini":
+────────────────────────────────────────────────────────
+Example YINI configuration file (config.yini)
+────────────────────────────────────────────────────────
+
     ^ App
     title = 'My App'
     items = 10
@@ -47,9 +52,12 @@ Sample "config.yini":
         username = 'user'
         password = 'secret'
 
-More info:
-https://github.com/YINI-lang/yini-cli
+────────────────────────────────────────────────────────
 
-Into to YINI Config:
-https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md`
+More info:
+  https://github.com/YINI-lang/yini-cli
+
+YINI homepage:
+  https://yini-lang.org/
+`
 }
