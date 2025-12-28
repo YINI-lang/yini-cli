@@ -87,27 +87,7 @@ YINI CLI requires Node.js **v20 or later**.
 
 ## Usage of command `yini`
 
-```bash
-Usage: yini [options] [command]
-
-Official CLI for parsing and validating YINI config files.
-
-Options:
-  -v, --version              Output the version number.
-  -i, --info                 Show extended information (details, links, etc.).
-  -s, --strict               Enable strict parsing mode.
-  -f, --force                Continue parsing even if errors occur.
-  -q, --quiet                Reduce output (show only errors).
-  --silent                   Suppress all output (even errors, exit code only).
-  -h, --help                 Display help for command.
-
-Commands:
-  parse [options] <file>     Parse a YINI file (*.yini) and print the result.
-  validate [options] <file>  Checks if the file can be parsed as valid YINI.
-  info                       Deprecated: Use `yini --info` or `yini -i` instead.
-  help <command>             Display help for command.
-
-Examples:
+Quick Examples:
   $ yini parse config.yini
   $ yini validate --strict config.yini
   $ yini parse config.yini --pretty --output out.json

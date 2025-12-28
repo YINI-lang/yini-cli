@@ -2,9 +2,12 @@
 //
 // (!) IMPORTANT: Leave the top shebang as the very first line! (otherwise command will break)
 //
+// index.ts
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
+// import { printInfo } from './globalOptions/infoOption.js'
+import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
     IValidateCommandOptions,
@@ -16,7 +19,6 @@ import {
     getHelpTextAfter,
     getHelpTextBefore,
 } from './globalOptions/helpOption.js'
-import { printInfo } from './globalOptions/infoOption.js'
 import { debugPrint, toPrettyJSON } from './utils/print.js'
 import { getPackageVersion } from './utils/yiniCliHelpers.js'
 
@@ -39,7 +41,7 @@ function appendGlobalOptionsTo(cmd: Command) {
             const optName = option.name()
             if (
                 optName === 'version' ||
-                optName === 'info' ||
+                // optName === 'info' ||
                 optName === 'help'
             ) {
                 debugPrint(
@@ -72,11 +74,11 @@ program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The (main/global) option: "--info, --strict, --quite, --silent"
+ * The (main/global) option: "--strict, --quite, --silent"
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
-    .option('-i, --info', 'Show extended information (details, links, etc.).')
+    // .option('-i, --info', 'Show extended information (details, env, etc.).')
     .option('-s, --strict', 'Enable strict parsing mode.')
     .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
@@ -168,22 +170,27 @@ const validateCmd = program
     })
 appendGlobalOptionsTo(validateCmd)
 
-// About to get deleted, moved to main option --info
-//@todo Delete
-program
+// program
+//     .command('info')
+//     .description(descr['For-command-info'])
+//     .enablePositionalOptions(false) // NOTE: If false, then options must appear before the subcommand (the subcommand will not see them).
+//     .usage(' ') // NOTE: Must be a space, to override usage (removes [options]) completely.
+//     .addHelpText('after', '') // 👈 prevents Commander from auto-adding option text
+//     .action(() => {
+//         debugPrint('Run command "info"')
+//         printInfo()
+//     })
+const infoCmd = program
     .command('info')
     .description(descr['For-command-info'])
-    .action((options) => {
+    .enablePositionalOptions(false) // NOTE: If false, then options must appear before the subcommand (the subcommand will not see them).
+    .usage(' ') // NOTE: Must be a space, to override usage (removes [options]) completely.
+    .addHelpText('after', '') // 👈 prevents Commander from auto-adding option text
+    .action(() => {
         debugPrint('Run command "info"')
-        if (isDebug()) {
-            console.log('options:')
-            console.log(toPrettyJSON(options))
-        }
-        console.warn(
-            'Deprecated: Use `yini --info` or `yini -i` instead of `yini info`.',
-        )
         printInfo()
     })
+appendGlobalOptionsTo(infoCmd)
 
 // NOTE: Converting YINI files to other formats than json and js.
 // Other format should go into a new CLI-command called 'yini-convert' to not let this command grow too large.
