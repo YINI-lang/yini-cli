@@ -13,9 +13,9 @@ export const getHelpTextBefore = () => {
     return `${getPackageName()} ${getPackageVersion()}
 YINI CLI (Yet another INI)
 
-Parse and validate YINI configuration files.
-A config format, inspired by INI, with type-safe values, nested
-sections, comments, minimal syntax noise, and optional strict mode.
+The official terminal / command-line (CLI) for parsing and validating YINI
+configuration files. A config format, inspired by INI, with type-safe values,
+nested sections, comments, minimal syntax noise, and optional strict mode.
 
 Designed for clarity and consistency. :)\n`
 }

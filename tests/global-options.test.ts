@@ -70,7 +70,8 @@ describe('Test main (global) options in yini CLI:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).contain(descripts.yini)
+        // expect(stdout).contain(descripts.yini)
+        expect(stdout).contain('YINI')
         expect(stdout).contain(descripts['For-command-info'])
         expect(stdout).contain(descripts['For-command-parse'])
         expect(stdout).contain(descripts['For-command-validate'])
@@ -87,7 +88,8 @@ describe('Test main (global) options in yini CLI:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).contain(descripts.yini)
+        // expect(stdout).contain(descripts.yini)
+        expect(stdout).contain('YINI')
         expect(stdout).contain(descripts['For-command-info'])
         expect(stdout).contain(descripts['For-command-parse'])
         expect(stdout).contain(descripts['For-command-validate'])

@@ -1,13 +1,20 @@
 # YINI-CLI
+> **Readable configuration without YAML foot-guns or JSON noise.**  
+
 **The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON.**
 
-*YINI is an INI-inspired configuration format designed for clarity and predictability. It supports nesting, comments, and a formally defined syntax, so configuration files stay easy to read and reason about as they grow.*
+*YINI is an INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It supports nesting, comments, and a formally defined syntax. It is suitable for configuration files, application settings, and general data-storage use cases.*
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
 
-This tool is useful if you work with human-edited configuration files and want predictable structure without indentation-based rules.
+This tool is ideal for anyone working with human-edited configuration who wants predictable structure without indentation-based rules.
 
 ---
+
+## Example of YINI code
+> A basic YINI configuration example, showing a section, nested section, comments:  
+![YINI Config Example](./samples/basic.yini.png)
+Source: [basic.yini](./samples/basic.yini)
 
 ## Quick Start
 
@@ -64,10 +71,6 @@ YINI CLI requires Node.js **v20 or later**.
     }    
     ```
 
-⭐ If this was useful, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
-
----
-
 ### Typical use cases
 
 - Validating configuration files during development or CI.
@@ -76,38 +79,27 @@ YINI CLI requires Node.js **v20 or later**.
 
 ---
 
+## Example 2
+> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
+![YINI Config Example](./samples/config.yini.png)
+Source: [config.yini](./samples/config.yini)
+
+---
+
 ## 🙋‍♀️ Why YINI?
 - **Indentation-independent structure:** The YINI config format is indentation-independent, meaning any space or tab never changes meaning.
-- **Explicit nesting:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
+- **Explicit nesting & refactoring safety:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
 - **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use-requirements.
+
+⭐ Don't forget to, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
 
 ---
 
 ## Usage of command `yini`
 
-```bash
-Usage: yini [options] [command]
-
-Official CLI for parsing and validating YINI config files.
-
-Options:
-  -v, --version              Output the version number.
-  -i, --info                 Show extended information (details, links, etc.).
-  -s, --strict               Enable strict parsing mode.
-  -f, --force                Continue parsing even if errors occur.
-  -q, --quiet                Reduce output (show only errors).
-  --silent                   Suppress all output (even errors, exit code only).
-  -h, --help                 Display help for command.
-
-Commands:
-  parse [options] <file>     Parse a YINI file (*.yini) and print the result.
-  validate [options] <file>  Checks if the file can be parsed as valid YINI.
-  info                       Deprecated: Use `yini --info` or `yini -i` instead.
-  help <command>             Display help for command.
-
-Examples:
+Quick Examples:
   $ yini parse config.yini
   $ yini validate --strict config.yini
   $ yini parse config.yini --pretty --output out.json
@@ -184,7 +176,7 @@ The `parse` command supports multiple output styles:
 | `yini parse config.yini --pretty`                  | Pretty JSON           | Formatted and indented with `JSON.stringify(obj, null, 4)`.                  |
 | `yini parse config.yini --json`                    | Compact JSON          | Compact and machine-friendly `JSON.stringify(obj)`.                          |
 | `yini parse config.yini --output out.txt`          | File (JS-style)       | Default style, written to specified file.                                    |
-| `yini parse config.yini --pretty --output out.json`| File (Pretty JSON)    | Formatted JSON written to file.                                              |
+| `yini parse config.yini --pretty --output out.json`| File (**Pretty JSON**)| Formatted JSON written to file.                                              |
 
 >💡 Tip: You can combine --output with any style flag to control both formatting and destination.
 
@@ -228,4 +220,4 @@ If you found this useful, a GitHub star helps the project a lot ⭐
 **^YINI ≡**  
 > YINI — Clear, Structured Configuration Files.  
 
-[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
+[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI on GitHub](https://github.com/YINI-lang)  

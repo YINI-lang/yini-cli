@@ -12,9 +12,45 @@ export interface IParseCommandOptions extends IGlobalOptions {
     pretty?: boolean
     json?: boolean
     output?: string
+    force?: boolean // --best-effort = 'ignore-errors'
 }
 // -------------------------------------------------------------------------
 
+/*
+    TODO / SHOULD-DO:
+
+    yini parse <file> [options]
+
+    Options
+    -------
+
+    Parsing mode:
+    --strict
+    --lenient                   (default)
+
+    Output format:
+    --to <json|json-compact>    (default, --to json)
+    --json                      (alias for --to json, default)
+    --json-compact              (alias for --to json-compact)
+
+    Output handling:
+    -o, --output <file>         (default) No overwrite if dest is more recent than source file (override with --overwrite)
+    --overwrite
+    --no-overwrite           
+
+    Execution control:
+    --fail-fast
+	--best-effort = ignore-errors within a file, attempt recovery and still emit outp
+	            --No for parse, --keep-going = continue to the next file when one fails
+    --max-errors <n>
+    --verbose
+    --checks                    (default)
+    --no-checks
+
+    Policy control (advanced):
+    --duplicates-policy <error|warn|allow>
+    --reserved-policy   <error|warn|allow>
+ */
 export const parseFile = (
     file: string,
     commandOptions: IParseCommandOptions,

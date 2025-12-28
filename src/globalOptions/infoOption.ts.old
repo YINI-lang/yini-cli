@@ -1,4 +1,5 @@
 import { createRequire } from 'module'
+import { removeSuffix } from '../utils/string.js'
 
 // import pkg from '../../package.json' with { type: 'json' } // NOTE: Must use { type: 'json' } when in ESM mode.
 
@@ -13,6 +14,6 @@ export const printInfo = () => {
     )
     console.log(`Author:      ${pkg.author}`)
     console.log(`License:     ${pkg.license}`)
-    console.log(`Homepage:    ${pkg.homepage}`)
     console.log('Repo:        https://github.com/YINI-lang/yini-cli')
+    console.log(`Homepage:    ${removeSuffix(pkg.homepage, '/')}`)
 }
