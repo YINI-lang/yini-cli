@@ -1,5 +1,5 @@
 # YINI-CLI
-**Command-line tool for validating, inspecting, and converting YINI configuration files to JSON.**
+**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON.**
 
 *YINI is an INI-inspired configuration format designed for clarity and predictability. It supports nesting, comments, and a formally defined syntax, so configuration files stay easy to read and reason about as they grow.*
 

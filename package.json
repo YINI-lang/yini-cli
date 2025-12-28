@@ -1,7 +1,7 @@
 {
     "name": "yini-cli",
     "version": "1.1.1-beta",
-    "description": "Official CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
+    "description": "The official CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
     "keywords": [
         "yini",
         "cli",
