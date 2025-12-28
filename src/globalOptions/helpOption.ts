@@ -25,7 +25,9 @@ Designed for clarity and consistency. :)\n`
  */
 export const getHelpTextAfter = () => {
     return `
-Examples:
+========================================================
+
+Quick Examples:
   $ yini parse config.yini
   $ yini validate --strict config.yini
   $ yini parse config.yini --pretty --output out.json
@@ -33,10 +35,9 @@ Examples:
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help
 
-────────────────────────────────────────────────────────
+========================================================
 Example YINI configuration file (config.yini)
-────────────────────────────────────────────────────────
-
+========================================================
     ^ App
     title = 'My App'
     items = 10
@@ -51,13 +52,12 @@ Example YINI configuration file (config.yini)
         ^^ Login
         username = 'user'
         password = 'secret'
-
-────────────────────────────────────────────────────────
+========================================================
 
 More info:
   https://github.com/YINI-lang/yini-cli
 
 YINI homepage:
-  https://yini-lang.org/
+  https://yini-lang.org
 `
 }

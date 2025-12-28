@@ -13,19 +13,32 @@ Here you will find some **more detailed info** for install/setup/directory struc
 - **cross-env** - Environment variable management
 
 ## Project Dir Structure
+The main directory structure, note that some dirs and files have been left out to keep this a bit shorter.
+
 ```txt
 yini-cli/
 ├── bin/
-│   └── yini.js         # CLI entry point
+│   └── yini.js             # CLI entry point
+│
 ├── src/
+│   ├── cli/                # CLI presentation, not command/utility
+│   │   └── helpAll.ts
+|   |
+│   ├── globalOptions/
+│   │   └── helpOption.ts
+│   │   └── infoOption.ts
+│   │
 │   ├── commands/
 │   │   └── parse.ts
 │   │   └── validate.ts
-│   │   └── convert.ts
+│   │   └── ...
+│   │
 │   └── index.ts
+│
 ├── tests/
 │   ├── smoke.test.ts
 │   └── fixtures/
+│
 ├── package.json
 ├── tsconfig.json
 ├── vitest.config.ts
