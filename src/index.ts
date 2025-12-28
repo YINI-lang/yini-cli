@@ -6,7 +6,6 @@
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
-// import { printInfo } from './globalOptions/infoOption.js'
 import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
@@ -23,7 +22,6 @@ import { debugPrint, toPrettyJSON } from './utils/print.js'
 import { getPackageVersion } from './utils/yiniCliHelpers.js'
 
 const require = createRequire(import.meta.url)
-// const pkg = require('../package.json')
 
 // --- Helper functions --------------------------------------------------------
 function appendGlobalOptionsTo(cmd: Command) {
@@ -32,18 +30,9 @@ function appendGlobalOptionsTo(cmd: Command) {
     if (!globals.length) return
 
     const lines = globals
-        // .map(
-        //     (opt) =>
-        //         `  ${help.optionTerm(opt)}  ${help.optionDescription(opt)}`,
-        // )
-        // .join('\n')
         .map((option: Option) => {
             const optName = option.name()
-            if (
-                optName === 'version' ||
-                // optName === 'info' ||
-                optName === 'help'
-            ) {
+            if (optName === 'version' || optName === 'help') {
                 debugPrint(
                     'Skip patching option.name() = ' +
                         option.name() +
@@ -57,7 +46,6 @@ function appendGlobalOptionsTo(cmd: Command) {
         .trim()
 
     cmd.addHelpText('after', `\nGlobal options:\n  ${lines}`)
-    // cmd.addHelpText('after', `  ${lines}`)
 }
 // -------------------------------------------------------------------------
 
@@ -78,7 +66,6 @@ program.addHelpText('after', getHelpTextAfter())
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
-    // .option('-i, --info', 'Show extended information (details, env, etc.).')
     .option('-s, --strict', 'Enable strict parsing mode.')
     .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
@@ -91,20 +78,6 @@ program
         }
         printInfo()
     })
-
-/**
- * The (main/global) option: "--info"
- */
-// program
-//     .option('-s, --strict', 'Enable parsing in strict-mode.')
-//     .action((options) => {
-//         debugPrint('Run (global) option "strict"')
-//         if (isDebug()) {
-//             console.log('options:')
-//             console.log(toPrettyJSON(options))
-//         }
-//         printInfo()
-//     })
 
 /**
  * The command: "parse <file>"
@@ -149,7 +122,6 @@ const validateCmd = program
         '--details',
         'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
     )
-    // .option('--silent', 'Suppress output')
     .action((file, options: IValidateCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
@@ -170,22 +142,15 @@ const validateCmd = program
     })
 appendGlobalOptionsTo(validateCmd)
 
-// program
-//     .command('info')
-//     .description(descr['For-command-info'])
-//     .enablePositionalOptions(false) // NOTE: If false, then options must appear before the subcommand (the subcommand will not see them).
-//     .usage(' ') // NOTE: Must be a space, to override usage (removes [options]) completely.
-//     .addHelpText('after', '') // 👈 prevents Commander from auto-adding option text
-//     .action(() => {
-//         debugPrint('Run command "info"')
-//         printInfo()
-//     })
+/**
+ * The command: "info"
+ */
 const infoCmd = program
     .command('info')
     .description(descr['For-command-info'])
     .enablePositionalOptions(false) // NOTE: If false, then options must appear before the subcommand (the subcommand will not see them).
     .usage(' ') // NOTE: Must be a space, to override usage (removes [options]) completely.
-    .addHelpText('after', '') // 👈 prevents Commander from auto-adding option text
+    .addHelpText('after', '') // (?) Prevents Commander from auto-adding option text.
     .action(() => {
         debugPrint('Run command "info"')
         printInfo()
