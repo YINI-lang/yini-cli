@@ -12,6 +12,7 @@ export interface IParseCommandOptions extends IGlobalOptions {
     pretty?: boolean
     json?: boolean
     output?: string
+    force?: boolean // --best-effort = 'ignore-errors'
 }
 // -------------------------------------------------------------------------
 
@@ -39,6 +40,8 @@ export interface IParseCommandOptions extends IGlobalOptions {
 
     Execution control:
     --fail-fast
+	--best-effort = ignore-errors within a file, attempt recovery and still emit outp
+	            --No for parse, --keep-going = continue to the next file when one fails
     --max-errors <n>
     --verbose
     --checks                    (default)

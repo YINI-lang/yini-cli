@@ -54,7 +54,11 @@ const program = new Command()
     .name('yini')
     .description(descr.yini)
     // Below will replace all auto-registered items (especially the descriptions starting with a capital and ending with a period).
-    .version(getPackageVersion(), '-v, --version', 'Output the version number.')
+    .version(
+        getPackageVersion(),
+        '-v, --version',
+        'Display the version number.',
+    )
     .helpOption('-h, --help', 'Display full help for all commands.')
     .helpCommand('help <command>', 'Display help for a specific command.')
 
@@ -70,6 +74,7 @@ program
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
     .option('--silent', 'Suppress all output (even errors, exit code only).')
+    .option('--verbose', 'Display extra information.')
     .action((options) => {
         debugPrint('Run global options')
         if (isDebug()) {
@@ -115,13 +120,13 @@ const validateCmd = program
     .command('validate <file>')
     .description(descr['For-command-validate'])
     .option(
-        '--report',
-        'Print detailed meta-data info (e.g., key count, nesting, etc.).',
+        '--stats',
+        'Include a statistics section (e.g., key count, nesting depth, etc.).',
     )
-    .option(
-        '--details',
-        'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
-    )
+    // .option(
+    //     '--details',
+    //     'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
+    // )
     .action((file, options: IValidateCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.

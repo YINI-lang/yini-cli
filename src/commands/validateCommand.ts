@@ -4,6 +4,7 @@ import { exit } from 'node:process'
 import YINI, {
     IssuePayload,
     ParseOptions,
+    PreferredFailLevel,
     ResultMetadata,
     YiniParseResult,
 } from 'yini-parser'
@@ -14,8 +15,8 @@ const IS_DEBUG: boolean = true // For local debugging purposes, etc.
 
 // --- CLI command "validate" commandOptions --------------------------------------------------------
 export interface IValidateCommandOptions extends IGlobalOptions {
-    report?: boolean
-    details?: boolean
+    stats?: boolean
+    // details?: boolean
 }
 // -------------------------------------------------------------------------
 
@@ -174,11 +175,20 @@ export const validateFile = (
     let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
+    // let failLevel: PreferredFailLevel = 'auto'
+    // if (commandOptions.failFast) {
+    //     failLevel = 'warnings-and-errors'
+    // }
+    // if (commandOptions.bestEffort) {
+    //     failLevel = 'ignore-errors'
+    // }
+
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
         // failLevel: 'errors',
-        failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
+        // failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
         // failLevel: 'ignore-errors',
+        failLevel: 'ignore-errors',
         includeMetadata: true,
         includeDiagnostics: true,
         silent: true,
@@ -226,7 +236,7 @@ export const validateFile = (
             'includeMetadata = ' +
                 metadata?.diagnostics?.effectiveOptions.includeMetadata,
         )
-    IS_DEBUG && console.log('commandOptions.report = ' + commandOptions?.report)
+    IS_DEBUG && console.log('commandOptions.stats = ' + commandOptions?.stats)
     IS_DEBUG && console.log()
 
     //state returned:
@@ -302,7 +312,7 @@ export const validateFile = (
             printIssuesFound(file, metadata)
         }
 
-        if (commandOptions.report) {
+        if (commandOptions.stats) {
             if (!metadata) {
                 console.error('Internal Error: No meta data found')
             }
@@ -373,7 +383,7 @@ const printSummary = (sum: ISummary) => {
 
     str += sum.result + '\n'
     str += '\n'
-    str += `File:         ${sum.file}\n`
+    str += `File:         "${sum.file}"\n`
     str += `Mode:         ${sum.mode.toLowerCase()}\n`
     str += `Errors:       ${sum.summary.errors}\n`
     str += `Warnings:     ${sum.summary.warnings}\n`
