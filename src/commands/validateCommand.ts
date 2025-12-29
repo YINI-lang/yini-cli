@@ -19,6 +19,19 @@ export interface IValidateCommandOptions extends IGlobalOptions {
 }
 // -------------------------------------------------------------------------
 
+interface ISummary {
+    result: string
+    file: string
+    mode: 'strict' | 'lenient' | 'custom'
+    summary: {
+        issuesCount: number
+        errors: number
+        warnings: number
+        notices: number
+        infos: number
+    }
+}
+
 /*
     TODO / SHOULD-DO:
 
@@ -226,32 +239,55 @@ export const validateFile = (
     }
     // console.log()
 
+    let statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed'
+
     if (errors) {
-        // red ✖
-        console.error(
-            formatToSummary('Failed', errors, warnings, notices, infos),
-        )
-
-        // exit(1)
+        statusType = 'Failed'
     } else if (warnings) {
-        // yellow ⚠️
-        console.warn(
-            formatToSummary(
-                'Passed-with-Warnings',
-                errors,
-                warnings,
-                notices,
-                infos,
-            ),
-        )
-
-        // exit(0)
+        statusType = 'Passed-with-Warnings'
     } else {
-        // green ✔
-        console.log(formatToSummary('Passed', errors, warnings, notices, infos))
-
-        // exit(0)
+        statusType = 'Passed'
     }
+
+    const jsonSummary = toSummaryJson(
+        statusType,
+        file,
+        // metadata,
+        metadata?.mode ?? 'custom',
+        errors,
+        warnings,
+        notices,
+        infos,
+    )
+
+    printSummary(jsonSummary)
+
+    // if (errors) {
+    //     // red ✖
+    //     console.error(
+    //         formatToSummary('Failed', errors, warnings, notices, infos),
+    //     )
+
+    //     // exit(1)
+    // } else if (warnings) {
+    //     // yellow ⚠️
+    //     console.warn(
+    //         formatToSummary(
+    //             'Passed-with-Warnings',
+    //             errors,
+    //             warnings,
+    //             notices,
+    //             infos,
+    //         ),
+    //     )
+
+    //     // exit(0)
+    // } else {
+    //     // green ✔
+    //     console.log(formatToSummary('Passed', errors, warnings, notices, infos))
+
+    //     // exit(0)
+    // }
 
     // Print optional Stats-report if "--stats" was given.
     if (!commandOptions.silent && !isCatchedError) {
@@ -285,7 +321,77 @@ export const validateFile = (
 }
 
 /**
- * @returns A string formatted as a short sSummary.
+ * @returns Map to a short summary.
+ */
+const toSummaryJson = (
+    statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
+    fileWithPath: string,
+    // metadata: ResultMetadata | null,
+    mode: 'strict' | 'lenient' | 'custom',
+    errors: number,
+    warnings: number,
+    notices: number,
+    infos: number,
+): ISummary => {
+    let result = ''
+
+    switch (statusType) {
+        case 'Passed':
+            // result = '✔  Validation passed'
+            result = '✔  Validation successful'
+            break
+        case 'Passed-with-Warnings':
+            // result = '⚠️ Validation finished'
+            result = '✔  Validation successful'
+            break
+        case 'Failed':
+            // result = '✖  Validation failed'
+            result = '✖  Validation failed'
+            break
+    }
+
+    // const diag = metadata.diagnostics
+
+    const issuesCount: number = errors + warnings + notices + infos
+
+    return {
+        result: result,
+        file: fileWithPath,
+        mode: mode,
+        summary: {
+            issuesCount: issuesCount,
+            errors,
+            warnings,
+            notices,
+            infos,
+        },
+    }
+}
+
+const printSummary = (sum: ISummary) => {
+    let str = ''
+
+    str += sum.result + '\n'
+    str += '\n'
+    str += `File:         ${sum.file}\n`
+    str += `Mode:         ${sum.mode.toLowerCase()}\n`
+    str += `Errors:       ${sum.summary.errors}\n`
+    str += `Warnings:     ${sum.summary.warnings}\n`
+
+    if (sum.summary.notices) {
+        str += `Notices:      ${sum.summary.notices}\n`
+    }
+    if (sum.summary.infos) {
+        str += `Infos:        ${sum.summary.infos}\n`
+    }
+
+    str += `Total issues: ${sum.summary.issuesCount}\n`
+
+    console.log(str)
+}
+
+/**
+ * @deprecated Use toSummaryJson(..), this TO BE deleted.
  */
 const formatToSummary = (
     statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
