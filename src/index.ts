@@ -67,7 +67,7 @@ program.addHelpText('after', getHelpTextAfter())
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
     .option('-s, --strict', 'Enable strict parsing mode.')
-    .option('-f, --force', 'Continue parsing even if errors occur.')
+    // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
     .option('--silent', 'Suppress all output (even errors, exit code only).')
     .action((options) => {

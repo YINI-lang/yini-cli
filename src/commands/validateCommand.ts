@@ -10,7 +10,7 @@ import YINI, {
 import { IGlobalOptions } from '../types.js'
 import { printObject, toPrettyJSON } from '../utils/print.js'
 
-const IS_DEBUG: boolean = false // For local debugging purposes, etc.
+const IS_DEBUG: boolean = true // For local debugging purposes, etc.
 
 // --- CLI command "validate" commandOptions --------------------------------------------------------
 export interface IValidateCommandOptions extends IGlobalOptions {
@@ -19,6 +19,141 @@ export interface IValidateCommandOptions extends IGlobalOptions {
 }
 // -------------------------------------------------------------------------
 
+/*
+    TODO / SHOULD-DO:
+
+    yini validate <file|path...> [options]
+
+    Validate one or more YINI files.
+    If a directory is provided, all .yini files (case-insensitive) are processed recursively by default.
+
+    On successful validation, a report (summary, issues, optional stats) is printed to the terminal.
+
+    Options
+    -------
+
+    Validation mode:
+    --strict                Enable strict validation mode
+    --lenient               (default) Enable lenient validation mode
+    --quiet, -q             Suppress normal output (show errors only)
+    --silent, -s            Suppress all output (exit code only)
+    --stats                 Include stats, show meta-data section (counts, depth, etc.)
+    --format <text|yini|json>	Output format for the report (staus, stats, issues) (default: text)
+
+    Input handling:
+    <file>                  Validate a single YINI file
+    <path>                  Validate all .yini files in the directory (recursive by default)
+    --no-recursive, --no-subdirs	Do not descend into subdirectories
+
+    Output handling:
+    --output <file>, -o <file>	Write validation report to file
+    --overwrite             Allow overwriting existing report file
+    --no-overwrite          (default) Prevent overwriting existing report file (default)    
+
+    Execution controls (Nice-to-Have)
+    --fail-fast	            Stop on the first validation error
+    --max-errors <n>        Stop after <n> errors
+    --verbose	            Show detailed processing information
+    --warnings-as-errors    Treat warnings as errors
+
+    Policy controls (advanced):
+    --duplicates-policy <error|warn|allow>	Control handling of duplicate keys / section names
+    --reserved-policy <error|warn|allow>
+
+    ===========================================================
+
+    REQUIREMENTS for report output:
+
+    The output should:
+        1. Be human-readable by default
+        2. Give a clear verdict
+        3. Show useful context for each problem
+        4. Be machine-friendly when requested (--format json)
+        5. Be stable and predictable for CI usage
+
+    * Header / Summary:
+    On success:
+    ✔ Validation successful
+    File: config.yini
+    Mode: lenient
+    Errors: 0
+    Warnings: 2
+
+    On failure:
+    ✖ Validation failed
+    File: config.yini
+    Mode: strict
+    Errors: 3
+    Warnings: 1
+
+    * Issues sections:
+    Each issue:
+        Severity	error / warning
+        Code	stable identifier (DUPLICATE_KEY, UNKNOWN_CONSTRUCT, etc.)
+        Message	short explanation
+        Location	file + line + column
+        Context	snippet of the file (if helpful)
+    
+    Example:
+        Errors:
+        [E001] Duplicate key "host"
+            at config.yini:14:5
+            Previous definition at line 7
+            → host = "localhost"
+
+        Warnings:
+        [W002] Reserved construct used: "$schema"
+            at config.yini:3:1
+
+    * Optional meta-data section --stats
+        Statistics:
+        Sections: 5
+        Keys: 27
+        Arrays: 4
+        Objects: 3
+        Nesting depth: 4
+
+    * Exit code contract
+        Success, no warnings	0
+        Warnings only	0 (or 1 if --warnings-as-errors)
+        Errors	1
+
+    Example: JSON format (--format json)
+        {
+        "file": "config.yini",
+        "mode": "strict",
+        "summary": {
+            "errors": 2,
+            "warnings": 1
+        },
+        "issues": [
+            {
+            "severity": "error",
+            "code": "DUPLICATE_KEY",
+            "message": "Duplicate key \"host\"",
+            "location": { "line": 14, "column": 5 }
+            },
+            {
+            "severity": "error",
+            "code": "INVALID_TYPE",
+            "message": "Expected number, got string",
+            "location": { "line": 22, "column": 12 }
+            },
+            {
+            "severity": "warning",
+            "code": "RESERVED_CONSTRUCT",
+            "message": "Reserved construct \"$schema\"",
+            "location": { "line": 3, "column": 1 }
+            }
+        ],
+        "stats": {
+            "sections": 5,
+            "keys": 27,
+            "nestingDepth": 4
+        }
+        }
+
+*/
 export const validateFile = (
     file: string,
     commandOptions: IValidateCommandOptions = {},
@@ -81,28 +216,6 @@ export const validateFile = (
     IS_DEBUG && console.log('commandOptions.report = ' + commandOptions?.report)
     IS_DEBUG && console.log()
 
-    if (!commandOptions.silent && !isCatchedError) {
-        if (commandOptions.report) {
-            if (!metadata) {
-                console.error('Internal Error: No meta data found')
-            }
-            assert(metadata) // Make sure there is metadata!
-
-            console.log()
-            console.log(formatToReport(file, metadata).trim())
-        }
-
-        if (commandOptions.details) {
-            if (!metadata) {
-                console.error('Internal Error: No meta data found')
-            }
-            assert(metadata) // Make sure there is metadata!
-
-            console.log()
-            printDetailsOnAllIssue(file, metadata)
-        }
-    }
-
     //state returned:
     // - passed (no errors/warnings),
     // - finished (with warnings, no errors) / or - passed with warnings
@@ -116,14 +229,14 @@ export const validateFile = (
     if (errors) {
         // red ✖
         console.error(
-            formatToStatus('Failed', errors, warnings, notices, infos),
+            formatToSummary('Failed', errors, warnings, notices, infos),
         )
 
-        exit(1)
+        // exit(1)
     } else if (warnings) {
         // yellow ⚠️
         console.warn(
-            formatToStatus(
+            formatToSummary(
                 'Passed-with-Warnings',
                 errors,
                 warnings,
@@ -132,16 +245,49 @@ export const validateFile = (
             ),
         )
 
-        exit(0)
+        // exit(0)
     } else {
         // green ✔
-        console.log(formatToStatus('Passed', errors, warnings, notices, infos))
+        console.log(formatToSummary('Passed', errors, warnings, notices, infos))
 
-        exit(0)
+        // exit(0)
     }
+
+    // Print optional Stats-report if "--stats" was given.
+    if (!commandOptions.silent && !isCatchedError) {
+        // if (commandOptions.details) {
+        if (errors || warnings) {
+            if (!metadata) {
+                console.error('Internal Error: No meta data found')
+            }
+            assert(metadata) // Make sure there is metadata!
+
+            console.log()
+            printIssuesFound(file, metadata)
+        }
+
+        if (commandOptions.report) {
+            if (!metadata) {
+                console.error('Internal Error: No meta data found')
+            }
+            assert(metadata) // Make sure there is metadata!
+
+            console.log()
+            console.log(formatToStatsReport(file, metadata).trim())
+        }
+    }
+
+    if (errors) {
+        exit(1)
+    }
+
+    exit(0)
 }
 
-const formatToStatus = (
+/**
+ * @returns A string formatted as a short sSummary.
+ */
+const formatToSummary = (
     statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
     errors: number,
     warnings: number,
@@ -167,7 +313,7 @@ const formatToStatus = (
     return str
 }
 
-// --- Format to a Report --------------------------------------------------------
+// --- Format to a Stats report --------------------------------------------------------
 
 //@todo format parsed.meta to report as
 /*
@@ -182,11 +328,11 @@ const formatToStatus = (
     Notices:  0
     Result: INVALID
 */
-const formatToReport = (
+const formatToStatsReport = (
     fileWithPath: string,
     metadata: ResultMetadata,
 ): string => {
-    // console.log('formatToReport(..)')
+    // console.log('formatToStatsReport(..)')
     // printObject(metadata)
     // console.log()
 
@@ -242,7 +388,7 @@ Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.sour
     Warning at line 10, column 3: Section level skipped (0 → 2)
     Notice at line 1: Unused @yini directive
 */
-const printDetailsOnAllIssue = (
+const printIssuesFound = (
     fileWithPath: string,
     metadata: ResultMetadata,
 ): void => {
@@ -254,9 +400,9 @@ const printDetailsOnAllIssue = (
     assert(metadata.diagnostics)
     const diag = metadata.diagnostics
 
-    console.log('Details')
-    console.log('-------')
-    console.log()
+    IS_DEBUG && console.log('*** Issues Found')
+    IS_DEBUG && console.log('*** ------------')
+    IS_DEBUG && console.log()
 
     const errors: IssuePayload[] = diag.errors.payload
     printIssues('Error  ', 'E', errors)
