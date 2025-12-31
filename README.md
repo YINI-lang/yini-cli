@@ -1,7 +1,9 @@
 # YINI-CLI
+> **Readable configuration without YAML foot-guns or JSON noise.**  
+
 **The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON.**
 
-*YINI is an INI-inspired configuration format designed for clarity and predictability. It supports nesting, comments, and a formally defined syntax, so configuration files stay easy to read and reason about as they grow.*
+*YINI is an INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It supports nesting, comments, and a formally defined syntax. It is suitable for configuration files, application settings, and general data-storage use cases.*
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
 
@@ -64,8 +66,6 @@ YINI CLI requires Node.js **v20 or later**.
     }    
     ```
 
-⭐ If this was useful, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
-
 ---
 
 ### Typical use cases
@@ -82,6 +82,8 @@ YINI CLI requires Node.js **v20 or later**.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
 - **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use-requirements.
+
+⭐ If this was useful, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
 
 ---
 
