@@ -7,9 +7,14 @@
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
 
-This tool is useful if you work with human-edited configuration files and want predictable structure without indentation-based rules.
+This tool is ideal for anyone working with human-edited configuration who wants predictable structure without indentation-based rules.
 
 ---
+
+## Example of YINI code
+> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
+![YINI Config Example](./samples/config.yini.png)
+Source: [config.yini](./samples/config.yini)
 
 ## Quick Start
 
@@ -78,7 +83,7 @@ YINI CLI requires Node.js **v20 or later**.
 
 ## 🙋‍♀️ Why YINI?
 - **Indentation-independent structure:** The YINI config format is indentation-independent, meaning any space or tab never changes meaning.
-- **Explicit nesting:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
+- **Explicit nesting & refactoring safety:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
 - **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use-requirements.
@@ -166,7 +171,7 @@ The `parse` command supports multiple output styles:
 | `yini parse config.yini --pretty`                  | Pretty JSON           | Formatted and indented with `JSON.stringify(obj, null, 4)`.                  |
 | `yini parse config.yini --json`                    | Compact JSON          | Compact and machine-friendly `JSON.stringify(obj)`.                          |
 | `yini parse config.yini --output out.txt`          | File (JS-style)       | Default style, written to specified file.                                    |
-| `yini parse config.yini --pretty --output out.json`| File (Pretty JSON)    | Formatted JSON written to file.                                              |
+| `yini parse config.yini --pretty --output out.json`| File (**Pretty JSON**)| Formatted JSON written to file.                                              |
 
 >💡 Tip: You can combine --output with any style flag to control both formatting and destination.
 
