@@ -12,9 +12,9 @@ This tool is ideal for anyone working with human-edited configuration who wants 
 ---
 
 ## Example of YINI code
-> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
-![YINI Config Example](./samples/config.yini.png)
-Source: [config.yini](./samples/config.yini)
+> A basic YINI configuration example, showing a section, nested section, comments:  
+![YINI Config Example](./samples/basic.yini.png)
+Source: [basic.yini](./samples/basic.yini)
 
 ## Quick Start
 
@@ -71,13 +71,18 @@ YINI CLI requires Node.js **v20 or later**.
     }    
     ```
 
----
-
 ### Typical use cases
 
 - Validating configuration files during development or CI.
 - Inspecting and debugging structured configuration.
 - Converting YINI files to JSON for tooling and automation.
+
+---
+
+## Example 2
+> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
+![YINI Config Example](./samples/config.yini.png)
+Source: [config.yini](./samples/config.yini)
 
 ---
 
