@@ -93,7 +93,7 @@ Source: [config.yini](./samples/config.yini)
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
 - **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use-requirements.
 
-⭐ If this was useful, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
+⭐ Don't forget to, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
 
 ---
 
