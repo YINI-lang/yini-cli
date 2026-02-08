@@ -220,4 +220,4 @@ If you found this useful, a GitHub star helps the project a lot ⭐
 **^YINI ≡**  
 > YINI — Clear, Structured Configuration Files.  
 
-[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
+[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI on GitHub](https://github.com/YINI-lang)  
