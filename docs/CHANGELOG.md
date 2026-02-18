@@ -2,7 +2,11 @@
 
 ## WORK: 2.0.0-beta - xxx
 - **Improved:** Updated `--help` to display full help for all commands, while preserving command-specific help through `yini help <command>`.
-- **Updated:** Showing extended information now uses the `info` command only. The global `--info` option has been removed — please use `yini info` instead.
+- **Changed:** Showing extended information now uses the `info` command only. The global `--info` option has been removed — please use `yini info` instead.
+- **Updated:** `parse` command:
+  - Deprecated `--pretty`; use `--json` instead.
+  - `--json-compact` now outputs compact JSON (no whitespace).
+  - Added `--js` option for JavaScript output.
 
 ## 1.1.1-beta - 2025 Dec
 - **Updated:** Updated to use the latest YINI Parser version `1.3.2-beta` from `1.3.0-beta`.

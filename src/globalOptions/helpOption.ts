@@ -29,8 +29,10 @@ export const getHelpTextAfter = () => {
 
 Quick Examples:
   $ yini parse config.yini
+  $ yini parse config.yini --json-compact
+  $ yini parse config.yini --js
+  $ yini parse config.yini --output out.json
   $ yini validate --strict config.yini
-  $ yini parse config.yini --pretty --output out.json
 
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help

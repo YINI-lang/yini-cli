@@ -60,13 +60,13 @@ YINI CLI requires Node.js **v20 or later**.
     ```
 
     Expected result, your CLI should output a parsed version of the config and output something similar to:
-    ```js
+    ```json
     {
-        App: {
-            name: 'My App Title',
-            version: '1.2.3',
-            pageSize: 25,
-            darkTheme: false
+        "App": {
+            "name": "My App Title",
+            "version": "1.2.3",
+            "pageSize": 25,
+            "darkTheme": false
         }
     }    
     ```
@@ -101,8 +101,19 @@ Source: [config.yini](./samples/config.yini)
 
 Quick Examples:
   $ yini parse config.yini
+      → Parse and print formatted JSON (default).
+
+  $ yini parse config.yini --json-compact
+      → Output compact JSON.
+
+  $ yini parse config.yini --js
+      → Output as JavaScript.
+
+  $ yini parse config.yini --output out.json
+      → Write formatted JSON to a file.
+
   $ yini validate --strict config.yini
-  $ yini parse config.yini --pretty --output out.json
+      → Validate using strict mode.
 
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help
@@ -161,7 +172,7 @@ Here's a small example showing YINI structure and comments:
 
 That's it!
 
-- ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
+- ▶️ See more on [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_middle).
 - ▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
 
 ---
