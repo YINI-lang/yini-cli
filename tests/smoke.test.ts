@@ -18,7 +18,7 @@ const DIR_OF_FIXTURES = 'fixtures/'
 describe('Smoke test yini CLI basic usage:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
-    it('1. Parses (command "parse") a valid YINI file and print as JS object.', async () => {
+    it('1. Parses (command "parse") a valid YINI file and print as pretty JSON.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -32,20 +32,39 @@ describe('Smoke test yini CLI basic usage:', () => {
         printObject(stdout)
 
         // Assert.
+        expect(stdout).toContain('    "App":')
+        expect(stdout).toContain('        "title": "My App",')
+        expect(stdout).toContain('"enabled": true')
+    })
+
+    it('2. Parses (command "parse --js") a valid YINI file and print as JS object.', async () => {
+        // Arrange.
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
+        // and to capture stdout, stderr, exitCode, etc.
+        const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+        debugPrint('Test: 2:')
+        debugPrint('stdout:')
+        printObject(stdout)
+
+        // Assert.
         expect(stdout).toContain('{ App:')
         expect(stdout).toContain('title: ')
         expect(stdout).toContain('My App')
         expect(stdout).toContain('enabled: true')
     })
 
-    it('2. Parses (command "parse") nested sections and print as JS object.', async () => {
+    it('3. Parses (command "parse --js") nested sections and print as JS object.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath}`)
-        debugPrint('Test: 2:')
+        const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+        debugPrint('Test: 3:')
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -56,14 +75,14 @@ describe('Smoke test yini CLI basic usage:', () => {
         expect(stdout).toContain("host: 'localhost'")
     })
 
-    it('3. Shows error on parsing (command "parse") an invalid YINI (containing some garbage).', async () => {
+    it('4. Shows error on parsing (command "parse") an invalid YINI (containing some garbage).', async () => {
         // Arrange.
         const fileName = 'invalid/invalid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const { stderr, exitCode } = await yiniCLI(`parse ${fullPath}`)
-        debugPrint('Test: 3:')
+        debugPrint('Test: 4:')
         debugPrint('stderr:')
         printObject(stderr)
         debugPrint('exitCode:')
@@ -74,14 +93,14 @@ describe('Smoke test yini CLI basic usage:', () => {
         expect(stderr.toLowerCase()).toContain('syntax error')
     })
 
-    it('4. Parse (command "parse", with "--pretty") and print as pretty JSON.', async () => {
+    it('5. Parse (command "parse", with "--json") and print as pretty JSON.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
-        debugPrint('Test: 2:')
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+        debugPrint('Test: 5:')
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -92,14 +111,14 @@ describe('Smoke test yini CLI basic usage:', () => {
         expect(stdout).toContain('            "host": "localhost"')
     })
 
-    it('5. Parse (command "parse", with "--json") and print as JSON string.', async () => {
+    it('6. Parse (command "parse", with "--json-compact") and print as JSON string.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
-        debugPrint('Test: 2:')
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        debugPrint('Test: 6:')
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -109,14 +128,14 @@ describe('Smoke test yini CLI basic usage:', () => {
         )
     })
 
-    it('6.a. Should pass parsing (command "parse", with "--json") a corrupt YINI in lenient (default) mode.', async () => {
+    it('7.a. Should pass parsing (command "parse", with "--json-compact") a corrupt YINI in lenient (default) mode.', async () => {
         // Arrange.
         const fileName = 'invalid/corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
-        debugPrint('Test: 6.a:')
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        debugPrint('Test: 7.a:')
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -125,14 +144,14 @@ describe('Smoke test yini CLI basic usage:', () => {
         expect(stdout).toContain(toJSON(jsObj))
     })
 
-    it.skip('6.b. Show error on corrupt YINI in strict-mode.', async () => {
+    it.skip('7.b. Show error on corrupt YINI in strict-mode.', async () => {
         // Arrange.
         const fileName = 'corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const { stderr, exitCode } = await yiniCLI(`parse ${fullPath} strict`)
-        debugPrint('Test: 6.b:')
+        debugPrint('Test: 7.b:')
         debugPrint('stderr:')
         printObject(stderr)
         debugPrint('exitCode:')
