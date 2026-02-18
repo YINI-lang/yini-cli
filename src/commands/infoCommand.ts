@@ -32,16 +32,27 @@ if verbose(
  * NOTE: Keep contributors in acknowledged in README or --credits.
  */
 export const printInfo = () => {
-    console.log(`*** YINI CLI ***`)
-    console.log(`yini-cli:    ${pkg.version}`)
+    const size = 16
+
+    console.log()
+    console.log('YINI CLI — Environment Information')
+    console.log('==================================')
+    console.log()
+
+    console.log(toColRow(size, 'CLI Version:', pkg.version))
     console.log(
-        `yini-parser: ${pkg.dependencies['yini-parser'].replace('^', '')}`,
+        toColRow(
+            size,
+            'Parser Version:',
+            pkg.dependencies['yini-parser'].replace('^', ''),
+        ),
     )
-    console.log(`Author:      ${pkg.author}`)
-    console.log(`License:     ${pkg.license}`)
-    console.log('Repo:        https://github.com/YINI-lang/yini-cli')
+    console.log(toColRow(size, 'Author:', pkg.author))
+    console.log(toColRow(size, 'License:', pkg.license))
+    console.log()
+
     console.log(
-        toColRow(16, 'Repository', 'https://github.com/YINI-lang/yini-cli'),
+        toColRow(size, 'Repository:', 'https://github.com/YINI-lang/yini-cli'),
     )
-    console.log(`Homepage:    ${removeSuffix(pkg.homepage, '/')}`)
+    console.log(toColRow(size, 'Homepage:', removeSuffix(pkg.homepage, '/')))
 }
