@@ -433,5 +433,29 @@ describe('Test parse command usage:', () => {
         expect(stdout).not.toContain(JSON.stringify(corruptObj))
     })
 
+    // --js           Output as JavaScript.
+    it('5.a) Have correct output when using the command "parse" **with option --js**.', async () => {
+        // Arrange.
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
+        // and to capture stdout, stderr, exitCode, etc.
+        const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+        debugPrint('stdout:')
+        printObject(stdout)
+
+        // Assert.
+        const correctObj = {
+            App: {
+                title: 'My App',
+                enabled: true,
+            },
+        }
+        const parsed = eval(`(${stdout})`)
+        expect(parsed).toEqual(correctObj)
+    })
+
     //@todo Add test for option --output <file>
 })
