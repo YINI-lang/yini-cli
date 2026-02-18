@@ -90,9 +90,11 @@ program
 const parseCmd = program
     .command('parse <file>')
     .description(descr['For-command-parse'])
-    .option('--pretty', 'Pretty-print output as JSON.')
-    .option('--json', 'Compact JSON output using JSON.stringify.')
-    .option('--output <file>', 'Write output to a specified file.')
+    .option('--json', 'Output as formatted JSON (default).')
+    .option('--json-compact', 'Output compact JSON (no whitespace).')
+    .option('--js', 'Output as JavaScript.')
+    .option('--output <file>', 'Write output to file.')
+    .option('--pretty', '(deprecated) Use --json instead.')
     .action((file, options: IParseCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.

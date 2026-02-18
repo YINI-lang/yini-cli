@@ -8,9 +8,14 @@ import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
 type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
+/**
+ * @deprecated pretty Deprecated since 2026 Feb! Use `json` instead.
+ */
 export interface IParseCommandOptions extends IGlobalOptions {
-    pretty?: boolean
-    json?: boolean
+    pretty?: boolean // Deprecated since 2026 Feb! Use `--json` instead.
+    json?: boolean // JSON prettyfied (DEFAULT),
+    jsonCompact?: boolean // Output compact JSON (no whitespace).
+    js?: boolean // Output as JavaScript
     output?: string
     force?: boolean // --best-effort = 'ignore-errors'
 }
@@ -65,11 +70,18 @@ export const parseFile = (
     printObject(commandOptions)
 
     if (commandOptions.pretty) {
+        console.warn(
+            'Warning: The option --pretty is deprecated, use --json instead.',
+        )
         outputStyle = 'Pretty-JSON'
     } else if (commandOptions.json) {
+        outputStyle = 'Pretty-JSON'
+    } else if (commandOptions.jsonCompact) {
         outputStyle = 'JSON-compact'
-    } else {
+    } else if (commandOptions.js) {
         outputStyle = 'JS-style'
+    } else {
+        outputStyle = 'Pretty-JSON'
     }
 
     doParseFile(file, commandOptions, outputStyle, outputFile)
