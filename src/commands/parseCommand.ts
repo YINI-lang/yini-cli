@@ -141,12 +141,7 @@ const doParseFile = (
         if (outputFile) {
             const resolved = path.resolve(outputFile)
 
-            if (fs.existsSync(resolved) && !commandOptions.overwrite) {
-                console.error(
-                    `Error: File "${outputFile}" already exists. Use --overwrite to replace it.`,
-                )
-                process.exit(1)
-            }
+            enforceWritePolicy(file, resolved, commandOptions.overwrite)
 
             // Write JSON output to file instead of stdout.
             fs.writeFileSync(resolved, output, 'utf-8')
@@ -162,5 +157,37 @@ const doParseFile = (
 
         console.error(`Error: ${message}`)
         process.exit(1)
+    }
+}
+
+const enforceWritePolicy = (
+    srcPath: string,
+    destPath: string,
+    overwrite?: boolean,
+) => {
+    if (!fs.existsSync(destPath)) {
+        return // File does not exist, OK to write.
+    }
+
+    const srcStat = fs.statSync(srcPath)
+    const destStat = fs.statSync(destPath)
+
+    const destIsNewer = destStat.mtimeMs >= srcStat.mtimeMs
+
+    if (overwrite === true) {
+        return // Explicit overwrite, OK.
+    }
+
+    if (overwrite === false) {
+        throw new Error(
+            `File "${destPath}" already exists. Overwriting disabled (--no-overwrite).`,
+        )
+    }
+
+    // Default policy (overwrite undefined).
+    if (destIsNewer) {
+        throw new Error(
+            `Destination file "${destPath}" is newer than source. Use --overwrite to force.`,
+        )
     }
 }

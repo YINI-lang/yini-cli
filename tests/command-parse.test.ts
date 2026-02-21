@@ -457,7 +457,7 @@ describe('Test parse command usage:', () => {
         expect(parsed).toEqual(correctObj)
     })
 
-    it('6. Fails when output file exists without --overwrite', async () => {
+    it('6. Fails when output file exists without --overwrite.', async () => {
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
@@ -466,6 +466,100 @@ describe('Test parse command usage:', () => {
 
         const { exitCode } = await yiniCLI(
             `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.a) Writes output file when it does not exist.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-new.json')
+        if (fs.existsSync(outPath)) fs.unlinkSync(outPath)
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).toBe(0)
+        expect(fs.existsSync(outPath)).toBe(true)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.b) Writes when destination is older than source.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-older.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        // Make dest older than the *source file*
+        const srcStat = fs.statSync(fullPath)
+        const olderThanSrc = (srcStat.mtimeMs - 60_000) / 1000 // 60s older
+        fs.utimesSync(outPath, olderThanSrc, olderThanSrc)
+
+        const { exitCode, stderr } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        // Helpful when debugging:
+        // console.log(stderr)
+
+        expect(exitCode).toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.c) Fails when destination is newer than source.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-newer.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        // Make dest newer than the *source file*
+        const srcStat = fs.statSync(fullPath)
+        const newerThanSrc = (srcStat.mtimeMs + 60_000) / 1000 // 60s newer
+        fs.utimesSync(outPath, newerThanSrc, newerThanSrc)
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.d) Writes when --overwrite is used.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-overwrite.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath} --overwrite`,
+        )
+
+        expect(exitCode).toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.e) Fails when --no-overwrite is used.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-no-overwrite.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath} --no-overwrite`,
         )
 
         expect(exitCode).not.toBe(0)

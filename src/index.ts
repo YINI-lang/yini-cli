@@ -97,8 +97,15 @@ const parseCmd = program
     .option('--js', 'Output as JavaScript.')
 
     // File handling options.
-    .option('-o, --output <file>', 'Write output to file.')
-    .option('--overwrite', 'Allow to save/write over existing file(s).')
+    .option(
+        '-o, --output <file>',
+        'Write output to <file>. By default, an existing file is only overwritten if it is older than the input YINI file.',
+    )
+    .option(
+        '--overwrite',
+        'Always overwrite the output file, even if it is newer than the input YINI file.',
+    )
+    .option('--no-overwrite', 'Fail if the output file already exists.')
 
     // Behavior options.
     .option('--best-effort', 'Ignore parse errors.')
