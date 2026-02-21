@@ -5,5 +5,8 @@ import { execa } from 'execa'
  * (yini-cli) on execution in CLI.
  * @returns
  */
-export const yiniCLI = (argsLine: string) =>
-    execa('tsx', ['src/index.ts', ...argsLine.split(' ')], { reject: false })
+export const yiniCLI = (argsLine: string, options = {}) =>
+    execa('tsx', ['src/index.ts', ...argsLine.split(/\s+/)], {
+        reject: false,
+        ...options,
+    })

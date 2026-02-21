@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import util from 'util'
 import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
 import {
@@ -10,7 +9,7 @@ import {
     toPrettyJSON,
 } from '../utils/print.js'
 
-type TOutputStyle = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
+type TOutputStyle = 'JS-style' | 'Pretty-JSON' | 'JSON-compact'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
 /**
@@ -24,7 +23,7 @@ export interface IParseCommandOptions extends IGlobalOptions {
     output?: string
     bestEffort?: boolean // --best-effort = 'ignore-errors'
     overwrite?: boolean // Allow to save/write over existing file(s).
-    force?: boolean // Same as --overwrite.
+    // force?: boolean // Same as --overwrite.
 }
 // -------------------------------------------------------------------------
 
@@ -43,7 +42,7 @@ export interface IParseCommandOptions extends IGlobalOptions {
     Output format:
     --to <json|json-compact>    (default, --to json)
     --json                      (alias for --to json, default)
-    --json-compact              (alias for --to json-compact)
+    --compact              (alias for --to json-compact)
 
     Output handling:
     -o, --output <file>         (default) No overwrite if dest is more recent than source file (override with --overwrite)
@@ -68,23 +67,45 @@ export const parseFile = (
     commandOptions: IParseCommandOptions,
 ) => {
     const outputFile = commandOptions.output || ''
-    const isStrictMode = !!commandOptions.strict
-    let outputStyle: TOutputStyle = 'Pretty-JSON'
+    // const isStrictMode = !!commandOptions.strict
+
+    const outputStyle = resolveOutputStyle(commandOptions)
 
     debugPrint('file = ' + file)
     debugPrint('output = ' + commandOptions.output)
     debugPrint('commandOptions:')
     printObject(commandOptions)
 
-    if (commandOptions.compact) {
-        outputStyle = 'JSON-compact'
-    } else if (commandOptions.js) {
-        outputStyle = 'JS-style'
-    } else if (commandOptions.pretty) {
+    doParseFile(file, commandOptions, outputStyle, outputFile)
+}
+
+const resolveOutputStyle = (options: IParseCommandOptions): TOutputStyle => {
+    if (options.js && options.compact) {
+        throw new Error('--js and --compact cannot be combined.')
+    }
+
+    if (options.compact) return 'JSON-compact'
+    if (options.js) return 'JS-style'
+
+    if (options.pretty) {
         console.warn('Warning: --pretty is deprecated. Use --json instead.')
     }
 
-    doParseFile(file, commandOptions, outputStyle, outputFile)
+    return 'Pretty-JSON'
+}
+
+const renderOutput = (parsed: unknown, style: TOutputStyle): string => {
+    switch (style) {
+        case 'JS-style':
+            return toPrettyJS(parsed)
+
+        case 'JSON-compact':
+            return JSON.stringify(parsed)
+
+        case 'Pretty-JSON':
+        default:
+            return toPrettyJSON(parsed)
+    }
 }
 
 const doParseFile = (
@@ -94,7 +115,9 @@ const doParseFile = (
     outputFile = '',
 ) => {
     // let strictMode = !!commandOptions.strict
-    let preferredFailLevel: PreferredFailLevel = 'auto'
+    let preferredFailLevel: PreferredFailLevel = commandOptions.bestEffort
+        ? 'ignore-errors'
+        : 'auto'
     let includeMetaData = false
 
     debugPrint('File = ' + file)
@@ -102,9 +125,7 @@ const doParseFile = (
 
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
-        // failLevel: 'errors',
         failLevel: preferredFailLevel,
-        // failLevel: 'ignore-errors',
         includeMetadata: includeMetaData,
     }
 
@@ -115,52 +136,31 @@ const doParseFile = (
 
     try {
         const parsed = YINI.parseFile(file, parseOptions)
-
-        let output = ''
-        switch (outputStyle) {
-            case 'JS-style':
-                //output = util.inspect(parsed, { depth: null, colors: true })
-                output = toPrettyJS(parsed)
-                break
-
-            case 'Pretty-JSON':
-                output = toPrettyJSON(parsed)
-                break
-
-            case 'Console.log':
-                output = '<todo>'
-                break
-
-            case 'JSON-compact':
-                output = JSON.stringify(parsed)
-                break
-
-            default:
-                output = util.inspect(parsed, { depth: null, colors: false })
-        }
+        const output = renderOutput(parsed, outputStyle)
 
         if (outputFile) {
-            if (
-                fs.existsSync(outputFile) &&
-                (!commandOptions.force || !commandOptions.overwrite)
-            ) {
+            const resolved = path.resolve(outputFile)
+
+            if (fs.existsSync(resolved) && !commandOptions.overwrite) {
                 console.error(
-                    `Error: File "${outputFile}" already exists. Use --force to overwrite.`,
+                    `Error: File "${outputFile}" already exists. Use --overwrite to replace it.`,
                 )
                 process.exit(1)
             }
 
             // Write JSON output to file instead of stdout.
-            fs.writeFileSync(path.resolve(outputFile), output, 'utf-8')
-            console.log(`Output written to file: "${outputFile}"`)
+            fs.writeFileSync(resolved, output, 'utf-8')
+
+            if (commandOptions.verbose) {
+                console.log(`Output written to file: "${outputFile}"`)
+            }
         } else {
             console.log(output)
         }
-    } catch (err: any) {
-        console.error(`Error: ${err.message}`)
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err)
+
+        console.error(`Error: ${message}`)
         process.exit(1)
     }
-}
-function toCleanPrettyJS(parsed: any): string {
-    throw new Error('Function not implemented.')
 }

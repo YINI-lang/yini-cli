@@ -90,19 +90,30 @@ program
 const parseCmd = program
     .command('parse <file>')
     .description(descr['For-command-parse'])
+
+    // Output format options.
     .option('--json', 'Output as formatted JSON (default).')
     .option('--compact', 'Output compact JSON (no whitespace).')
     .option('--js', 'Output as JavaScript.')
-    .option('--output <file>', 'Write output to file.')
-    .option('--pretty', '(deprecated) Use --json instead.')
+
+    // File handling options.
+    .option('-o, --output <file>', 'Write output to file.')
+    .option('--overwrite', 'Allow to save/write over existing file(s).')
+
+    // Behavior options.
     .option('--best-effort', 'Ignore parse errors.')
-    .option(
-        '--overwrite, --force',
-        'Allow to save/write over existing file(s).',
-    )
+
+    // Deprecated options.
+    .option('--pretty', '(deprecated) Use --json instead.')
+
     .action((file, options: IParseCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
+
+        if (mergedOptions.js && mergedOptions.compact) {
+            console.error('Error: --js and --compact cannot be combined.')
+            process.exit(1)
+        }
 
         debugPrint('Run command "parse"')
         debugPrint('isDebug(): ' + isDebug())
@@ -112,11 +123,8 @@ const parseCmd = program
             console.log('mergedOptions:')
             console.log(toPrettyJSON(mergedOptions))
         }
-        if (file) {
-            parseFile(file, mergedOptions)
-        } else {
-            program.help()
-        }
+
+        parseFile(file, mergedOptions)
     })
 appendGlobalOptionsTo(parseCmd)
 

@@ -457,5 +457,19 @@ describe('Test parse command usage:', () => {
         expect(parsed).toEqual(correctObj)
     })
 
-    //@todo Add test for option --output <file>
+    it('6. Fails when output file exists without --overwrite', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
 })

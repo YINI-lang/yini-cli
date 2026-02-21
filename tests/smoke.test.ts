@@ -51,7 +51,7 @@ describe('Smoke test yini CLI basic usage:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).toContain('{ App:')
+        expect(stdout).toContain('    App:')
         expect(stdout).toContain('title: ')
         expect(stdout).toContain('My App')
         expect(stdout).toContain('enabled: true')
@@ -69,7 +69,7 @@ describe('Smoke test yini CLI basic usage:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).toContain('{ App:')
+        expect(stdout).toContain('    App:')
         expect(stdout).toContain("name: 'Nested'")
         expect(stdout).toContain('Database: {')
         expect(stdout).toContain("host: 'localhost'")
