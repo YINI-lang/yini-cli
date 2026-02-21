@@ -95,6 +95,11 @@ const parseCmd = program
     .option('--js', 'Output as JavaScript.')
     .option('--output <file>', 'Write output to file.')
     .option('--pretty', '(deprecated) Use --json instead.')
+    .option('--best-effort', 'Ignore parse errors.')
+    .option(
+        '--overwrite, --force',
+        'Allow to save/write over existing file(s).',
+    )
     .action((file, options: IParseCommandOptions) => {
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.

@@ -3,9 +3,14 @@ import path from 'node:path'
 import util from 'util'
 import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
-import { debugPrint, printObject, toPrettyJSON } from '../utils/print.js'
+import {
+    debugPrint,
+    printObject,
+    toPrettyJS,
+    toPrettyJSON,
+} from '../utils/print.js'
 
-type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
+type TOutputStyle = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
 /**
@@ -17,7 +22,9 @@ export interface IParseCommandOptions extends IGlobalOptions {
     compact?: boolean // Output compact JSON (no whitespace).
     js?: boolean // Output as JavaScript
     output?: string
-    force?: boolean // --best-effort = 'ignore-errors'
+    bestEffort?: boolean // --best-effort = 'ignore-errors'
+    overwrite?: boolean // Allow to save/write over existing file(s).
+    force?: boolean // Same as --overwrite.
 }
 // -------------------------------------------------------------------------
 
@@ -62,26 +69,19 @@ export const parseFile = (
 ) => {
     const outputFile = commandOptions.output || ''
     const isStrictMode = !!commandOptions.strict
-    let outputStyle: TOutputStype = 'JS-style'
+    let outputStyle: TOutputStyle = 'Pretty-JSON'
 
     debugPrint('file = ' + file)
     debugPrint('output = ' + commandOptions.output)
     debugPrint('commandOptions:')
     printObject(commandOptions)
 
-    if (commandOptions.pretty) {
-        console.warn(
-            'Warning: The option --pretty is deprecated, use --json instead.',
-        )
-        outputStyle = 'Pretty-JSON'
-    } else if (commandOptions.json) {
-        outputStyle = 'Pretty-JSON'
-    } else if (commandOptions.compact) {
+    if (commandOptions.compact) {
         outputStyle = 'JSON-compact'
     } else if (commandOptions.js) {
         outputStyle = 'JS-style'
-    } else {
-        outputStyle = 'Pretty-JSON'
+    } else if (commandOptions.pretty) {
+        console.warn('Warning: --pretty is deprecated. Use --json instead.')
     }
 
     doParseFile(file, commandOptions, outputStyle, outputFile)
@@ -90,7 +90,7 @@ export const parseFile = (
 const doParseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
-    outputStyle: TOutputStype,
+    outputStyle: TOutputStyle,
     outputFile = '',
 ) => {
     // let strictMode = !!commandOptions.strict
@@ -108,8 +108,8 @@ const doParseFile = (
         includeMetadata: includeMetaData,
     }
 
-    // If --force then override fail-level.
-    if (commandOptions.force) {
+    // If --best-effort then override fail-level.
+    if (commandOptions.bestEffort) {
         parseOptions.failLevel = 'ignore-errors'
     }
 
@@ -118,20 +118,38 @@ const doParseFile = (
 
         let output = ''
         switch (outputStyle) {
+            case 'JS-style':
+                //output = util.inspect(parsed, { depth: null, colors: true })
+                output = toPrettyJS(parsed)
+                break
+
             case 'Pretty-JSON':
                 output = toPrettyJSON(parsed)
                 break
+
             case 'Console.log':
                 output = '<todo>'
                 break
+
             case 'JSON-compact':
                 output = JSON.stringify(parsed)
                 break
+
             default:
                 output = util.inspect(parsed, { depth: null, colors: false })
         }
 
         if (outputFile) {
+            if (
+                fs.existsSync(outputFile) &&
+                (!commandOptions.force || !commandOptions.overwrite)
+            ) {
+                console.error(
+                    `Error: File "${outputFile}" already exists. Use --force to overwrite.`,
+                )
+                process.exit(1)
+            }
+
             // Write JSON output to file instead of stdout.
             fs.writeFileSync(path.resolve(outputFile), output, 'utf-8')
             console.log(`Output written to file: "${outputFile}"`)
@@ -142,4 +160,7 @@ const doParseFile = (
         console.error(`Error: ${err.message}`)
         process.exit(1)
     }
+}
+function toCleanPrettyJS(parsed: any): string {
+    throw new Error('Function not implemented.')
 }
