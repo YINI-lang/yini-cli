@@ -5,7 +5,7 @@
 - **Changed:** Showing extended information now uses the `info` command only. The global `--info` option has been removed — please use `yini info` instead.
 - **Updated:** `parse` command:
   - Deprecated `--pretty`; use `--json` instead.
-  - `--json-compact` now outputs compact JSON (no whitespace).
+  - `--compact` now outputs compact JSON (no whitespace).
   - Added `--js` option for JavaScript output.
 
 ## 1.1.1-beta - 2025 Dec

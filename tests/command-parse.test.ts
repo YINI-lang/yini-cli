@@ -330,8 +330,8 @@ describe('Test parse command usage:', () => {
         )
     })
 
-    // --json-compact           Compact JSON output using JSON.stringify.
-    it('4.a) Have correct output when using the command "parse" **with option --json-compact**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.a) Have correct output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -339,7 +339,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -353,8 +353,8 @@ describe('Test parse command usage:', () => {
         expect(stdout).toContain(JSON.stringify(correctObj))
     })
 
-    // --json-compact           Compact JSON output using JSON.stringify.
-    it('4.b) Have correct output when using the command "parse" **with option --json-compact**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.b) Have correct output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -362,7 +362,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -393,8 +393,8 @@ describe('Test parse command usage:', () => {
         expect(stdout).toContain(JSON.stringify(correctObj))
     })
 
-    // --json-compact           Compact JSON output using JSON.stringify.
-    it('4.c) Corrupt result should NOT match output when using the command "parse" **with option --json-compact**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.c) Corrupt result should NOT match output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -402,7 +402,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 

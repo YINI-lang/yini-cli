@@ -29,7 +29,7 @@ export const getHelpTextAfter = () => {
 
 Quick Examples:
   $ yini parse config.yini
-  $ yini parse config.yini --json-compact
+  $ yini parse config.yini --compact
   $ yini parse config.yini --js
   $ yini parse config.yini --output out.json
   $ yini validate --strict config.yini

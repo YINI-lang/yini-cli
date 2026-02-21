@@ -91,7 +91,7 @@ const parseCmd = program
     .command('parse <file>')
     .description(descr['For-command-parse'])
     .option('--json', 'Output as formatted JSON (default).')
-    .option('--json-compact', 'Output compact JSON (no whitespace).')
+    .option('--compact', 'Output compact JSON (no whitespace).')
     .option('--js', 'Output as JavaScript.')
     .option('--output <file>', 'Write output to file.')
     .option('--pretty', '(deprecated) Use --json instead.')

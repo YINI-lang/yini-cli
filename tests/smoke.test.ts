@@ -111,13 +111,13 @@ describe('Smoke test yini CLI basic usage:', () => {
         expect(stdout).toContain('            "host": "localhost"')
     })
 
-    it('6. Parse (command "parse", with "--json-compact") and print as JSON string.', async () => {
+    it('6. Parse (command "parse", with "--compact") and print as JSON string.', async () => {
         // Arrange.
         const fileName = 'nested-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('Test: 6:')
         debugPrint('stdout:')
         printObject(stdout)
@@ -128,13 +128,13 @@ describe('Smoke test yini CLI basic usage:', () => {
         )
     })
 
-    it('7.a. Should pass parsing (command "parse", with "--json-compact") a corrupt YINI in lenient (default) mode.', async () => {
+    it('7.a. Should pass parsing (command "parse", with "--compact") a corrupt YINI in lenient (default) mode.', async () => {
         // Arrange.
         const fileName = 'invalid/corrupt-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json-compact`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('Test: 7.a:')
         debugPrint('stdout:')
         printObject(stdout)

@@ -14,7 +14,7 @@ type TOutputStype = 'JS-style' | 'Pretty-JSON' | 'Console.log' | 'JSON-compact'
 export interface IParseCommandOptions extends IGlobalOptions {
     pretty?: boolean // Deprecated since 2026 Feb! Use `--json` instead.
     json?: boolean // JSON prettyfied (DEFAULT),
-    jsonCompact?: boolean // Output compact JSON (no whitespace).
+    compact?: boolean // Output compact JSON (no whitespace).
     js?: boolean // Output as JavaScript
     output?: string
     force?: boolean // --best-effort = 'ignore-errors'
@@ -76,7 +76,7 @@ export const parseFile = (
         outputStyle = 'Pretty-JSON'
     } else if (commandOptions.json) {
         outputStyle = 'Pretty-JSON'
-    } else if (commandOptions.jsonCompact) {
+    } else if (commandOptions.compact) {
         outputStyle = 'JSON-compact'
     } else if (commandOptions.js) {
         outputStyle = 'JS-style'
