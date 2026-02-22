@@ -14,7 +14,7 @@ const DIR_OF_FIXTURES = 'fixtures/'
 describe('Test parse command usage:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
-    it('1.a) Have correct output when using the command "parse" **with no options**.', async () => {
+    it('1.a) Have correct output when using the command "parse" **with no options** to be pretty JSON.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -27,7 +27,14 @@ describe('Test parse command usage:', () => {
         printObject(stdout)
 
         // Assert.
-        expect(stdout).toContain("{ App: { title: 'My App', enabled: true } }")
+        // const correctObj = {
+
+        expect(stdout).toContain(`{
+    "App": {
+        "title": "My App",
+        "enabled": true
+    }
+}`)
     })
 
     it('1.b) Have correct output when using the command "parse" **with no options**.', async () => {
@@ -44,23 +51,36 @@ describe('Test parse command usage:', () => {
 
         // Assert.
         const correct: string = `{
-  App: {
-    name: 'ExampleApp Web',
-    version: '1.2.3',
-    debug: false,
-    Logging: { level: 'info', file: 'logs/app.log', maxSize: 1048576 },
-    Database: {
-      type: 'postgres',
-      host: 'db.example.com',
-      port: 5432,
-      username: 'some_user',
-      password: 's3cret',
-      poolSize: 10,
-      Options: { ssl: true, connectionTimeout: 30 }
+    "App": {
+        "name": "ExampleApp Web",
+        "version": "1.2.3",
+        "debug": false,
+        "Logging": {
+            "level": "info",
+            "file": "logs/app.log",
+            "maxSize": 1048576
+        },
+        "Database": {
+            "type": "postgres",
+            "host": "db.example.com",
+            "port": 5432,
+            "username": "some_user",
+            "password": "s3cret",
+            "poolSize": 10,
+            "Options": {
+                "ssl": true,
+                "connectionTimeout": 30
+            }
+        },
+        "Features": {
+            "enableSignup": true,
+            "betaBanner": false
+        }
     },
-    Features: { enableSignup: true, betaBanner: false }
-  },
-  Env: { NODE_ENV: 'production', TIMEZONE: 'Europe/Gothenburg' }
+    "Env": {
+        "NODE_ENV": "production",
+        "TIMEZONE": "Europe/Gothenburg"
+    }
 }`
         expect(stdout).toContain(correct)
     })
@@ -140,15 +160,35 @@ describe('Test parse command usage:', () => {
 
         // Assert.
         const correct: string = `{
-  window: { title: 'Sample Window', id: 'window_main' },
-  image: { src: 'gfx/bg.png', id: 'bg1', isCentered: true },
-  text: {
-    content: 'Click here!',
-    id: 'text1',
-    isCentered: true,
-    url: 'images/',
-    styles: [ [ 'font-weight', 'bold' ], [ 'size', 36 ], [ 'font', 'arial' ] ]
-  }
+    "window": {
+        "title": "Sample Window",
+        "id": "window_main"
+    },
+    "image": {
+        "src": "gfx/bg.png",
+        "id": "bg1",
+        "isCentered": true
+    },
+    "text": {
+        "content": "Click here!",
+        "id": "text1",
+        "isCentered": true,
+        "url": "images/",
+        "styles": [
+            [
+                "font-weight",
+                "bold"
+            ],
+            [
+                "size",
+                36
+            ],
+            [
+                "font",
+                "arial"
+            ]
+        ]
+    }
 }`
         expect(stdout).toContain(correct)
     })
@@ -181,8 +221,8 @@ describe('Test parse command usage:', () => {
         expect(stdout).not.toContain(corruptObj)
     })
 
-    // --pretty         Pretty-print output as JSON.
-    it('3.a) Have correct output when using the command "parse" **with option --pretty**.', async () => {
+    // --json         Pretty-print output as JSON.
+    it('3.a) Have correct output when using the command "parse" **with option --json**.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -190,7 +230,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -206,8 +246,8 @@ describe('Test parse command usage:', () => {
         )
     })
 
-    // --pretty         Pretty-print output as JSON.
-    it('3.b) Have correct output when using the command "parse" **with option --pretty**.', async () => {
+    // --json         Pretty-print output as JSON.
+    it('3.b) Have correct output when using the command "parse" **with option --json**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -215,7 +255,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -248,8 +288,8 @@ describe('Test parse command usage:', () => {
         )
     })
 
-    // --pretty         Pretty-print output as JSON.
-    it('3.c) Corrupt result should NOT match output when using the command "parse" **with option --pretty**.', async () => {
+    // --json         Pretty-print output as JSON.
+    it('3.c) Corrupt result should NOT match output when using the command "parse" **with option --json**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -257,7 +297,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --pretty`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -290,8 +330,8 @@ describe('Test parse command usage:', () => {
         )
     })
 
-    // --json           Compact JSON output using JSON.stringify.
-    it('4.a) Have correct output when using the command "parse" **with option --json**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.a) Have correct output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -299,7 +339,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -313,8 +353,8 @@ describe('Test parse command usage:', () => {
         expect(stdout).toContain(JSON.stringify(correctObj))
     })
 
-    // --json           Compact JSON output using JSON.stringify.
-    it('4.b) Have correct output when using the command "parse" **with option --json**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.b) Have correct output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -322,7 +362,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -353,8 +393,8 @@ describe('Test parse command usage:', () => {
         expect(stdout).toContain(JSON.stringify(correctObj))
     })
 
-    // --json           Compact JSON output using JSON.stringify.
-    it('4.c) Corrupt result should NOT match output when using the command "parse" **with option --json**.', async () => {
+    // --compact           Compact JSON output using JSON.stringify.
+    it('4.c) Corrupt result should NOT match output when using the command "parse" **with option --compact**.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -362,7 +402,7 @@ describe('Test parse command usage:', () => {
         // Act.
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+        const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -393,5 +433,137 @@ describe('Test parse command usage:', () => {
         expect(stdout).not.toContain(JSON.stringify(corruptObj))
     })
 
-    //@todo Add test for option --output <file>
+    // --js           Output as JavaScript.
+    it('5.a) Have correct output when using the command "parse" **with option --js**.', async () => {
+        // Arrange.
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
+        // and to capture stdout, stderr, exitCode, etc.
+        const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+        debugPrint('stdout:')
+        printObject(stdout)
+
+        // Assert.
+        const correctObj = {
+            App: {
+                title: 'My App',
+                enabled: true,
+            },
+        }
+        const parsed = eval(`(${stdout})`)
+        expect(parsed).toEqual(correctObj)
+    })
+
+    it('6. Fails when output file exists without --overwrite.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.a) Writes output file when it does not exist.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-new.json')
+        if (fs.existsSync(outPath)) fs.unlinkSync(outPath)
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).toBe(0)
+        expect(fs.existsSync(outPath)).toBe(true)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.b) Writes when destination is older than source.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-older.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        // Make dest older than the *source file*
+        const srcStat = fs.statSync(fullPath)
+        const olderThanSrc = (srcStat.mtimeMs - 60_000) / 1000 // 60s older
+        fs.utimesSync(outPath, olderThanSrc, olderThanSrc)
+
+        const { exitCode, stderr } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        // Helpful when debugging:
+        // console.log(stderr)
+
+        expect(exitCode).toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.c) Fails when destination is newer than source.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-newer.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        // Make dest newer than the *source file*
+        const srcStat = fs.statSync(fullPath)
+        const newerThanSrc = (srcStat.mtimeMs + 60_000) / 1000 // 60s newer
+        fs.utimesSync(outPath, newerThanSrc, newerThanSrc)
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath}`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.d) Writes when --overwrite is used.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-overwrite.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath} --overwrite`,
+        )
+
+        expect(exitCode).toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
+
+    it('7.e) Fails when --no-overwrite is used.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const outPath = path.join(baseDir, 'tmp-no-overwrite.json')
+        fs.writeFileSync(outPath, 'dummy')
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${outPath} --no-overwrite`,
+        )
+
+        expect(exitCode).not.toBe(0)
+
+        fs.unlinkSync(outPath)
+    })
 })

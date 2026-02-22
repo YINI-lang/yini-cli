@@ -1,7 +1,16 @@
 # CHANGELOG
 
-## 1.2.X-beta - xx
-- - **Improved:** Updated `--help` to display full help for all commands, while preserving command-specific help through `yini help <command>`.
+## WORK: 2.0.0-beta - xxx
+- **Improved:** Updated `--help` to display full help for all commands, while preserving command-specific help through `yini help <command>`.
+- **Changed:** Showing extended information now uses the `info` command only. The global `--info` option has been removed — please use `yini info` instead.
+- **Updated:** `parse` command:
+  - Deprecated `--pretty` (JSON is now the default; use `--json` explicitly if desired).
+  - `--compact` now outputs compact JSON (no whitespace).
+  - Added `--js` option to output JavaScript-style objects.
+  - Improved `--output` file handling:
+    - By default, the output file is written only if it does not exist or is older than the source YINI file.
+    - Added `--overwrite` to always replace existing files.
+    - Added `--no-overwrite` to prevent replacing existing files.
 
 ## 1.1.1-beta - 2025 Dec
 - **Updated:** Updated to use the latest YINI Parser version `1.3.2-beta` from `1.3.0-beta`.

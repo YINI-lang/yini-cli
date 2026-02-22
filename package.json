@@ -1,10 +1,11 @@
 {
     "name": "yini-cli",
     "version": "1.1.1-beta",
-    "description": "The official CLI for parsing and validating YINI config files: type-safe values, nested sections, comments, minimal syntax noise, and optional strict mode.",
+    "description": "CLI tool for YINI text-based format - an INI-like config format with real structure, comments, nested sections, no YAML foot-guns, and less noise than JSON.",
     "keywords": [
         "yini",
         "cli",
+        "data-format",
         "config",
         "configuration",
         "parser",

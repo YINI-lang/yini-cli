@@ -13,9 +13,9 @@ export const getHelpTextBefore = () => {
     return `${getPackageName()} ${getPackageVersion()}
 YINI CLI (Yet another INI)
 
-Parse and validate YINI configuration files.
-A config format, inspired by INI, with type-safe values, nested
-sections, comments, minimal syntax noise, and optional strict mode.
+The official terminal / command-line (CLI) for parsing and validating YINI
+configuration files. A config format, inspired by INI, with type-safe values,
+nested sections, comments, minimal syntax noise, and optional strict mode.
 
 Designed for clarity and consistency. :)\n`
 }
@@ -28,9 +28,11 @@ export const getHelpTextAfter = () => {
 ========================================================
 
 Quick Examples:
-  $ yini parse config.yini
+  $ yini parse file.yini
+  $ yini parse file.yini --json
+  $ yini parse file.yini --js
+  $ yini parse file.yini -o output.json
   $ yini validate --strict config.yini
-  $ yini parse config.yini --pretty --output out.json
 
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help

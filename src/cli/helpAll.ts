@@ -15,7 +15,7 @@ export function enableHelpAll(program: Command) {
                 output += '\n\n'
                 output +=
                     '--------------------------------------------------------\n'
-                output += `Command: ${sub.name()}\n`
+                output += `* Command: ${sub.name()}\n`
                 output +=
                     '--------------------------------------------------------\n'
                 output += originalFormatHelp.call(helper, sub, helper)
