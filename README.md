@@ -1,13 +1,13 @@
 # YINI-CLI
-> **Readable configuration without YAML foot-guns or JSON noise.**  
+> **Readable configuration without indentation pitfalls or JSON verbosity.**  
 
-**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON.**
+**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON or JavaScript.**
 
 *YINI is an INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It supports nesting, comments, and a formally defined syntax. It is suitable for configuration files, application settings, and general data-storage use cases.*
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
 
-This tool is ideal for anyone working with human-edited configuration who wants predictable structure without indentation-based rules.
+This tool is designed for teams and developers working with human-edited configuration files who require explicit structure without indentation-based semantics.
 
 ---
 
@@ -20,8 +20,6 @@ Source: [basic.yini](./samples/basic.yini)
 
 ### Requirements
 YINI CLI requires Node.js **v20 or later**.  
-
-(It has also been tested with Node.js v13+, but v20+ is recommended for best compatibility.)
 
 ### Installation
 
@@ -36,7 +34,7 @@ YINI CLI requires Node.js **v20 or later**.
     ```bash
     yini --version
     ```
-    Should print the version (e.g., 1.0.0).
+    This should print the installed version (e.g., 1.0.0).
 
     Then you may try:
     ```bash
@@ -87,36 +85,47 @@ Source: [config.yini](./samples/config.yini)
 ---
 
 ## 🙋‍♀️ Why YINI?
-- **Indentation-independent structure:** The YINI config format is indentation-independent, meaning any space or tab never changes meaning.
+- **Indentation-independent structure:** YINI is indentation-independent — whitespace never alters structural meaning.
 - **Explicit nesting & refactoring safety:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
 - **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use-requirements.
 
-⭐ Don't forget to, [star it on GitHub](https://github.com/YINI-lang/yini-cli) — it helps a lot, thank you!
-
 ---
 
-## Usage of command `yini`
+## Usage
 
-Quick Examples:
-  $ yini parse config.yini
-      → Parse and print formatted JSON (default).
+### Quick Examples
 
-  $ yini parse config.yini --json-compact
-      → Output compact JSON.
+```bash
+yini parse config.yini
+```
+→ Parse and print formatted JSON (default).
 
-  $ yini parse config.yini --js
-      → Output as JavaScript.
+```bash
+yini parse config.yini --compact
+```
+→ Output compact JSON (no whitespace).
 
-  $ yini parse config.yini --output out.json
-      → Write formatted JSON to a file.
+```bash
+yini parse config.yini --js
+```
+→ Output as JavaScript-style object.
 
-  $ yini validate --strict config.yini
-      → Validate using strict mode.
+```bash
+yini parse config.yini -o out.json
+```
+→ Write formatted JSON to a file.
 
-For help with a specific command, use -h or --help. For example:
-  $ yini validate --help
+```bash
+yini validate --strict config.yini
+```
+→ Validate using strict mode.
+
+For help with a specific command:
+
+```bash
+yini parse --help
 ```
 
 ---
@@ -179,17 +188,37 @@ That's it!
 
 ## 📤 Output Modes for `yini parse`
 
-The `parse` command supports multiple output styles:
+The `parse` command supports multiple output formats:
 
-| Command Example                                    | Output Style         | Description                                                                  |
-|----------------------------------------------------|----------------------|------------------------------------------------------------------------------|
-| `yini parse config.yini`                           | JS-style object       | Uses Node’s `util.inspect` — human-readable, shows types, nesting, etc.     |
-| `yini parse config.yini --pretty`                  | Pretty JSON           | Formatted and indented with `JSON.stringify(obj, null, 4)`.                  |
-| `yini parse config.yini --json`                    | Compact JSON          | Compact and machine-friendly `JSON.stringify(obj)`.                          |
-| `yini parse config.yini --output out.txt`          | File (JS-style)       | Default style, written to specified file.                                    |
-| `yini parse config.yini --pretty --output out.json`| File (**Pretty JSON**)| Formatted JSON written to file.                                              |
+| Command Example                         | Output Format       | Description |
+|------------------------------------------|----------------------|------------|
+| `yini parse config.yini`                | Pretty JSON (default) | Formatted JSON with indentation (4 spaces). |
+| `yini parse config.yini --json`         | Pretty JSON          | Explicit pretty JSON output. |
+| `yini parse config.yini --compact`      | Compact JSON         | Minified JSON (no whitespace). |
+| `yini parse config.yini --js`           | JavaScript object    | JavaScript-style object (unquoted keys, single quotes). |
+| `yini parse config.yini -o out.json`    | File output          | Writes formatted JSON to file (default format). |
 
+>💡 `--js` and `--compact` are mutually exclusive.  
 >💡 Tip: You can combine --output with any style flag to control both formatting and destination.
+
+---
+
+## 📁 Output File Handling
+
+When using `-o, --output <file>`, YINI CLI applies safe write rules:
+
+| Scenario | Result |
+|----------|--------|
+| File does not exist | File is written |
+| File exists and is **older** than the input YINI file | File is overwritten |
+| File exists and is **newer** than the input YINI file | Command fails |
+| `--overwrite` is used | File is always overwritten |
+| `--no-overwrite` is used | Command fails if file exists |
+
+This prevents accidental overwriting of newer generated files.
+
+Use:
+`--overwrite` to force replacement.
 
 ---
 
@@ -197,10 +226,11 @@ The `parse` command supports multiple output styles:
 Areas of planned and possible future expansion:
 
 1. **Improve existing commands** — Continued functionality improvements, better diagnostics, and expanded QA for `parse` and `validate` and their options.
-2. Command `format`: Pretty-print or normalize a `.yini` file.
-3. Command `lint`: Stricter stylistic checks (like `validate`, but opinionated).
-4. Command `diff`: Compare two YINI files and show structural/config differences.
-5. Command `convert`: Convert a `JSON` or `XML` file into YINI format.
+2. Command `convert`: Batch convert YINI files to JSON or JavaScript.
+3. Command `format`: Pretty-print or normalize a `.yini` file.
+4. Command `lint`: Stricter stylistic checks (like `validate`, but opinionated).
+5. Command `diff`: Compare two YINI files and show structural/config differences.
+6. Import JSON or XML into YINI format.
 
 ---
 
@@ -209,13 +239,12 @@ Areas of planned and possible future expansion:
   *Install and view package details.*
 
 - ➡️ [YINI Project](https://github.com/YINI-lang)  
-  *YINI home on gitHub.*
+  *YINI home on GitHub.*
 
 ---
 
 ## Contribution & Involvement
-Interested in contributing or trying ideas?
-Issues, feedback, and experiments are welcome — even small ones.
+Contributions, issues, and feedback are welcome. Even small improvements or suggestions are appreciated.
 
 ---
 
@@ -225,8 +254,6 @@ This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LIC
 In this project on GitHub, the `libs` directory contains third party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
 
 ---
-
-If you found this useful, a GitHub star helps the project a lot ⭐
 
 **^YINI ≡**  
 > YINI — Clear, Structured Configuration Files.  
