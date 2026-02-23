@@ -1,5 +1,3 @@
-import assert from 'node:assert'
-import fs from 'node:fs'
 import { exit } from 'node:process'
 import YINI, {
     IssuePayload,
@@ -9,9 +7,8 @@ import YINI, {
     YiniParseResult,
 } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
-import { printObject, toPrettyJSON } from '../utils/print.js'
 
-const IS_DEBUG: boolean = true // For local debugging purposes, etc.
+const IS_DEBUG: boolean = false // For local debugging purposes, etc.
 
 // --- CLI command "validate" commandOptions --------------------------------------------------------
 export interface IValidateCommandOptions extends IGlobalOptions {
@@ -175,19 +172,8 @@ export const validateFile = (
     let parsedResult: YiniParseResult | undefined = undefined
     let isCatchedError: boolean = true
 
-    // let failLevel: PreferredFailLevel = 'auto'
-    // if (commandOptions.failFast) {
-    //     failLevel = 'warnings-and-errors'
-    // }
-    // if (commandOptions.bestEffort) {
-    //     failLevel = 'ignore-errors'
-    // }
-
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
-        // failLevel: 'errors',
-        // failLevel: commandOptions.force ? 'ignore-errors' : 'errors',
-        // failLevel: 'ignore-errors',
         failLevel: 'ignore-errors',
         includeMetadata: true,
         includeDiagnostics: true,
