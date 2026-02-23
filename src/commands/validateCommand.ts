@@ -201,10 +201,14 @@ export const validateFile = (
 
     if (!isCatchedError && parsedResult?.meta) {
         metadata = parsedResult?.meta
-        assert(metadata) // Make sure there is metadata!
+        // assert(metadata) // Make sure there is metadata!
         // printObject(metadata, true)
 
-        assert(metadata.diagnostics)
+        // assert(metadata.diagnostics)
+        if (!metadata?.diagnostics) {
+            console.error('Internal error: Missing diagnostics metadata')
+            exit(1)
+        }
         const diag = metadata.diagnostics
 
         errors = diag!.errors.errorCount
@@ -295,9 +299,10 @@ export const validateFile = (
         // if (commandOptions.details) {
         if (errors || warnings) {
             if (!metadata) {
-                console.error('Internal Error: No meta data found')
+                console.error('Internal error: No metadata available')
+                exit(1)
             }
-            assert(metadata) // Make sure there is metadata!
+            // assert(metadata) // Make sure there is metadata!
 
             console.log()
             printIssuesFound(file, metadata)
@@ -305,9 +310,9 @@ export const validateFile = (
 
         if (commandOptions.stats) {
             if (!metadata) {
-                console.error('Internal Error: No meta data found')
+                console.error('Internal error: No metadata available')
+                exit(1)
             }
-            assert(metadata) // Make sure there is metadata!
 
             console.log()
             console.log(formatToStatsReport(file, metadata).trim())
@@ -443,7 +448,10 @@ const formatToStatsReport = (
     // printObject(metadata)
     // console.log()
 
-    assert(metadata.diagnostics)
+    if (!metadata?.diagnostics) {
+        console.error('Internal error: Missing diagnostics')
+        exit(1)
+    }
     const diag = metadata.diagnostics
 
     const issuesCount: number =
@@ -504,7 +512,10 @@ const printIssuesFound = (
     // console.log(toPrettyJSON(metadata))
     // console.log()
 
-    assert(metadata.diagnostics)
+    if (!metadata?.diagnostics) {
+        console.error('Internal error: Missing diagnostics metadata')
+        exit(1)
+    }
     const diag = metadata.diagnostics
 
     IS_DEBUG && console.log('*** Issues Found')
