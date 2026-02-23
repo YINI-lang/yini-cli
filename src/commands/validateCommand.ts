@@ -220,11 +220,10 @@ export const validateFile = (
     IS_DEBUG && console.log()
     IS_DEBUG && console.log('isCatchedError = ' + isCatchedError)
     IS_DEBUG && console.log('TEMP OUTPUT')
-    IS_DEBUG && console.log('isCatchedError = ' + isCatchedError)
     IS_DEBUG && console.log('  errors = ' + errors)
     IS_DEBUG && console.log('warnings = ' + warnings)
     IS_DEBUG && console.log(' notices = ' + notices)
-    IS_DEBUG && console.log('   infor = ' + infos)
+    IS_DEBUG && console.log('   infos = ' + infos)
     IS_DEBUG && console.log('metadata = ' + metadata)
     IS_DEBUG &&
         console.log(
@@ -348,7 +347,7 @@ const toSummaryJson = (
             break
         case 'Passed-with-Warnings':
             // result = '⚠️ Validation finished'
-            result = '✔  Validation successful'
+            result = '✔  Validation successful (with warnings)'
             break
         case 'Failed':
             // result = '✖  Validation failed'
