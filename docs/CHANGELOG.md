@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.2.1-beta - 2026 Feb
+- **Improved:** `validate` command:
+  - Strengthened `validate` command diagnostics handling and metadata guards.
+  - Replaced unsafe internal assertions with controlled error handling.
+  - Improved silent mode behavior and exit code consistency.
+
 ## 1.2.0-beta - 2026 Feb
 - **Improved:** Updated `--help` to display full help for all commands, while preserving command-specific help through `yini help <command>`.
 - **Changed:** Showing extended information now uses the `info` command only. The global `--info` option has been removed — please use `yini info` instead.
