@@ -184,8 +184,13 @@ export const validateFile = (
         parsedResult = YINI.parseFile(file, parseOptions)
 
         isCatchedError = false
-    } catch (err: any) {
+    } catch (err: unknown) {
         isCatchedError = true
+
+        if (!commandOptions.silent) {
+            const message = err instanceof Error ? err.message : String(err)
+            console.error(`Error: ${message}`)
+        }
     }
 
     let metadata: ResultMetadata | null = null
