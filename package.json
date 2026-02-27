@@ -1,7 +1,7 @@
 {
     "name": "yini-cli",
     "version": "1.2.1-beta",
-    "description": "CLI tool for YINI text-based format - an INI-like config format with real structure, comments, nested sections, no YAML foot-guns, and less noise than JSON.",
+    "description": "CLI tool for validating and converting YINI configuration files - an INI-like format with real structure, nested sections and strict or lenient modes.",
     "keywords": [
         "yini",
         "cli",
