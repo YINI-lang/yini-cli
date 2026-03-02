@@ -49,7 +49,7 @@ interface ValidationReport {
     metadata?: ResultMetadata | null
 }
 
-const validateTargets = (
+export const validateTargets = (
     targets: string[],
     options: IValidateCommandOptions,
 ) => {

@@ -2,7 +2,7 @@
 //
 // (!) IMPORTANT: Leave the top shebang as the very first line! (otherwise command will break)
 //
-// index.ts
+// /index.ts
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
@@ -10,7 +10,7 @@ import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
     IValidateCommandOptions,
-    validateFile,
+    validateTargets,
 } from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
 import { descriptions as descr } from './descriptions.js'
@@ -136,9 +136,6 @@ const parseCmd = program
 appendGlobalOptionsTo(parseCmd)
 
 /**
- * The command: "validate <file>"
- */
-/**
  * The command: "validate <file|path...>"
  */
 const validateCmd = program
@@ -146,35 +143,42 @@ const validateCmd = program
     .description(descr['For-command-validate'])
 
     // ─────────────────────────────
-    // Validation mode
+    // Reporting / behavior
     // ─────────────────────────────
-    // .option('--strict', 'Enable strict validation mode')
-    // .option('--lenient', 'Enable lenient validation mode (default)')
-    // .option('-q, --quiet', 'Suppress normal output (show errors only)')
-    // .option('-s, --silent', 'Suppress all output (exit code only)')
     .option('--warnings-as-errors', 'Treat warnings as errors')
-
-    // ─────────────────────────────
-    // Reporting
-    // ─────────────────────────────
     .option('--stats', 'Include statistics section in output')
-    .option('--format <type>', 'Output format: text | json', 'text')
-    // .option('--verbose', 'Show detailed validation info')
-    .option('--fail-fast', 'Stop on first validation error')
-    .option('--max-errors <n>', 'Stop after n errors', parseInt)
+    .addOption(
+        new Option('--format <type>', 'Output format: text | json')
+            .choices(['text', 'json'])
+            .default('text'),
+    )
+
+    // Execution controls (nice-to-have)
+    .option('--fail-fast', 'Stop after first file that fails validation')
+    .option(
+        '--max-errors <n>',
+        'Stop after N total errors (across files)',
+        (v) => {
+            const n = Number.parseInt(v, 10)
+            if (!Number.isFinite(n) || n < 1) {
+                throw new Error('--max-errors must be a positive integer')
+            }
+            return n
+        },
+    )
 
     // ─────────────────────────────
     // Input handling
     // ─────────────────────────────
-    .option('--recursive', 'Process directories recursively (default)', true)
+    // Default: recursive (so only expose the negated option)
     .option('--no-recursive', 'Do not process subdirectories')
 
     // ─────────────────────────────
     // Output handling
     // ─────────────────────────────
     .option('-o, --output <file>', 'Write validation report to file')
-    .option('--overwrite', 'Allow overwriting existing report file')
-    .option('--no-overwrite', 'Prevent overwriting existing report file')
+    .option('--overwrite', 'Allow overwriting an existing output file')
+    .option('--no-overwrite', 'Prevent overwriting an existing output file')
 
     .action((fileOrPaths: string[], options: IValidateCommandOptions) => {
         const globals = program.opts()
@@ -189,11 +193,8 @@ const validateCmd = program
             console.log(toPrettyJSON(mergedOptions))
         }
 
-        if (!fileOrPaths || fileOrPaths.length === 0) {
-            program.help()
-        }
+        if (!fileOrPaths?.length) program.help()
 
-        // Multi-file support.
         validateTargets(fileOrPaths, mergedOptions)
     })
 appendGlobalOptionsTo(validateCmd)
@@ -219,20 +220,3 @@ appendGlobalOptionsTo(infoCmd)
 enableHelpAll(program)
 
 program.parseAsync()
-function validateTargets(
-    fileOrPaths: string[],
-    mergedOptions: {
-        stats?: boolean
-        warningsAsErrors?: boolean
-        format?: 'json' | 'text'
-        failFast?: boolean
-        recursive?: boolean
-        lenient?: boolean
-        strict?: boolean
-        quiet?: boolean
-        silent?: boolean
-        verbose?: boolean
-    },
-) {
-    throw new Error('Function not implemented.')
-}
