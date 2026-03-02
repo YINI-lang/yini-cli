@@ -145,8 +145,8 @@ const validateCmd = program
     // ─────────────────────────────
     // Reporting / behavior
     // ─────────────────────────────
-    .option('--warnings-as-errors', 'Treat warnings as errors')
-    .option('--stats', 'Include statistics section in output')
+    .option('--warnings-as-errors', 'Treat warnings as errors.')
+    .option('--stats', 'Include statistics section in output.')
     .addOption(
         new Option('--format <type>', 'Output format: text | json')
             .choices(['text', 'json'])
@@ -154,14 +154,14 @@ const validateCmd = program
     )
 
     // Execution controls (nice-to-have)
-    .option('--fail-fast', 'Stop after first file that fails validation')
+    .option('--fail-fast', 'Stop after first file that fails validation.')
     .option(
         '--max-errors <n>',
-        'Stop after N total errors (across files)',
+        'Stop after N total errors (across files).',
         (v) => {
             const n = Number.parseInt(v, 10)
             if (!Number.isFinite(n) || n < 1) {
-                throw new Error('--max-errors must be a positive integer')
+                throw new Error('--max-errors must be a positive integer.')
             }
             return n
         },
@@ -171,14 +171,14 @@ const validateCmd = program
     // Input handling
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
-    .option('--no-recursive', 'Do not process subdirectories')
+    .option('--no-recursive', 'Do not process subdirectories.')
 
     // ─────────────────────────────
     // Output handling
     // ─────────────────────────────
-    .option('-o, --output <file>', 'Write validation report to file')
-    .option('--overwrite', 'Allow overwriting an existing output file')
-    .option('--no-overwrite', 'Prevent overwriting an existing output file')
+    .option('-o, --output <file>', 'Write validation report to file.')
+    .option('--overwrite', 'Allow overwriting an existing output file.')
+    .option('--no-overwrite', 'Prevent overwriting an existing output file.')
 
     .action((fileOrPaths: string[], options: IValidateCommandOptions) => {
         const globals = program.opts()

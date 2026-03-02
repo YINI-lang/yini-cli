@@ -186,17 +186,17 @@ export const formatText = (report: ValidationReport): string => {
 
     switch (report.status) {
         case 'Passed':
-            out += '✔ Validation successful\n'
+            out += '✔  Validation successful\n'
             break
         case 'Passed-with-Warnings':
-            out += '✔ Validation successful (with warnings)\n'
+            out += '✔  Validation successful (with warnings)\n'
             break
         case 'Failed':
-            out += '✖ Validation failed\n'
+            out += '✖  Validation failed\n'
             break
     }
 
-    out += `\nFile: ${report.file}\n`
+    out += `\nFile: "${report.file}"\n`
     out += `Mode: ${report.mode}\n`
     out += `Errors: ${report.summary.errors}\n`
     out += `Warnings: ${report.summary.warnings}\n`
