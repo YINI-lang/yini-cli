@@ -56,10 +56,15 @@ export const validateTargets = (
     let overallExitCode = 0
 
     for (const target of targets) {
-        const files = collectFiles(target, options.recursive)
+        const files = collectFiles(target, options.recursive ?? true)
 
         for (const file of files) {
             const result = runValidation(file, options)
+
+            if (result.fatalError && !options.silent) {
+                console.error(`Error: ${result.fatalError}`)
+            }
+
             const report = buildReport(result, options.warningsAsErrors)
 
             if (!options.silent) {
@@ -67,6 +72,10 @@ export const validateTargets = (
                     console.log(formatJson(report))
                 } else {
                     console.log(formatText(report))
+                }
+
+                if (options.stats && result.metadata) {
+                    console.log(formatToStatsReport(file, result.metadata))
                 }
             }
 
@@ -330,25 +339,25 @@ export const formatText = (report: ValidationReport): string => {
         }
 
 */
-export const validateFile = (
-    file: string,
-    options: IValidateCommandOptions = {},
-) => {
-    const result = runValidation(file, options)
-    const report = buildReport(result, options.warningsAsErrors)
+// export const validateFile = (
+//     file: string,
+//     options: IValidateCommandOptions = {},
+// ) => {
+//     const result = runValidation(file, options)
+//     const report = buildReport(result, options.warningsAsErrors)
 
-    if (!options.silent) {
-        if (options.format === 'json') {
-            console.log(formatJson(report))
-        } else {
-            console.log(formatText(report))
-        }
-    }
+//     if (!options.silent) {
+//         if (options.format === 'json') {
+//             console.log(formatJson(report))
+//         } else {
+//             console.log(formatText(report))
+//         }
+//     }
 
-    const exitCode = report.status === 'Failed' ? 1 : 0
+//     const exitCode = report.status === 'Failed' ? 1 : 0
 
-    exit(exitCode)
-}
+//     exit(exitCode)
+// }
 
 export const runValidation = (
     file: string,
