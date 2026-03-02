@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { exit } from 'node:process'
 import YINI, {
     IssuePayload,
@@ -13,9 +15,95 @@ const IS_DEBUG: boolean = false // For local debugging purposes, etc.
 // --- CLI command "validate" commandOptions --------------------------------------------------------
 export interface IValidateCommandOptions extends IGlobalOptions {
     stats?: boolean
+    warningsAsErrors?: boolean
+    format?: 'json' | 'text'
     // details?: boolean
 }
 // -------------------------------------------------------------------------
+
+export interface ValidationResult {
+    file: string
+    mode: 'strict' | 'lenient' | 'custom'
+    errors: number
+    warnings: number
+    notices: number
+    infos: number
+    metadata: ResultMetadata | null
+    fatalError?: string
+}
+
+export interface ValidationReport {
+    status: 'Passed' | 'Passed-with-Warnings' | 'Failed'
+    summary: {
+        errors: number
+        warnings: number
+        notices: number
+        infos: number
+        total: number
+    }
+    file: string
+    mode: string
+    metadata?: ResultMetadata | null
+}
+
+const collectFiles = (inputPath: string, recursive = true): string[] => {
+    const stat = fs.statSync(inputPath)
+
+    if (stat.isFile()) return [inputPath]
+
+    let results: string[] = []
+
+    for (const entry of fs.readdirSync(inputPath)) {
+        const full = path.join(inputPath, entry)
+        const s = fs.statSync(full)
+
+        if (s.isDirectory() && recursive) {
+            results.push(...collectFiles(full, recursive))
+        }
+
+        if (s.isFile() && full.toLowerCase().endsWith('.yini')) {
+            results.push(full)
+        }
+    }
+
+    return results
+}
+
+export const buildReport = (
+    result: ValidationResult,
+    warningsAsErrors?: boolean,
+): ValidationReport => {
+    let effectiveErrors = result.errors
+
+    if (warningsAsErrors && result.warnings > 0) {
+        effectiveErrors += result.warnings
+    }
+
+    let status: ValidationReport['status']
+
+    if (effectiveErrors > 0) {
+        status = 'Failed'
+    } else if (result.warnings > 0) {
+        status = 'Passed-with-Warnings'
+    } else {
+        status = 'Passed'
+    }
+
+    return {
+        status,
+        file: result.file,
+        mode: result.mode,
+        summary: {
+            errors: result.errors,
+            warnings: result.warnings,
+            notices: result.notices,
+            infos: result.infos,
+            total:
+                result.errors + result.warnings + result.notices + result.infos,
+        },
+        metadata: result.metadata,
+    }
+}
 
 interface ISummary {
     result: string
@@ -28,6 +116,46 @@ interface ISummary {
         notices: number
         infos: number
     }
+}
+
+export const formatJson = (report: ValidationReport) => {
+    return JSON.stringify(
+        {
+            file: report.file,
+            mode: report.mode,
+            summary: {
+                errors: report.summary.errors,
+                warnings: report.summary.warnings,
+                notices: report.summary.notices,
+                infos: report.summary.infos,
+            },
+        },
+        null,
+        2,
+    )
+}
+
+export const formatText = (report: ValidationReport): string => {
+    let out = ''
+
+    switch (report.status) {
+        case 'Passed':
+            out += '✔ Validation successful\n'
+            break
+        case 'Passed-with-Warnings':
+            out += '✔ Validation successful (with warnings)\n'
+            break
+        case 'Failed':
+            out += '✖ Validation failed\n'
+            break
+    }
+
+    out += `\nFile: ${report.file}\n`
+    out += `Mode: ${report.mode}\n`
+    out += `Errors: ${report.summary.errors}\n`
+    out += `Warnings: ${report.summary.warnings}\n`
+
+    return out
 }
 
 /*
@@ -167,13 +295,30 @@ interface ISummary {
 */
 export const validateFile = (
     file: string,
-    commandOptions: IValidateCommandOptions = {},
+    options: IValidateCommandOptions = {},
 ) => {
-    let parsedResult: YiniParseResult | undefined = undefined
-    let isCatchedError: boolean = true
+    const result = runValidation(file, options)
+    const report = buildReport(result, options.warningsAsErrors)
 
+    if (!options.silent) {
+        if (options.format === 'json') {
+            console.log(formatJson(report))
+        } else {
+            console.log(formatText(report))
+        }
+    }
+
+    const exitCode = report.status === 'Failed' ? 1 : 0
+
+    exit(exitCode)
+}
+
+export const runValidation = (
+    file: string,
+    options: IValidateCommandOptions = {},
+): ValidationResult => {
     const parseOptions: ParseOptions = {
-        strictMode: commandOptions.strict ?? false,
+        strictMode: options.strict ?? false,
         failLevel: 'ignore-errors',
         includeMetadata: true,
         includeDiagnostics: true,
@@ -181,148 +326,45 @@ export const validateFile = (
     }
 
     try {
-        parsedResult = YINI.parseFile(file, parseOptions)
+        const parsed = YINI.parseFile(file, parseOptions)
+        const meta = parsed?.meta ?? null
 
-        isCatchedError = false
+        if (!meta?.diagnostics) {
+            return {
+                file,
+                mode: 'custom',
+                errors: 1,
+                warnings: 0,
+                notices: 0,
+                infos: 0,
+                metadata: null,
+                fatalError: 'Missing diagnostics metadata',
+            }
+        }
+
+        const d = meta.diagnostics
+
+        return {
+            file,
+            mode: meta.mode ?? 'custom',
+            errors: d.errors.errorCount,
+            warnings: d.warnings.warningCount,
+            notices: d.notices.noticeCount,
+            infos: d.infos.infoCount,
+            metadata: meta,
+        }
     } catch (err: unknown) {
-        isCatchedError = true
-
-        if (!commandOptions.silent) {
-            const message = err instanceof Error ? err.message : String(err)
-            console.error(`Error: ${message}`)
+        return {
+            file,
+            mode: options.strict ? 'strict' : 'lenient',
+            errors: 1,
+            warnings: 0,
+            notices: 0,
+            infos: 0,
+            metadata: null,
+            fatalError: err instanceof Error ? err.message : String(err),
         }
     }
-
-    let metadata: ResultMetadata | null = null
-    let errors = 0
-    let warnings = 0
-    let notices = 0
-    let infos = 0
-
-    if (!isCatchedError && parsedResult?.meta) {
-        metadata = parsedResult?.meta
-        // assert(metadata) // Make sure there is metadata!
-        // printObject(metadata, true)
-
-        // assert(metadata.diagnostics)
-        if (!metadata?.diagnostics) {
-            console.error('Internal error: Missing diagnostics metadata')
-            exit(1)
-        }
-        const diag = metadata.diagnostics
-
-        errors = diag!.errors.errorCount
-        warnings = diag!.warnings.warningCount
-        notices = diag!.notices.noticeCount
-        infos = diag!.infos.infoCount
-    }
-
-    IS_DEBUG && console.log()
-    IS_DEBUG && console.log('isCatchedError = ' + isCatchedError)
-    IS_DEBUG && console.log('TEMP OUTPUT')
-    IS_DEBUG && console.log('  errors = ' + errors)
-    IS_DEBUG && console.log('warnings = ' + warnings)
-    IS_DEBUG && console.log(' notices = ' + notices)
-    IS_DEBUG && console.log('   infos = ' + infos)
-    IS_DEBUG && console.log('metadata = ' + metadata)
-    IS_DEBUG &&
-        console.log(
-            'includeMetadata = ' +
-                metadata?.diagnostics?.effectiveOptions.includeMetadata,
-        )
-    IS_DEBUG && console.log('commandOptions.stats = ' + commandOptions?.stats)
-    IS_DEBUG && console.log()
-
-    //state returned:
-    // - passed (no errors/warnings),
-    // - finished (with warnings, no errors) / or - passed with warnings
-    // - failed (errors),
-
-    if (isCatchedError) {
-        errors = 1
-    }
-    // console.log()
-
-    let statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed'
-
-    if (errors) {
-        statusType = 'Failed'
-    } else if (warnings) {
-        statusType = 'Passed-with-Warnings'
-    } else {
-        statusType = 'Passed'
-    }
-
-    const jsonSummary = toSummaryJson(
-        statusType,
-        file,
-        // metadata,
-        metadata?.mode ?? 'custom',
-        errors,
-        warnings,
-        notices,
-        infos,
-    )
-
-    printSummary(jsonSummary)
-
-    // if (errors) {
-    //     // red ✖
-    //     console.error(
-    //         formatToSummary('Failed', errors, warnings, notices, infos),
-    //     )
-
-    //     // exit(1)
-    // } else if (warnings) {
-    //     // yellow ⚠️
-    //     console.warn(
-    //         formatToSummary(
-    //             'Passed-with-Warnings',
-    //             errors,
-    //             warnings,
-    //             notices,
-    //             infos,
-    //         ),
-    //     )
-
-    //     // exit(0)
-    // } else {
-    //     // green ✔
-    //     console.log(formatToSummary('Passed', errors, warnings, notices, infos))
-
-    //     // exit(0)
-    // }
-
-    // Print optional Stats-report if "--stats" was given.
-    if (!commandOptions.silent && !isCatchedError) {
-        // if (commandOptions.details) {
-        if (errors || warnings) {
-            if (!metadata) {
-                console.error('Internal error: No metadata available')
-                exit(1)
-            }
-            // assert(metadata) // Make sure there is metadata!
-
-            console.log()
-            printIssuesFound(file, metadata)
-        }
-
-        if (commandOptions.stats) {
-            if (!metadata) {
-                console.error('Internal error: No metadata available')
-                exit(1)
-            }
-
-            console.log()
-            console.log(formatToStatsReport(file, metadata).trim())
-        }
-    }
-
-    if (errors) {
-        exit(1)
-    }
-
-    exit(0)
 }
 
 /**
