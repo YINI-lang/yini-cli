@@ -1,3 +1,4 @@
+// commands/validateCommand.ts
 import fs from 'node:fs'
 import path from 'node:path'
 import { exit } from 'node:process'
@@ -17,11 +18,13 @@ export interface IValidateCommandOptions extends IGlobalOptions {
     stats?: boolean
     warningsAsErrors?: boolean
     format?: 'json' | 'text'
+    failFast?: boolean
+    recursive?: boolean
     // details?: boolean
 }
 // -------------------------------------------------------------------------
 
-export interface ValidationResult {
+interface ValidationResult {
     file: string
     mode: 'strict' | 'lenient' | 'custom'
     errors: number
@@ -32,7 +35,7 @@ export interface ValidationResult {
     fatalError?: string
 }
 
-export interface ValidationReport {
+interface ValidationReport {
     status: 'Passed' | 'Passed-with-Warnings' | 'Failed'
     summary: {
         errors: number
@@ -44,6 +47,40 @@ export interface ValidationReport {
     file: string
     mode: string
     metadata?: ResultMetadata | null
+}
+
+const validateTargets = (
+    targets: string[],
+    options: IValidateCommandOptions,
+) => {
+    let overallExitCode = 0
+
+    for (const target of targets) {
+        const files = collectFiles(target, options.recursive)
+
+        for (const file of files) {
+            const result = runValidation(file, options)
+            const report = buildReport(result, options.warningsAsErrors)
+
+            if (!options.silent) {
+                if (options.format === 'json') {
+                    console.log(formatJson(report))
+                } else {
+                    console.log(formatText(report))
+                }
+            }
+
+            if (report.status === 'Failed') {
+                overallExitCode = 1
+
+                if (options.failFast) {
+                    process.exit(1)
+                }
+            }
+        }
+    }
+
+    process.exit(overallExitCode)
 }
 
 const collectFiles = (inputPath: string, recursive = true): string[] => {
@@ -105,18 +142,18 @@ export const buildReport = (
     }
 }
 
-interface ISummary {
-    result: string
-    file: string
-    mode: 'strict' | 'lenient' | 'custom'
-    summary: {
-        issuesCount: number
-        errors: number
-        warnings: number
-        notices: number
-        infos: number
-    }
-}
+// interface ISummary {
+//     result: string
+//     file: string
+//     mode: 'strict' | 'lenient' | 'custom'
+//     summary: {
+//         issuesCount: number
+//         errors: number
+//         warnings: number
+//         notices: number
+//         infos: number
+//     }
+// }
 
 export const formatJson = (report: ValidationReport) => {
     return JSON.stringify(
@@ -370,6 +407,7 @@ export const runValidation = (
 /**
  * @returns Map to a short summary.
  */
+/*
 const toSummaryJson = (
     statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
     fileWithPath: string,
@@ -414,57 +452,58 @@ const toSummaryJson = (
         },
     }
 }
+*/
 
-const printSummary = (sum: ISummary) => {
-    let str = ''
+// const printSummary = (sum: ISummary) => {
+//     let str = ''
 
-    str += sum.result + '\n'
-    str += '\n'
-    str += `File:         "${sum.file}"\n`
-    str += `Mode:         ${sum.mode.toLowerCase()}\n`
-    str += `Errors:       ${sum.summary.errors}\n`
-    str += `Warnings:     ${sum.summary.warnings}\n`
+//     str += sum.result + '\n'
+//     str += '\n'
+//     str += `File:         "${sum.file}"\n`
+//     str += `Mode:         ${sum.mode.toLowerCase()}\n`
+//     str += `Errors:       ${sum.summary.errors}\n`
+//     str += `Warnings:     ${sum.summary.warnings}\n`
 
-    if (sum.summary.notices) {
-        str += `Notices:      ${sum.summary.notices}\n`
-    }
-    if (sum.summary.infos) {
-        str += `Infos:        ${sum.summary.infos}\n`
-    }
+//     if (sum.summary.notices) {
+//         str += `Notices:      ${sum.summary.notices}\n`
+//     }
+//     if (sum.summary.infos) {
+//         str += `Infos:        ${sum.summary.infos}\n`
+//     }
 
-    str += `Total issues: ${sum.summary.issuesCount}\n`
+//     str += `Total issues: ${sum.summary.issuesCount}\n`
 
-    console.log(str)
-}
+//     console.log(str)
+// }
 
-/**
- * @deprecated Use toSummaryJson(..), this TO BE deleted.
- */
-const formatToSummary = (
-    statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
-    errors: number,
-    warnings: number,
-    notices: number,
-    infos: number,
-): string => {
-    const totalMsgs: number = errors + warnings + notices + infos
-    let str = ``
+// /**
+//  * @deprecated Use toSummaryJson(..), this TO BE deleted.
+//  */
+// const formatToSummary = (
+//     statusType: 'Passed' | 'Passed-with-Warnings' | 'Failed',
+//     errors: number,
+//     warnings: number,
+//     notices: number,
+//     infos: number,
+// ): string => {
+//     const totalMsgs: number = errors + warnings + notices + infos
+//     let str = ``
 
-    switch (statusType) {
-        case 'Passed':
-            str = '✔  Validation passed'
-            break
-        case 'Passed-with-Warnings':
-            str = '⚠️ Validation finished'
-            break
-        case 'Failed':
-            str = '✖  Validation failed'
-            break
-    }
+//     switch (statusType) {
+//         case 'Passed':
+//             str = '✔  Validation passed'
+//             break
+//         case 'Passed-with-Warnings':
+//             str = '⚠️ Validation finished'
+//             break
+//         case 'Failed':
+//             str = '✖  Validation failed'
+//             break
+//     }
 
-    str += ` (${errors} errors, ${warnings} warnings, ${totalMsgs} total messages)`
-    return str
-}
+//     str += ` (${errors} errors, ${warnings} warnings, ${totalMsgs} total messages)`
+//     return str
+// }
 
 // --- Format to a Stats report --------------------------------------------------------
 

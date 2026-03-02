@@ -138,34 +138,63 @@ appendGlobalOptionsTo(parseCmd)
 /**
  * The command: "validate <file>"
  */
+/**
+ * The command: "validate <file|path...>"
+ */
 const validateCmd = program
-    .command('validate <file>')
+    .command('validate <fileOrPath...>')
     .description(descr['For-command-validate'])
-    .option(
-        '--stats',
-        'Include a statistics section (e.g., key count, nesting depth, etc.).',
-    )
-    // .option(
-    //     '--details',
-    //     'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
-    // )
-    .action((file, options: IValidateCommandOptions) => {
-        const globals = program.opts() // Global options.
-        const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 
-        debugPrint('Run command "parse"')
+    // ─────────────────────────────
+    // Validation mode
+    // ─────────────────────────────
+    // .option('--strict', 'Enable strict validation mode')
+    // .option('--lenient', 'Enable lenient validation mode (default)')
+    // .option('-q, --quiet', 'Suppress normal output (show errors only)')
+    // .option('-s, --silent', 'Suppress all output (exit code only)')
+    .option('--warnings-as-errors', 'Treat warnings as errors')
+
+    // ─────────────────────────────
+    // Reporting
+    // ─────────────────────────────
+    .option('--stats', 'Include statistics section in output')
+    .option('--format <type>', 'Output format: text | json', 'text')
+    // .option('--verbose', 'Show detailed validation info')
+    .option('--fail-fast', 'Stop on first validation error')
+    .option('--max-errors <n>', 'Stop after n errors', parseInt)
+
+    // ─────────────────────────────
+    // Input handling
+    // ─────────────────────────────
+    .option('--recursive', 'Process directories recursively (default)', true)
+    .option('--no-recursive', 'Do not process subdirectories')
+
+    // ─────────────────────────────
+    // Output handling
+    // ─────────────────────────────
+    .option('-o, --output <file>', 'Write validation report to file')
+    .option('--overwrite', 'Allow overwriting existing report file')
+    .option('--no-overwrite', 'Prevent overwriting existing report file')
+
+    .action((fileOrPaths: string[], options: IValidateCommandOptions) => {
+        const globals = program.opts()
+        const mergedOptions = { ...globals, ...options }
+
+        debugPrint('Run command "validate"')
         debugPrint('isDebug(): ' + isDebug())
-        debugPrint('isDev()  : ' + isDev())
-        debugPrint(`<file> = ${file}`)
+        debugPrint('isDev(): ' + isDev())
+
         if (isDebug()) {
             console.log('mergedOptions:')
             console.log(toPrettyJSON(mergedOptions))
         }
-        if (file) {
-            validateFile(file, mergedOptions)
-        } else {
+
+        if (!fileOrPaths || fileOrPaths.length === 0) {
             program.help()
         }
+
+        // Multi-file support.
+        validateTargets(fileOrPaths, mergedOptions)
     })
 appendGlobalOptionsTo(validateCmd)
 
@@ -190,3 +219,20 @@ appendGlobalOptionsTo(infoCmd)
 enableHelpAll(program)
 
 program.parseAsync()
+function validateTargets(
+    fileOrPaths: string[],
+    mergedOptions: {
+        stats?: boolean
+        warningsAsErrors?: boolean
+        format?: 'json' | 'text'
+        failFast?: boolean
+        recursive?: boolean
+        lenient?: boolean
+        strict?: boolean
+        quiet?: boolean
+        silent?: boolean
+        verbose?: boolean
+    },
+) {
+    throw new Error('Function not implemented.')
+}
