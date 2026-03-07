@@ -1,6 +1,8 @@
+// src/commands/parseCommand.ts
 import fs from 'node:fs'
 import path from 'node:path'
 import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
+import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
 import {
     debugPrint,
@@ -9,7 +11,7 @@ import {
     toPrettyJSON,
 } from '../utils/print.js'
 
-type TOutputStyle = 'JS-style' | 'Pretty-JSON' | 'JSON-compact'
+// type TOutputFormat = 'json' | 'json-compact' | 'js' | 'yaml' | 'xml'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
 /**
@@ -20,6 +22,8 @@ export interface IParseCommandOptions extends IGlobalOptions {
     json?: boolean // JSON prettyfied (DEFAULT),
     compact?: boolean // Output compact JSON (no whitespace).
     js?: boolean // Output as JavaScript
+    yaml?: boolean
+    xml?: boolean
     output?: string
     bestEffort?: boolean // --best-effort = 'ignore-errors'
     overwrite?: boolean // Allow to save/write over existing file(s).
@@ -69,31 +73,34 @@ export const parseFile = (
     const outputFile = commandOptions.output || ''
     // const isStrictMode = !!commandOptions.strict
 
-    const outputStyle = resolveOutputStyle(commandOptions)
+    const outputFormat = resolveOutputFormat(commandOptions)
 
     debugPrint('file = ' + file)
     debugPrint('output = ' + commandOptions.output)
     debugPrint('commandOptions:')
     printObject(commandOptions)
 
-    doParseFile(file, commandOptions, outputStyle, outputFile)
+    doParseFile(file, commandOptions, outputFormat, outputFile)
 }
 
-const resolveOutputStyle = (options: IParseCommandOptions): TOutputStyle => {
+const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
     if (options.js && options.compact) {
         throw new Error('--js and --compact cannot be combined.')
     }
 
-    if (options.compact) return 'JSON-compact'
-    if (options.js) return 'JS-style'
+    if (options.compact) return 'json-compact'
+    if (options.js) return 'js'
+    if (options.yaml) return 'yaml'
+    if (options.xml) return 'xml'
 
     if (options.pretty) {
         console.warn('Warning: --pretty is deprecated. Use --json instead.')
     }
 
-    return 'Pretty-JSON'
+    return 'json'
 }
 
+/*
 const renderOutput = (parsed: unknown, style: TOutputStyle): string => {
     switch (style) {
         case 'JS-style':
@@ -107,21 +114,21 @@ const renderOutput = (parsed: unknown, style: TOutputStyle): string => {
             return toPrettyJSON(parsed)
     }
 }
+*/
 
 const doParseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
-    outputStyle: TOutputStyle,
+    outputFormat: TOutputFormat,
     outputFile = '',
 ) => {
-    // let strictMode = !!commandOptions.strict
     let preferredFailLevel: PreferredFailLevel = commandOptions.bestEffort
         ? 'ignore-errors'
         : 'auto'
     let includeMetaData = false
 
     debugPrint('File = ' + file)
-    debugPrint('outputStyle = ' + outputStyle)
+    debugPrint('outputFormat = ' + outputFormat)
 
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
@@ -136,7 +143,9 @@ const doParseFile = (
 
     try {
         const parsed = YINI.parseFile(file, parseOptions)
-        const output = renderOutput(parsed, outputStyle)
+
+        const serializer = getSerializer(outputFormat)
+        const output = serializer.serialize(parsed)
 
         if (outputFile) {
             const resolved = path.resolve(outputFile)
