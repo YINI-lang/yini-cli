@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## WIP---------1.3.0-beta - 2026 Mar
+## 1.3.0-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.0-beta`.
 - **Added:** CLI now supports parsing/validating **Classic (C) strings** (escape sequences) via the updated parser.
 - **Note:** Default (raw) strings are unchanged (backslashes `\` and `\n` remain as-is unless using `c"..."` / `C'...'`).
