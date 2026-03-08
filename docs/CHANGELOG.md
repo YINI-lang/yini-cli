@@ -4,6 +4,10 @@
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.0-beta`.
 - **Added:** CLI now supports parsing/validating **Classic (C) strings** (escape sequences) via the updated parser.
 - **Note:** Default (raw) strings are unchanged (backslashes `\` and `\n` remain as-is unless using `c"..."` / `C'...'`).
+- **Added:** New output formats for the `parse` command:
+  - `--yaml` to export parsed data as **YAML**
+  - `--xml` to export parsed data as **XML**
+- **Refactored:** Output format handling internally to improve robustness, simplify debugging, and make the code easier to test and maintain.
 
 ## 1.2.1-beta - 2026 Feb
 - **Improved:** `validate` command:
