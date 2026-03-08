@@ -72,6 +72,8 @@
     "author": "Marko K. Seppänen",
     "dependencies": {
         "commander": "^14.0.1",
+        "xmlbuilder2": "^4.0.3",
+        "yaml": "^2.8.2",
         "yini-parser": "^1.4.0-beta"
     },
     "devDependencies": {
