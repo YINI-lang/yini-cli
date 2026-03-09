@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.3.1-beta - 2026 Mar
+- **Improved:** `parse` command file write policy.
+  - Destination files newer than the source are now **skipped with a warning** instead of causing an error.
+  - Helps prevent unnecessary build failures in CI pipelines and static site generators (e.g. Astro).
+- **Improved:** Output files are only rewritten when the generated content has actually changed, reducing redundant file writes.
+
 ## 1.3.0-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.0-beta`.
 - **Added:** CLI now supports parsing/validating **Classic (C) strings** (escape sequences) via the updated parser.

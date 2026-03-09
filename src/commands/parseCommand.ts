@@ -1,17 +1,11 @@
 // src/commands/parseCommand.ts
+
 import fs from 'node:fs'
 import path from 'node:path'
 import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
 import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
-import {
-    debugPrint,
-    printObject,
-    toPrettyJS,
-    toPrettyJSON,
-} from '../utils/print.js'
-
-// type TOutputFormat = 'json' | 'json-compact' | 'js' | 'yaml' | 'xml'
+import { debugPrint, printObject } from '../utils/print.js'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
 /**
@@ -30,6 +24,26 @@ export interface IParseCommandOptions extends IGlobalOptions {
     // force?: boolean // Same as --overwrite.
 }
 // -------------------------------------------------------------------------
+
+const reportAction = (
+    action: 'write' | 'skip',
+    file: string,
+    reason?: string,
+) => {
+    let txt = ''
+
+    if (reason) {
+        txt = `${action.padEnd(6)} "${file}" (${reason})`
+    } else {
+        txt = `${action.padEnd(6)} "${file}"`
+    }
+
+    if (action === 'skip') {
+        console.warn(txt)
+    } else {
+        console.log(txt)
+    }
+}
 
 /*
     TODO / SHOULD-DO:
@@ -132,14 +146,14 @@ const doParseFile = (
 
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
-        failLevel: preferredFailLevel,
-        includeMetadata: includeMetaData,
+        failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
+        includeMetadata: false,
     }
 
     // If --best-effort then override fail-level.
-    if (commandOptions.bestEffort) {
-        parseOptions.failLevel = 'ignore-errors'
-    }
+    // if (commandOptions.bestEffort) {
+    //     parseOptions.failLevel = 'ignore-errors'
+    // }
 
     try {
         const parsed = YINI.parseFile(file, parseOptions)
@@ -150,13 +164,43 @@ const doParseFile = (
         if (outputFile) {
             const resolved = path.resolve(outputFile)
 
-            enforceWritePolicy(file, resolved, commandOptions.overwrite)
+            const canWrite = enforceWritePolicy(
+                file,
+                resolved,
+                commandOptions.overwrite,
+            )
+
+            if (!canWrite) {
+                if (commandOptions.verbose) {
+                    console.log(`skip    Skipping write to "${resolved}"`)
+                }
+
+                return
+            }
+
+            // Double check, if the file was actually changed by comparing the contents.
+            if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+                const existing = fs.readFileSync(resolved, 'utf-8')
+
+                // Only write the output file if the content actually changed.
+                // Prevents constantly showing meaningless rewrites, in some cases.
+                if (existing === output) {
+                    if (commandOptions.verbose) {
+                        // console.log(
+                        //     `skip    Output unchanged. Skipping write: "${resolved}"`,
+                        // )
+                        reportAction('skip', resolved, 'output unchanged')
+                    }
+                    return
+                }
+            }
 
             // Write JSON output to file instead of stdout.
             fs.writeFileSync(resolved, output, 'utf-8')
 
             if (commandOptions.verbose) {
-                console.log(`Output written to file: "${outputFile}"`)
+                // console.log(`write    Output written to file: "${outputFile}"`)
+                reportAction('write', resolved)
             }
         } else {
             console.log(output)
@@ -173,18 +217,19 @@ const enforceWritePolicy = (
     srcPath: string,
     destPath: string,
     overwrite?: boolean,
-) => {
+): boolean => {
     if (!fs.existsSync(destPath)) {
-        return // File does not exist, OK to write.
+        return true // File does not exist, OK to write.
     }
 
     const srcStat = fs.statSync(srcPath)
     const destStat = fs.statSync(destPath)
 
-    const destIsNewer = destStat.mtimeMs >= srcStat.mtimeMs
+    // Only strictly newer triggers skip overwrite.
+    const destIsNewer = destStat.mtimeMs > srcStat.mtimeMs
 
     if (overwrite === true) {
-        return // Explicit overwrite, OK.
+        return true // Explicit overwrite, OK.
     }
 
     if (overwrite === false) {
@@ -195,8 +240,14 @@ const enforceWritePolicy = (
 
     // Default policy (overwrite undefined).
     if (destIsNewer) {
-        throw new Error(
-            `Destination file "${destPath}" is newer than source. Use --overwrite to force.`,
-        )
+        // console.warn(
+        //     // `Destination file "${destPath}" is newer than source. Use --overwrite to force.`,
+        //     //`Warning: destination file "${destPath}" is newer than source. Skipping write. Use --overwrite to force.`,
+        //     `Warning: destination "${destPath}" is newer than source "${srcPath}". Skipping write. Use --overwrite to force.`,
+        // )
+        reportAction('skip', destPath, `newer than source "${srcPath}"`)
+        return false
     }
+
+    return true
 }
