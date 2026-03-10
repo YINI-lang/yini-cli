@@ -25,6 +25,73 @@ export interface IParseCommandOptions extends IGlobalOptions {
 }
 // -------------------------------------------------------------------------
 
+/**
+ * Will return true if:
+ *   * --overwrite was not explicitly given
+ *   * destination exists
+ *   * destination is newer than source
+ * @returns
+ */
+export const shouldSkipBecauseDestNewer = (
+    file: string,
+    optionOverwrite?: boolean | undefined,
+    // optionVerbose?: boolean | undefined,
+    outputFile = '',
+): boolean => {
+    if (outputFile && optionOverwrite === undefined) {
+        const resolved = path.resolve(outputFile)
+
+        if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+            const srcStat = fs.statSync(file)
+            const destStat = fs.statSync(resolved)
+
+            if (destStat.mtimeMs > srcStat.mtimeMs) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+export const isAllowWriteOutput = (
+    srcPath: string,
+    destPath: string,
+    newContent: string,
+    overwrite?: boolean,
+): boolean => {
+    if (!fs.existsSync(destPath)) {
+        return true
+    }
+
+    if (overwrite === true) {
+        return true
+    }
+
+    if (overwrite === false) {
+        throw new Error(
+            `File "${destPath}" already exists. Overwriting disabled (--no-overwrite).`,
+        )
+    }
+
+    const srcStat = fs.statSync(srcPath)
+    const destStat = fs.statSync(destPath)
+
+    if (destStat.mtimeMs > srcStat.mtimeMs) {
+        reportAction('skip', destPath, `newer than source "${srcPath}"`)
+        return false
+    }
+
+    const existing = fs.readFileSync(destPath, 'utf-8')
+
+    if (existing === newContent) {
+        reportAction('skip', destPath, 'output unchanged')
+        return false
+    }
+
+    return true
+}
+
 const reportAction = (
     action: 'write' | 'skip',
     file: string,
@@ -114,22 +181,6 @@ const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
     return 'json'
 }
 
-/*
-const renderOutput = (parsed: unknown, style: TOutputStyle): string => {
-    switch (style) {
-        case 'JS-style':
-            return toPrettyJS(parsed)
-
-        case 'JSON-compact':
-            return JSON.stringify(parsed)
-
-        case 'Pretty-JSON':
-        default:
-            return toPrettyJSON(parsed)
-    }
-}
-*/
-
 const doParseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
@@ -150,10 +201,23 @@ const doParseFile = (
         includeMetadata: false,
     }
 
-    // If --best-effort then override fail-level.
-    // if (commandOptions.bestEffort) {
-    //     parseOptions.failLevel = 'ignore-errors'
-    // }
+    // Check early if should skip before parsing,
+    // saves a lot of time in some cases.
+    if (
+        shouldSkipBecauseDestNewer(
+            file,
+            commandOptions.overwrite,
+            // commandOptions.verbose,
+            outputFile,
+        )
+    ) {
+        if (commandOptions.verbose) {
+            const resolved = path.resolve(outputFile)
+            reportAction('skip', resolved, `newer than source "${file}"`)
+        }
+
+        return
+    }
 
     try {
         const parsed = YINI.parseFile(file, parseOptions)
@@ -164,42 +228,20 @@ const doParseFile = (
         if (outputFile) {
             const resolved = path.resolve(outputFile)
 
-            const canWrite = enforceWritePolicy(
-                file,
-                resolved,
-                commandOptions.overwrite,
-            )
-
-            if (!canWrite) {
-                if (commandOptions.verbose) {
-                    console.log(`skip    Skipping write to "${resolved}"`)
-                }
-
+            if (
+                !isAllowWriteOutput(
+                    file,
+                    resolved,
+                    output,
+                    commandOptions.overwrite,
+                )
+            ) {
                 return
             }
 
-            // Double check, if the file was actually changed by comparing the contents.
-            if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
-                const existing = fs.readFileSync(resolved, 'utf-8')
-
-                // Only write the output file if the content actually changed.
-                // Prevents constantly showing meaningless rewrites, in some cases.
-                if (existing === output) {
-                    if (commandOptions.verbose) {
-                        // console.log(
-                        //     `skip    Output unchanged. Skipping write: "${resolved}"`,
-                        // )
-                        reportAction('skip', resolved, 'output unchanged')
-                    }
-                    return
-                }
-            }
-
-            // Write JSON output to file instead of stdout.
             fs.writeFileSync(resolved, output, 'utf-8')
 
             if (commandOptions.verbose) {
-                // console.log(`write    Output written to file: "${outputFile}"`)
                 reportAction('write', resolved)
             }
         } else {
@@ -211,43 +253,4 @@ const doParseFile = (
         console.error(`Error: ${message}`)
         process.exit(1)
     }
-}
-
-const enforceWritePolicy = (
-    srcPath: string,
-    destPath: string,
-    overwrite?: boolean,
-): boolean => {
-    if (!fs.existsSync(destPath)) {
-        return true // File does not exist, OK to write.
-    }
-
-    const srcStat = fs.statSync(srcPath)
-    const destStat = fs.statSync(destPath)
-
-    // Only strictly newer triggers skip overwrite.
-    const destIsNewer = destStat.mtimeMs > srcStat.mtimeMs
-
-    if (overwrite === true) {
-        return true // Explicit overwrite, OK.
-    }
-
-    if (overwrite === false) {
-        throw new Error(
-            `File "${destPath}" already exists. Overwriting disabled (--no-overwrite).`,
-        )
-    }
-
-    // Default policy (overwrite undefined).
-    if (destIsNewer) {
-        // console.warn(
-        //     // `Destination file "${destPath}" is newer than source. Use --overwrite to force.`,
-        //     //`Warning: destination file "${destPath}" is newer than source. Skipping write. Use --overwrite to force.`,
-        //     `Warning: destination "${destPath}" is newer than source "${srcPath}". Skipping write. Use --overwrite to force.`,
-        // )
-        reportAction('skip', destPath, `newer than source "${srcPath}"`)
-        return false
-    }
-
-    return true
 }

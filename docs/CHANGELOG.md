@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.3x.1x-beta IN_PROGRESS- 2026 xxx
+- **Improved:** `parse` command file output behavior.
+  - Added fast pre-check to skip parsing when the destination is newer than the source.
+  - Centralized output write policy and skip detection.
+- **Improved:** Avoid unnecessary file rewrites when generated output is unchanged.
+
 ## 1.3.1-beta - 2026 Mar
 - **Improved:** `parse` command file write policy.
   - Destination files newer than the source are now **skipped with a warning** instead of causing an error.
