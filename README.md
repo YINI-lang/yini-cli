@@ -256,6 +256,6 @@ In this project on GitHub, the `libs` directory contains third party software an
 ---
 
 **^YINI ≡**  
-> YINI — Clear, Structured Configuration Files.  
+> Readable like INI. Structured like JSON. No indentation surprises.  
 
 [yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI on GitHub](https://github.com/YINI-lang)  
