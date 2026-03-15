@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## 1.3x.1x-beta IN_PROGRESS- 2026 xxx
+## 1.3.2-beta - 2026 Mar
+- **Updated:** Bumped dependency `yini-parser` to `^1.4.1-beta`.
+- **Fixed:** `parse` now returns a non-zero exit code for invalid input that does not produce usable parsed output.
+- **Improved:** Better alignment with the latest parser diagnostics and recovery behavior.
 - **Improved:** `parse` command file output behavior.
   - Added fast pre-check to skip parsing when the destination is newer than the source.
   - Centralized output write policy and skip detection.

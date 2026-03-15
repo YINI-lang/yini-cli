@@ -1,8 +1,11 @@
 // src/commands/parseCommand.ts
-
 import fs from 'node:fs'
 import path from 'node:path'
-import YINI, { ParseOptions, PreferredFailLevel } from 'yini-parser'
+import YINI, {
+    ParseOptions,
+    PreferredFailLevel,
+    YiniParseResult,
+} from 'yini-parser'
 import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject } from '../utils/print.js'
@@ -181,24 +184,41 @@ const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
     return 'json'
 }
 
+/**
+ * Returns true if the parsed result appears to contain usable output data.
+ *
+ * This is used by the CLI to distinguish between:
+ * - parse runs that reported errors but still recovered meaningful data, and
+ * - parse runs that failed so badly that no useful parsed structure was produced.
+ *
+ * A value is considered meaningful only if it is:
+ * - not null or undefined,
+ * - an object,
+ * - and contains at least one own top-level property.
+ *
+ * @param value The parsed result data to inspect.
+ * @returns True if the parsed result looks usable for output; otherwise false.
+ */
+const hasMeaningfulParsedData = (value: unknown): boolean => {
+    if (value == null) return false
+    if (typeof value !== 'object') return false
+    return Object.keys(value as Record<string, unknown>).length > 0
+}
+
 const doParseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
     outputFormat: TOutputFormat,
     outputFile = '',
 ) => {
-    let preferredFailLevel: PreferredFailLevel = commandOptions.bestEffort
-        ? 'ignore-errors'
-        : 'auto'
-    let includeMetaData = false
-
     debugPrint('File = ' + file)
     debugPrint('outputFormat = ' + outputFormat)
 
     const parseOptions: ParseOptions = {
         strictMode: commandOptions.strict ?? false,
         failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
-        includeMetadata: false,
+        includeMetadata: true,
+        includeDiagnostics: true,
     }
 
     // Check early if should skip before parsing,
@@ -220,10 +240,26 @@ const doParseFile = (
     }
 
     try {
-        const parsed = YINI.parseFile(file, parseOptions)
+        const parsedWithMeta: YiniParseResult = YINI.parseFile(
+            file,
+            parseOptions,
+        )
+        const errorCount =
+            parsedWithMeta?.meta?.diagnostics?.errors?.errorCount ?? 0
+
+        const parsedData = parsedWithMeta.result
+        const hasUsableOutput = hasMeaningfulParsedData(parsedData)
+
+        if (
+            errorCount > 0 &&
+            !commandOptions.bestEffort &&
+            (commandOptions.strict || !hasUsableOutput)
+        ) {
+            process.exit(1)
+        }
 
         const serializer = getSerializer(outputFormat)
-        const output = serializer.serialize(parsed)
+        const output = serializer.serialize(parsedData)
 
         if (outputFile) {
             const resolved = path.resolve(outputFile)
