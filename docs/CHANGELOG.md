@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.3.3-beta - 2026 Mar
+- **Updated:** Bumped dependency `yini-parser` to `^1.4.2-beta`.
+
 ## 1.3.2-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.1-beta`.
 - **Fixed:** `parse` now returns a non-zero exit code for invalid input that does not produce usable parsed output.
