@@ -210,42 +210,97 @@ export const formatText = (report: ValidationReport): string => {
     yini validate <file|path...> [options]
 
     Validate one or more YINI files.
-    If a directory is provided, all .yini files (case-insensitive) are processed recursively by default.
 
-    On successful validation, a report (summary, issues, optional stats) is printed to the terminal.
+    Default behavior
+    ----------------
+    - Validates one or more files or directories.
+    - If a directory is provided, all .yini files are validated recursively by default.
+    - Prints a human-readable validation summary to the terminal.
+    - Uses lenient mode by default.
+    - Returns a non-zero exit code if one or more files contain validation errors.
 
     Options
     -------
 
     Validation mode:
-    --strict                Enable strict validation mode
-    --lenient               (default) Enable lenient validation mode
-    --quiet, -q             Suppress normal output (show errors only)
-    --silent, -s            Suppress all output (exit code only)
-    --stats                 Include stats, show meta-data section (counts, depth, etc.)
-    --format <text|yini|json>	Output format for the report (staus, stats, issues) (default: text)
+    --strict                    Validate in strict mode
+    --lenient                   Validate in lenient mode (default)
+
+    Output verbosity:
+    --quiet, -q                 Show only failed files and final summary
+    --silent, -s                Show no output; exit code only
+    --verbose                   Show extra processing details
+    --stats                     Include optional statistics in the report
+    --format <text|json>        Output format for validation results (default: text)
 
     Input handling:
-    <file>                  Validate a single YINI file
-    <path>                  Validate all .yini files in the directory (recursive by default)
-    --no-recursive, --no-subdirs	Do not descend into subdirectories
+    <file>                      Validate a single YINI file
+    <path>                      Validate all .yini files in the directory
+    --no-recursive              Do not scan subdirectories
 
     Output handling:
-    --output <file>, -o <file>	Write validation report to file
-    --overwrite             Allow overwriting existing report file
-    --no-overwrite          (default) Prevent overwriting existing report file (default)    
+    --output <file>, -o <file>  Write validation report to a file
+    --overwrite                 Allow overwriting an existing output file
+    --no-overwrite              Fail if output file already exists
 
-    Execution controls (Nice-to-Have)
-    --fail-fast	            Stop on the first validation error
-    --max-errors <n>        Stop after <n> errors
-    --verbose	            Show detailed processing information
-    --warnings-as-errors    Treat warnings as errors
+    Execution controls:
+    --fail-fast                 Stop on the first file that fails
+    --max-errors <n>            Stop after <n> validation errors
+    --warnings-as-errors        Treat warnings as errors for exit code purposes
 
     Policy controls (advanced):
-    --duplicates-policy <error|warn|allow>	Control handling of duplicate keys / section names
+    --duplicates-policy <error|warn|allow>
     --reserved-policy <error|warn|allow>
 
-    ===========================================================
+    ==========================================================
+    OUTPUT RULES
+    ==========================================================
+
+    Human-readable output should be the default.
+
+    Single file mode
+    ----------------
+
+    * On success (exit 0)
+
+    To stdout:
+    OK: "configfile.yini"
+
+    * Failure (exit 1 or 2)
+
+    To stderr:
+    FAILED: "configfile.yini" (2 issues)
+      12:8  error    Unexpected token '}'
+      27:1  warning  Duplicate key: "port" in ...
+
+    ---
+
+    ***Multi file mode (when a path given):***
+
+    * On success (exit 0)
+
+    To stdout:
+    OK    "configs/file.yini"
+    OK    "configs/db.yini"
+    OK    "configs/prod.yini"
+
+    Summary: 3 files checked, 0 errors, 0 warnings
+
+    * Failure (exit 1 or 2)
+
+    To stderr:
+    OK    "configs/file.yini"
+    FAIL  "configs/db.yini"
+    OK    "configs/prod.yini"
+
+    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
+
+    The print detailed issues only for failed files (to stderr)
+    "configs/db.yini"
+      12:8  error    Unexpected token '}'
+      27:1  warning  Duplicate key: "port" in ...
+
+    ---
 
     REQUIREMENTS for report output:
 
