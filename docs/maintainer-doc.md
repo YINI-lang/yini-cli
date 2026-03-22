@@ -11,14 +11,24 @@ In here is **internal-only notes**: Release process, package testing, etc.
       ```
    - **1. b)** Run below, locally before going to the publishing step: 
       ```bash
-      npm publish --dry-run
+      npm publish --dry-run --provenance --tag beta --access public
       ```
 
 2. Then:
    * Check and update `CHANGELOG.md` so it's update with the latest changes.
    * Update the version in `package.json`.
 
-3. **Make a Release on GitHub**
+3. Just to make sure:
+   a. Install and update package-lock.json by running:
+      ```bash
+      npm i
+      ```
+   b. And also build to be sure:
+      ```bash
+      npm run build
+      ```
+
+4. **Make a Release on GitHub**
    - Go to **Releases** tab in the repo (`yini-cli`, https://github.com/YINI-lang/yini-cli).
    - Click **"Draft a new release"**, write new tag, version, etc.
    - Click Publish release.

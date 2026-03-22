@@ -95,6 +95,8 @@ const parseCmd = program
     .option('--json', 'Output as formatted JSON (default).')
     .option('--compact', 'Output compact JSON (no whitespace).')
     .option('--js', 'Output as JavaScript.')
+    .option('--yaml', 'Output as YAML.')
+    .option('--xml', 'Output as XML.')
 
     // File handling options.
     .option(

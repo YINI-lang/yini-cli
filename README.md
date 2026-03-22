@@ -1,11 +1,11 @@
 # YINI-CLI
 > **Readable configuration without indentation pitfalls or JSON verbosity.**  
 
-**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON or JavaScript.**
+**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI (by the YINI-lang project) configuration files to JSON or JavaScript.**
 
 *YINI is an INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It supports nesting, comments, and a formally defined syntax. It is suitable for configuration files, application settings, and general data-storage use cases.*
 
-[![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
+[![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-cli)](https://www.npmjs.com/package/yini-cli)
 
 This tool is designed for teams and developers working with human-edited configuration files who require explicit structure without indentation-based semantics.
 
@@ -256,6 +256,6 @@ In this project on GitHub, the `libs` directory contains third party software an
 ---
 
 **^YINI ≡**  
-> YINI — Clear, Structured Configuration Files.  
+> Readable like INI. Structured like JSON. No indentation surprises.  
 
 [yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI on GitHub](https://github.com/YINI-lang)  

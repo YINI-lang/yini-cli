@@ -78,11 +78,11 @@ For running the `yini` command directly while developing, follow these steps.
    ```
    This shows the main help screen for the command.
 
-4. Simulate running: `parse sample.yini --pretty`:
+4. Simulate running: `parse sample.yini --compact`:
    ```bash
-   node ./bin/yini.js parse sample.yini --pretty
+   node ./bin/yini.js parse sample.yini --compact
    ```
-   This outputs the parsed file as prettyfied JSON.
+   This outputs the parsed file as compact JSON.
 
 
 For more detailed info, head over to the [Project-Setup](./project-setup.md).

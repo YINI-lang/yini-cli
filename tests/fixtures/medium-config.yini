@@ -1,0 +1,19 @@
+/*
+ * Medium config.
+ */
+
+^ App
+name = "Demo"
+version = "1.0.0"
+features = [ "search", "dark-mode" ]  // Comments are allowed.
+
+    ^^ Database         // Sub-section of App.
+    host = "localhost"
+    port = 5432
+    
+    // Object literal.
+    auth = {
+        user: "admin",
+        pass: "secret"
+    }
+

@@ -1,0 +1,12 @@
+/*
+    Simple config.
+*/
+
+^ App
+name = "Demo"
+version = "1.0"
+
+features = [
+    "search",
+    "dark-mode"
+]
