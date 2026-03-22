@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.3.xxxxx-beta - 2026 Mar
+- **Updated:** Bumped dependency `yini-parser` to `^1.4.3-beta` that consists of:
+  - Fixed: Error messages and thrown parse errors now include correct line and column information again.
+  - Improved: Syntax and string-related parse errors are now clearer and more consistent.
+  - Improved: Reduced some duplicate follow-up errors during recovery after invalid input.
+
 ## 1.3.3-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.2-beta`.
 

@@ -1,7 +1,7 @@
 # YINI-CLI
 > **Readable configuration without indentation pitfalls or JSON verbosity.**  
 
-**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI configuration files to JSON or JavaScript.**
+**The official terminal / command-line (CLI) tool for validating, inspecting, and converting YINI (by the YINI-lang project) configuration files to JSON or JavaScript.**
 
 *YINI is an INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It supports nesting, comments, and a formally defined syntax. It is suitable for configuration files, application settings, and general data-storage use cases.*
 
