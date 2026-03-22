@@ -238,17 +238,18 @@ export const formatText = (report: ValidationReport): string => {
     <path>                      Validate all .yini files in the directory
     --no-recursive              Do not scan subdirectories
 
-    Output handling:
-    --output <file>, -o <file>  Write validation report to a file
-    --overwrite                 Allow overwriting an existing output file
-    --no-overwrite              Fail if output file already exists
-
     Execution controls:
     --fail-fast                 Stop on the first file that fails
     --max-errors <n>            Stop after <n> validation errors
     --warnings-as-errors        Treat warnings as errors for exit code purposes
 
-    Policy controls (advanced):
+    Output handling: 
+	--no-recursive/--no-subdirs   = Do not descend into subdirectories
+    (WAIT WITH THIS) --output, -o <file> = Save/write report to file (No overwrite if dest is more recent than source file (override with --overwrite).)
+	(WAIT WITH THIS) --overwrite = Allow to save/write over existing report file.
+	(WAIT WITH THIS) --no-overwrite = Do not save/write over existing report file.
+
+    Policy controls (advanced, WAIT WITH THESE):
     --duplicates-policy <error|warn|allow>
     --reserved-policy <error|warn|allow>
 

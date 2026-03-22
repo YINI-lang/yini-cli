@@ -66,14 +66,14 @@ program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The (main/global) option: "--strict, --quite, --silent"
+ * The (main/global) options: "--strict, --quite, --silent"
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
-    .option('-s, --strict', 'Enable strict parsing mode.')
+    .option('-S, --strict', 'Enable strict mode (lenient mode is default).')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
-    .option('--silent', 'Suppress all output (even errors, exit code only).')
+    .option('-s, --silent', 'Show no output, not even errors, exit code only.')
     .option('--verbose', 'Display extra information.')
     .action((options) => {
         debugPrint('Run global options')
@@ -173,14 +173,14 @@ const validateCmd = program
     // Input handling
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
-    .option('--no-recursive', 'Do not process subdirectories.')
+    .option('--no-recursive, --no-subdirs', 'Do not process subdirectories.')
 
     // ─────────────────────────────
-    // Output handling
+    // Output handling - WAIT WITH THESE
     // ─────────────────────────────
-    .option('-o, --output <file>', 'Write validation report to file.')
-    .option('--overwrite', 'Allow overwriting an existing output file.')
-    .option('--no-overwrite', 'Prevent overwriting an existing output file.')
+    // .option('-o, --output <file>', 'Write validation report to file.')
+    // .option('--overwrite', 'Allow overwriting an existing output file.')
+    // .option('--no-overwrite', 'Prevent overwriting an existing output file.')
 
     .action((fileOrPaths: string[], options: IValidateCommandOptions) => {
         const globals = program.opts()

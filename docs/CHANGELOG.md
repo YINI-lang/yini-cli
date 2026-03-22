@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.xxxx.0-beta - 2026 Mar
+- - **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent` (due to this is very common UX-behavior).
+
 ## 1.3.4-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.3-beta` that consists of:
   - Fixed: Error messages and thrown parse errors now include correct line and column information again.
