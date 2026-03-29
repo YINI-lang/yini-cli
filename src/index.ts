@@ -120,11 +120,6 @@ const parseCmd = program
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 
-        if (mergedOptions.js && mergedOptions.compact) {
-            console.error('Error: --js and --compact cannot be combined.')
-            process.exit(1)
-        }
-
         debugPrint('Run command "parse"')
         debugPrint('isDebug(): ' + isDebug())
         debugPrint('isDev()  : ' + isDev())

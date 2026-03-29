@@ -10,6 +10,7 @@ import YINI, {
     YiniParseResult,
 } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
+import { resolveStrictMode } from './commonFunctions.js'
 
 const IS_DEBUG: boolean = false // For local debugging purposes, etc.
 
@@ -454,7 +455,7 @@ export const runValidation = (
     options: IValidateCommandOptions = {},
 ): ValidationResult => {
     const parseOptions: ParseOptions = {
-        strictMode: options.strict ?? false,
+        strictMode: resolveStrictMode(options),
         failLevel: 'ignore-errors',
         includeMetadata: true,
         includeDiagnostics: true,

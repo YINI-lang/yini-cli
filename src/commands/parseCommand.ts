@@ -1,14 +1,16 @@
 // src/commands/parseCommand.ts
 import fs from 'node:fs'
 import path from 'node:path'
-import YINI, {
-    ParseOptions,
-    PreferredFailLevel,
-    YiniParseResult,
-} from 'yini-parser'
+import YINI, { ParseOptions, YiniParseResult } from 'yini-parser'
 import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject } from '../utils/print.js'
+import {
+    printStderr,
+    printStdout,
+    printWarning,
+    resolveStrictMode,
+} from './commonFunctions.js'
 
 // --- CLI command "parse" commandOptions --------------------------------------------------------
 /**
@@ -16,7 +18,7 @@ import { debugPrint, printObject } from '../utils/print.js'
  */
 export interface IParseCommandOptions extends IGlobalOptions {
     pretty?: boolean // Deprecated since 2026 Feb! Use `--json` instead.
-    json?: boolean // JSON prettyfied (DEFAULT),
+    json?: boolean // Pretty-printed JSON (default)
     compact?: boolean // Output compact JSON (no whitespace).
     js?: boolean // Output as JavaScript
     yaml?: boolean
@@ -36,6 +38,7 @@ export interface IParseCommandOptions extends IGlobalOptions {
  * @returns
  */
 export const shouldSkipBecauseDestNewer = (
+    commandOptions: IParseCommandOptions,
     file: string,
     optionOverwrite?: boolean | undefined,
     // optionVerbose?: boolean | undefined,
@@ -58,6 +61,7 @@ export const shouldSkipBecauseDestNewer = (
 }
 
 export const isAllowWriteOutput = (
+    commandOptions: IParseCommandOptions,
     srcPath: string,
     destPath: string,
     newContent: string,
@@ -81,14 +85,19 @@ export const isAllowWriteOutput = (
     const destStat = fs.statSync(destPath)
 
     if (destStat.mtimeMs > srcStat.mtimeMs) {
-        reportAction('skip', destPath, `newer than source "${srcPath}"`)
+        reportAction(
+            commandOptions,
+            'skip',
+            destPath,
+            `newer than source "${srcPath}"`,
+        )
         return false
     }
 
     const existing = fs.readFileSync(destPath, 'utf-8')
 
     if (existing === newContent) {
-        reportAction('skip', destPath, 'output unchanged')
+        reportAction(commandOptions, 'skip', destPath, 'output unchanged')
         return false
     }
 
@@ -96,22 +105,25 @@ export const isAllowWriteOutput = (
 }
 
 const reportAction = (
+    options: IParseCommandOptions,
     action: 'write' | 'skip',
     file: string,
     reason?: string,
 ) => {
-    let txt = ''
+    if (options.silent) return
 
-    if (reason) {
-        txt = `${action.padEnd(6)} "${file}" (${reason})`
-    } else {
-        txt = `${action.padEnd(6)} "${file}"`
-    }
+    let txt = reason
+        ? `${action.padEnd(6)} "${file}" (${reason})`
+        : `${action.padEnd(6)} "${file}"`
 
     if (action === 'skip') {
-        console.warn(txt)
+        if (!options.quiet) {
+            console.warn(txt)
+        }
     } else {
-        console.log(txt)
+        if (options.verbose && !options.quiet) {
+            console.log(txt)
+        }
     }
 }
 
@@ -139,7 +151,7 @@ const reportAction = (
 
     Execution control:
     --fail-fast
-	--best-effort = ignore-errors within a file, attempt recovery and still emit outp
+	--best-effort = ignore-errors within a file, attempt recovery, and still emit output
 	            --No for parse, --keep-going = continue to the next file when one fails
     --max-errors <n>
     --verbose
@@ -178,7 +190,10 @@ const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
     if (options.xml) return 'xml'
 
     if (options.pretty) {
-        console.warn('Warning: --pretty is deprecated. Use --json instead.')
+        printWarning(
+            options,
+            'Warning: --pretty is deprecated. Use --json instead.',
+        )
     }
 
     return 'json'
@@ -215,7 +230,7 @@ const doParseFile = (
     debugPrint('outputFormat = ' + outputFormat)
 
     const parseOptions: ParseOptions = {
-        strictMode: commandOptions.strict ?? false,
+        strictMode: resolveStrictMode(commandOptions),
         failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
         includeMetadata: true,
         includeDiagnostics: true,
@@ -225,6 +240,7 @@ const doParseFile = (
     // saves a lot of time in some cases.
     if (
         shouldSkipBecauseDestNewer(
+            commandOptions,
             file,
             commandOptions.overwrite,
             // commandOptions.verbose,
@@ -233,7 +249,12 @@ const doParseFile = (
     ) {
         if (commandOptions.verbose) {
             const resolved = path.resolve(outputFile)
-            reportAction('skip', resolved, `newer than source "${file}"`)
+            reportAction(
+                commandOptions,
+                'skip',
+                resolved,
+                `newer than source "${file}"`,
+            )
         }
 
         return
@@ -250,11 +271,13 @@ const doParseFile = (
         const parsedData = parsedWithMeta.result
         const hasUsableOutput = hasMeaningfulParsedData(parsedData)
 
-        if (
-            errorCount > 0 &&
-            !commandOptions.bestEffort &&
-            (commandOptions.strict || !hasUsableOutput)
-        ) {
+        const hasErrors = errorCount > 0
+        const bestEffort = !!commandOptions.bestEffort
+        const strictMode = resolveStrictMode(commandOptions)
+        const shouldFailHard =
+            hasErrors && !bestEffort && (strictMode || !hasUsableOutput)
+
+        if (shouldFailHard) {
             process.exit(1)
         }
 
@@ -266,6 +289,7 @@ const doParseFile = (
 
             if (
                 !isAllowWriteOutput(
+                    commandOptions,
                     file,
                     resolved,
                     output,
@@ -278,15 +302,15 @@ const doParseFile = (
             fs.writeFileSync(resolved, output, 'utf-8')
 
             if (commandOptions.verbose) {
-                reportAction('write', resolved)
+                reportAction(commandOptions, 'write', resolved)
             }
         } else {
-            console.log(output)
+            printStdout(commandOptions, output)
         }
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err)
 
-        console.error(`Error: ${message}`)
+        printStderr(commandOptions, `Error: ${message}`)
         process.exit(1)
     }
 }
