@@ -71,6 +71,7 @@ program.addHelpText('after', getHelpTextAfter())
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
     .option('-S, --strict', 'Enable strict mode (lenient mode is default).')
+    .option('--lenient', 'Use lenient mode (this is the default).')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
     .option('-s, --silent', 'Show no output, not even errors, exit code only.')
@@ -173,7 +174,7 @@ const validateCmd = program
     // Input handling
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
-    .option('--no-recursive, --no-subdirs', 'Do not process subdirectories.')
+    .option('--no-recursive, --no-subdirs', 'Do not scan sub-directories.')
 
     // ─────────────────────────────
     // Output handling - WAIT WITH THESE

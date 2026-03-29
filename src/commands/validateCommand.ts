@@ -211,6 +211,9 @@ export const formatText = (report: ValidationReport): string => {
 
     Validate one or more YINI files.
 
+    <file> = validate file
+    <path> = scan for .yini files
+
     Default behavior
     ----------------
     - Validates one or more files or directories.
@@ -227,7 +230,7 @@ export const formatText = (report: ValidationReport): string => {
     --lenient                   Validate in lenient mode (default)
 
     Output verbosity:
-    --quiet, -q                 Show only failed files and final summary
+    --quiet, -q                 Suppress successful per-file output; show failed files, issue details for failures, and final summary only
     --silent, -s                Show no output; exit code only
     --verbose                   Show extra processing details
     --stats                     Include optional statistics in the report
@@ -240,18 +243,26 @@ export const formatText = (report: ValidationReport): string => {
 
     Execution controls:
     --fail-fast                 Stop on the first file that fails
-    --max-errors <n>            Stop after <n> validation errors
-    --warnings-as-errors        Treat warnings as errors for exit code purposes
+    --max-errors <n>            Stop validation after reporting <n> total errors across all input files
+    --warnings-as-errors        Treat warnings as errors for exit code purposes. 
+                                - Warnings still display as warnings.
+                                - Exit code becomes failure if any warning exists.
 
     Output handling: 
 	--no-recursive/--no-subdirs   = Do not descend into subdirectories
+    (WAIT WITH THIS) --no-summary
     (WAIT WITH THIS) --output, -o <file> = Save/write report to file (No overwrite if dest is more recent than source file (override with --overwrite).)
 	(WAIT WITH THIS) --overwrite = Allow to save/write over existing report file.
 	(WAIT WITH THIS) --no-overwrite = Do not save/write over existing report file.
 
     Policy controls (advanced, WAIT WITH THESE):
-    --duplicates-policy <error|warn|allow>
-    --reserved-policy <error|warn|allow>
+    (WAIT WITH THIS) --duplicates-policy <error|warn|allow>
+    (WAIT WITH THIS) --reserved-policy <error|warn|allow>
+
+    Exit codes:
+    0 = all files valid
+    1 = one or more files invalid
+    2 = CLI usage/runtime error (bad arguments, unreadable path, internal failure)
 
     ==========================================================
     OUTPUT RULES
@@ -265,12 +276,24 @@ export const formatText = (report: ValidationReport): string => {
     * On success (exit 0)
 
     To stdout:
-    OK: "configfile.yini"
+    ✔ Validation successful
+    File: "configfile.yini"
+    Mode: lenient
+    Errors: 0
+    Warnings: 0
 
-    * Failure (exit 1 or 2)
+    * Failure:
+      - Validation failure (exit 1).
+      - CLI/runtime failure (exit 2).
+
+    To stdout:
+    ✖ Validation failed (3 issues)
+    File: "configfile.yini"
+    Mode: strict
+    Errors: 2
+    Warnings: 1
 
     To stderr:
-    FAILED: "configfile.yini" (2 issues)
       12:8  error    Unexpected token '}'
       27:1  warning  Duplicate key: "port" in ...
 
@@ -285,21 +308,32 @@ export const formatText = (report: ValidationReport): string => {
     OK    "configs/db.yini"
     OK    "configs/prod.yini"
 
-    Summary: 3 files checked, 0 errors, 0 warnings
+    Mode: strict
+    Summary: 3 files checked, 0 errors, 0 warnings, 0 failed
 
-    * Failure (exit 1 or 2)
+    * Failure:
+      - Validation failure (exit 1).
+      - CLI/runtime failure (exit 2).
 
-    To stderr:
+    To stdout:
     OK    "configs/file.yini"
     FAIL  "configs/db.yini"
     OK    "configs/prod.yini"
 
+    Mode: strict
     Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
 
-    The print detailed issues only for failed files (to stderr)
+
+    To stdout:
+    Mode: strict
+    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
+
+    To stderr:
     "configs/db.yini"
       12:8  error    Unexpected token '}'
       27:1  warning  Duplicate key: "port" in ...
+
+    Detailed issues are printed only for failed files.
 
     ---
 
@@ -315,14 +349,14 @@ export const formatText = (report: ValidationReport): string => {
     * Header / Summary:
     On success:
     ✔ Validation successful
-    File: config.yini
+    File: "config.yini"
     Mode: lenient
     Errors: 0
     Warnings: 2
 
     On failure:
     ✖ Validation failed
-    File: config.yini
+    File: "config.yini"
     Mode: strict
     Errors: 3
     Warnings: 1
@@ -350,7 +384,7 @@ export const formatText = (report: ValidationReport): string => {
         Statistics:
         Sections: 5
         Keys: 27
-        Arrays: 4
+        Lists: 4
         Objects: 3
         Nesting depth: 4
 
