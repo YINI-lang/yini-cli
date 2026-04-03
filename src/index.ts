@@ -70,10 +70,13 @@ program.addHelpText('after', getHelpTextAfter())
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
-    .option('-s, --strict', 'Enable strict parsing mode.')
+    .option('--strict', 'Enable strict parsing mode.')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')
-    .option('--silent', 'Suppress all output (even errors, exit code only).')
+    .option(
+        '-s, --silent',
+        'Suppress all output (even errors, exit code only).',
+    )
     .option('--verbose', 'Display extra information.')
     .action((options) => {
         debugPrint('Run global options')
