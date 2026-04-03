@@ -231,7 +231,7 @@ Use `--overwrite` to force replacement.
 - ➡️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
   *Complete basic usage examples.*
 
-- ➡️ [YINI Project](https://github.com/YINI-lang)  
+- ➡️ [YINI-lang Project](https://github.com/YINI-lang)  
   *Repositories and related ecosystem projects.*
 
 ---
