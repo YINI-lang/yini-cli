@@ -3,6 +3,7 @@
 ## 1.3.4 - 2026 Apr
 - **Promoted** YINI CLI is now considered stable (non-beta) after iterative beta releases and refinements.
 - **Fixed:** Rebuilt the project and reduced reported from 9 vulnerabilities (5 moderate, 4 high) to 0.
+- **Updated:** Bumped dependency `yini-parser` to `^1.4.3`.
 
 ## 1.3.4-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.3-beta` that consists of:
