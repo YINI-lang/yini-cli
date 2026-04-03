@@ -11,6 +11,11 @@ In here is **internal-only notes**: Release process, package testing, etc.
       ```
    - **1. b)** Run below, locally before going to the publishing step: 
       ```bash
+      npm publish --dry-run --provenance --access public
+      ```
+
+      If a `beta` release, use this line instead:
+      ```bash
       npm publish --dry-run --provenance --tag beta --access public
       ```
 
