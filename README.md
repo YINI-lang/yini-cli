@@ -16,7 +16,7 @@ YINI CLI requires Node.js **v20 or later**.
 
 ### Installation
 
-1. **Install it globally from npm — (requires Node.js)**  
+1. **Install globally from npm — (requires Node.js)**  
     Open your terminal and run:
     ```
     npm install -g yini-cli
@@ -39,10 +39,10 @@ YINI CLI requires Node.js **v20 or later**.
     Create a simple test file, for example: `config.yini`:
     ```yini
     ^ App
-      name = "My App Title"
-      version = "1.2.3"
-      pageSize = 25
-      darkTheme = off
+    name = "My App Title"
+    version = "1.2.3"
+    pageSize = 25
+    darkTheme = off
     ```
 
     Then run:
@@ -84,7 +84,7 @@ Source: [config.yini](./samples/config.yini)
 
 ## 🙋‍♀️ Why YINI?
 - **Indentation-independent structure:** YINI is indentation-independent — whitespace never alters structural meaning.
-- **Explicit nesting & refactoring safety:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
+- **Explicit nesting:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy, making large configurations easier to scan and refactor.
 - **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
 - **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`), making it easier to document configuration directly in the file.
 - **Predictable parsing:** Well-defined rules with optional strict and lenient modes for different use cases.
@@ -128,7 +128,7 @@ yini parse --help
 
 ---
 
-## Deeper look into the syntax
+## A closer look at YINI
 
 Here's a small example showing YINI structure and comments:
 ```yini
@@ -147,7 +147,7 @@ Here's a small example showing YINI structure and comments:
     # This is a comment too.
 ```
 
-**The above YINI converted to a JS object:**
+**The above YINI as a JavaScript object:**
 ```js
 {
     App: {
@@ -237,7 +237,7 @@ Use `--overwrite` to force replacement.
 ---
 
 ## Contributing
-Contributions, issues, and feedback are welcome. Even small improvements or suggestions are appreciated.  
+Contributions, bug reports, and feedback are welcome. Even small improvements or suggestions are appreciated.  
 
 If this tool is useful to you, a GitHub star helps more people discover the project and supports future development.
 
