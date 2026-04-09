@@ -100,7 +100,7 @@ describe('Test parse command usage:', () => {
         printObject(stdout)
 
         // Assert.
-        // NOTE: Below has been tampered with purpose!
+        // NOTE: Below has been tampered with on purpose.
         const corruptResult: string = `{
   App: {
     name: 'ExampleApp Web',
@@ -120,7 +120,7 @@ describe('Test parse command usage:', () => {
   },
   Env: { NODE_ENV: 'production', TIMEZONE: 'Europe/Gothenburg' }
 }`
-        expect(stdout).not.toContain(corruptResult)
+        expect(stdout).not.toContain(corruptResult) // NOTE: not.
     })
 
     //@todo Enable when can eval strings with escapes correctly, especially \\ -> \
@@ -210,7 +210,7 @@ describe('Test parse command usage:', () => {
         printObject(stdout)
 
         // Assert.
-        // NOTE: Below has been tampered with purpose!
+        // NOTE: Below has been tampered with on purpose.
         const corruptObj: string = `XXXX{
   window: { title: 'Sample Window', id: 'window_main' },
   image: { src: 'gfx/bg.png', id: 'bg1', isCentered: true },
@@ -222,11 +222,11 @@ describe('Test parse command usage:', () => {
     styles: [ [ 'font-weight', 'bold' ], [ 'size', 36 ], [ 'font', 'arial' ] ]
   }
 }`
-        expect(stdout).not.toContain(corruptObj)
+        expect(stdout).not.toContain(corruptObj) // NOTE: not.
     })
 
     // --json         Pretty-print output as JSON.
-    it('3.a) Have correct output when using the command "parse" **with option --json**.', async () => {
+    it('3.a) Prints pretty JSON with --json', async () => {
         // Arrange.
         const fileName = 'valid-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -316,7 +316,7 @@ describe('Test parse command usage:', () => {
                     file: 'logs/app.log',
                     maxSize: 1048576,
                 },
-                // NOTE: Below has been tampered with purpose!
+                // NOTE: Below has been tampered with on purpose.
                 Database: {
                     type: 'postgres',
                     host: 'db.example.com',
@@ -331,7 +331,7 @@ describe('Test parse command usage:', () => {
         }
         expect(toPrettyJSON(JSON.parse(stdout))).not.toContain(
             toPrettyJSON(corruptObj),
-        )
+        ) // NOTE: not.
     })
 
     // --compact           Compact JSON output using JSON.stringify.
@@ -398,7 +398,7 @@ describe('Test parse command usage:', () => {
     })
 
     // --compact           Compact JSON output using JSON.stringify.
-    it('4.c) Corrupt result should NOT match output when using the command "parse" **with option --compact**.', async () => {
+    it('4.c) Does not match a corrupt, compact JSON result.', async () => {
         // Arrange.
         const fileName = 'valid-config-3.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -421,7 +421,7 @@ describe('Test parse command usage:', () => {
                     file: 'logs/app.log',
                     maxSize: 1048576,
                 },
-                // NOTE: Below has been tampered with purpose!
+                // NOTE: Below has been tampered with on purpose.
                 Database: {
                     type: 'postgres',
                     host: 'db.example.com',
@@ -434,7 +434,7 @@ describe('Test parse command usage:', () => {
             },
             Env: { NODE_ENV: 'production', TIMEZONE: 'Europe/Gothenburg' },
         }
-        expect(stdout).not.toContain(JSON.stringify(corruptObj))
+        expect(stdout).not.toContain(JSON.stringify(corruptObj)) // NOTE: not.
     })
 
     // --js           Output as JavaScript.
@@ -565,7 +565,7 @@ describe('Test parse command usage:', () => {
             `parse ${fullPath} --output ${outPath} --no-overwrite`,
         )
 
-        expect(exitCode).not.toBe(0)
+        expect(exitCode).not.toBe(0) // NOTE: not.
 
         fs.unlinkSync(outPath)
     })
@@ -574,17 +574,17 @@ describe('Test parse command usage:', () => {
         const fileName = 'invalid/invalid-in-strict-mode-1.yini'
         const fullPath = path.join(baseDir, fileName)
 
-        const { exitCode } = await yiniCLI(`parse ${fullPath}`)
+        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
 
-        expect(exitCode).not.toBe(1)
+        expect(exitCode).toBe(1)
     })
 
     it('9. [strict] Should fail when parsing an invalid strict-mode file (missing /end).', async () => {
         const fileName = 'invalid/invalid-in-strict-mode-2.yini'
         const fullPath = path.join(baseDir, fileName)
 
-        const { exitCode } = await yiniCLI(`parse ${fullPath}`)
+        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
 
-        expect(exitCode).not.toBe(1)
+        expect(exitCode).toBe(1)
     })
 })
