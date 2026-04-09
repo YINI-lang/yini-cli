@@ -1,21 +1,23 @@
-^ window
-title = 'Sample Window'  // Strings can be enclosed in either ' or ".
-id = 'window_main'
+^ App
 
-^ image
-src = 'gfx/bg.png'
-id = 'bg1'
-isCentered = true
+    ^^ Window
+    title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+    id = 'window_main'
 
-^ text
-content = 'Click here!'
-id = 'text1'
-isCentered = true
-url = 'images/'
+    ^^ Image
+    src = 'gfx/bg.png'
+    id = 'bg1'
+    isCentered = true
 
-// Following is a list with other lists as elements.
-styles = [
-    ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
-]
+    ^^ Text
+    content = 'Click here!'
+    id = 'text1'
+    isCentered = true
+    url = 'images/'
+
+    // Following is a list with other lists as elements.
+    styles = [
+        ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
+    ]
 
 /end

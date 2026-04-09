@@ -70,7 +70,7 @@ program.addHelpText('after', getHelpTextAfter())
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
-    .option('-S, --strict', 'Enable strict mode (lenient mode is default).')
+    .option('--strict', 'Enable strict parsing mode.')
     .option('--lenient', 'Use lenient mode (this is the default).')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option('-q, --quiet', 'Reduce output (show only errors).')

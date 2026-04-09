@@ -3,6 +3,17 @@
 ## 1.xxxx.0-beta - 2026 Mar
 - - **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent` (due to this is very common UX-behavior).
 
+## 1.4.0 - 2026 Apr
+- Bumped dependency `yini-parser` to `^1.5.0` which brings:
+  - **Updated** to match **YINI Specification RC.5**: includes synced grammar files and the latest section-header parsing rules.
+  - **Stricter**, more predictable strict mode: now requires exactly one explicit top-level section and a closing `/END` terminator.
+  - **Improved** parser reliability overall: better handling of null/empty values, cleaner `throwOnError` behavior, and expanded validation and test coverage.
+
+## 1.3.4 - 2026 Apr
+- **Promoted** YINI CLI is now considered stable (non-beta) after iterative beta releases and refinements.
+- **Fixed:** Rebuilt the project and reduced reported from 9 vulnerabilities (5 moderate, 4 high) to 0.
+- **Updated:** Bumped dependency `yini-parser` to `^1.4.3`.
+
 ## 1.3.4-beta - 2026 Mar
 - **Updated:** Bumped dependency `yini-parser` to `^1.4.3-beta` that consists of:
   - Fixed: Error messages and thrown parse errors now include correct line and column information again.
