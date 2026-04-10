@@ -153,7 +153,10 @@ const validateCmd = program
         '--warnings-as-errors',
         'Treat warnings as errors for exit code purposes.',
     )
-    .option('--stats', 'Include optional statistics in the validation report.')
+    .option(
+        '--stats',
+        'Include optional statistics in the report (single-file mode only).',
+    )
     .addOption(
         new Option(
             '--format <type>',

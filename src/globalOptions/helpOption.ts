@@ -11,7 +11,7 @@ import { getPackageName, getPackageVersion } from '../utils/yiniCliHelpers.js'
  */
 export const getHelpTextBefore = () => {
     return `${getPackageName()} ${getPackageVersion()}
-YINI CLI (Yet another INI)
+YINI CLI (by the YINI-lang project)
 
 The official terminal / command-line (CLI) for parsing and validating YINI
 configuration files. A config format, inspired by INI, with type-safe values,
@@ -32,7 +32,8 @@ Quick Examples:
   $ yini parse file.yini --json
   $ yini parse file.yini --js
   $ yini parse file.yini -o output.json
-  $ yini validate --strict config.yini
+  $ yini validate config.yini --stats
+  $ yini validate . --strict
 
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help
@@ -44,11 +45,13 @@ Example YINI configuration file (config.yini)
     title = 'My App'
     items = 10
     debug = ON
+    tags  = ['web', 'demo', 'prod']
 
     ^ Server
-    host = 'localhost'
-    port = 8080
+    host   = 'localhost'
+    port   = 8080
     useTLS = OFF
+    limits = { timeout: 30, keepAlive: true }
 
         // Sub-section of Server.
         ^^ Login
@@ -56,10 +59,10 @@ Example YINI configuration file (config.yini)
         password = 'secret'
 ========================================================
 
-More info:
+More information:
   https://github.com/YINI-lang/yini-cli
 
-YINI homepage:
+Homepage:
   https://yini-lang.org
 `
 }

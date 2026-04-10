@@ -1,249 +1,9 @@
 /*
-    TODO / SHOULD-DO:
-
-    yini validate <fileOrDirectory...> [options]
-
-    Validate one or more YINI files.
-
-    <file> = Validate one file
-    <directory> = Validate .yini files in the directory
-
-    Multiple files and directories may be provided, separated by spaces.
-
-    Default behavior
-    ----------------
-    - Validates one or more files or directories.
-    - If a directory is provided, all .yini files are validated recursively by default.
-    - Prints a human-readable validation summary to the terminal.
-    - Uses lenient mode by default.
-    - Returns a non-zero exit code if one or more files contain validation errors.
-    - For single file-mode: summary first
-    - For multi file-mode: summary last
-
-    Options
-    -------
-
-    Validation mode:
-    --strict                     Validate in strict mode
-    --lenient                    Validate in lenient mode (default)
-
-    Output verbosity:
-    --quiet, -q                  Suppress successful per-file output; show failed files, issue details for failures, and final summary only
-                                 - suppress OK ... lines
-                                 - still show FAIL ... lines
-                                 - still show per-file issue details for failed files
-                                 - still show final summary
-                                 - still show fatal CLI/runtime errors
-
-    --silent, -s                 Show no output; exit code only. Suppresses validation output. CLI/framework-level argument errors may still print help or error text unless explicitly intercepted.
-                                 - no summary
-                                 - no per-file lines
-                                 - no warnings
-                                 - no issue details
-                                 - no success output
-                                 - no validation failure output
-
-    --verbose                    Show extra processing details
-    --stats                      Include optional statistics in the report
-                                 TODO: Based on and in the formatToStatsReport(..) function.
-    --format <text|json>         Output format for validation results (default: text)
-
-    Input handling:
-    <file>                       Validate a single YINI file
-    <directory>                  Validate all .yini files in the directory
-	--no-recursive/--no-subdirs  Do not descend into subdirectories
-
-    Execution controls:
-    --fail-fast                 Stop on the first file that fails
-    --max-errors <n>            Stop validation after reporting <n> total errors across all input files
-    --warnings-as-errors        Treat warnings as errors for exit code purposes. 
-                                - Warnings retain warning severity in the output.
-                                - Exit code becomes non-zero (failure) if any warning exists.
-
-    Output handling: 
-    (WAIT WITH THIS) --no-summary
-    (WAIT WITH THIS) --output, -o <file> = Save/write report to file (No overwrite if dest is more recent than source file (override with --overwrite).)
-	(WAIT WITH THIS) --overwrite = Allow to save/write over existing report file.
-	(WAIT WITH THIS) --no-overwrite = Do not save/write over existing report file.
-
-    Policy controls (advanced, WAIT WITH THESE):
-    (WAIT WITH THIS) --duplicates-policy <error|warn|allow>
-    (WAIT WITH THIS) --reserved-policy <error|warn|allow>
-
-    Exit codes:
-    0 = all files valid
-    1 = one or more files invalid (validation failure)
-    2 = CLI usage/runtime error (bad arguments, unreadable directory, internal failure)
-
-    ==========================================================
-    OUTPUT RULES
-    ==========================================================
-
-    Human-readable output should be the default.
-
-    Single file mode
-    ----------------
-    - The summary for single file mode should feel more friendly.
-
-    * On success (exit 0)
-
-    To stdout:
-    ✔ Validation successful
-    File: "configfile.yini"
-    Mode: lenient
-    Errors: 0
-    Warnings: 0
-
-    * Failure:
-      - Validation failure (exit 1).
-      - CLI/runtime failure (exit 2).
-
-    To stdout:
-    ✖ Validation failed (3 issues)
-    File: "configfile.yini"
-    Mode: strict
-    Errors: 2
-    Warnings: 1
-
-    To stderr:
-      12:8  error    Unexpected token '}'
-      27:1  warning  Duplicate key: "port" in ...
-
-    ---
-
-    Multi-file mode (when a directory is given)
-    -------------------------------------------
-   - The summary for multi-file mode is different from single file mode.
-
-
-    * On success (exit 0)
-
-    To stdout:
-    OK    "configs/file.yini"
-    OK    "configs/db.yini"
-    OK    "configs/prod.yini"
-
-    Mode: strict
-    Summary: 3 files checked, 0 errors, 0 warnings, 0 failed
-
-    * Failure:
-      - Validation failure (exit 1).
-      - CLI/runtime failure (exit 2).
-
-    To stdout:
-    OK    "configs/file.yini"
-    FAIL  "configs/db.yini"
-    OK    "configs/prod.yini"
-
-    To stdout:
-    Mode: strict
-    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
-
-    To stderr:
-    "configs/db.yini"
-      12:8  error    Unexpected token '}'
-      27:1  warning  Duplicate key: "port" in ...
-
-    Detailed issues are printed only for failed files.
-
-    ---
-
-    REQUIREMENTS for report output:
-
-    The output should:
-        1. Be human-readable by default
-        2. Give a clear verdict
-        3. Show useful context for each problem
-        4. Be machine-friendly when requested (--format json)
-        5. Be stable and predictable for CI usage
-
-    * Header / Summary:
-    On success:
-    ✔ Validation successful
-    File: "config.yini"
-    Mode: lenient
-    Errors: 0
-    Warnings: 2
-
-    On failure:
-    ✖ Validation failed
-    File: "config.yini"
-    Mode: strict
-    Errors: 3
-    Warnings: 1
-
-    * Issues sections:
-    Each issue:
-        Severity	error / warning
-        Code	stable identifier (DUPLICATE_KEY, UNKNOWN_CONSTRUCT, etc.)
-        Message	short explanation
-        Location	file + line + column
-        Context	snippet of the file (if helpful)
-    
-    Example:
-        Errors:
-        [E001] Duplicate key "host"
-            at config.yini:14:5
-            Previous definition at line 7
-            → host = "localhost"
-
-        Warnings:
-        [W002] Reserved construct used: "$schema"
-            at config.yini:3:1
-
-    * Optional statistics section --stats
-        Statistics:
-        Sections: 5
-        Keys: 27
-        Lists: 4
-        Objects: 3
-        Nesting depth: 4
-
-    * Exit code contract
-        - Success, no warnings → 0
-        - Warnings only → 0
-        - Warnings only with --warnings-as-errors → 1
-        - One or more validation errors → 1
-        - CLI/runtime failure → 2
-
-    Example: JSON format (--format json)
-        {
-            "file": "config.yini",
-            "mode": "strict",
-            "status": "failed",
-            "summary": {
-                "filesChecked": 1,
-                "failedFiles": 1,
-                "errors": 2,
-                "warnings": 1
-            },
-          "issues": [
-            {
-            "severity": "error",
-            "code": "DUPLICATE_KEY",
-            "message": "Duplicate key \"host\"",
-            "location": { "line": 14, "column": 5 }
-            },
-            {
-            "severity": "error",
-            "code": "INVALID_TYPE",
-            "message": "Expected number, got string",
-            "location": { "line": 22, "column": 12 }
-            },
-            {
-            "severity": "warning",
-            "code": "RESERVED_CONSTRUCT",
-            "message": "Reserved construct \"$schema\"",
-            "location": { "line": 3, "column": 1 }
-            }
-        ],
-        "stats": {
-            "sections": 5,
-            "keys": 27,
-            "nestingDepth": 4
-        }
-        }
-*/
+ * validateCommand.ts
+ *
+ * Behavioral spec and output conventions:
+ * see docs/cli/validate-command.md
+ */
 
 // commands/validateCommand.ts
 import fs from 'node:fs'
@@ -309,6 +69,7 @@ interface IAggregateValidationResult {
     warnings: number
     notices: number
     infos: number
+    displayBaseDir: string
     results: IFileValidationResult[]
 }
 
@@ -329,6 +90,7 @@ export const validateTargets = (
             throw new Error('No YINI files found to validate.')
         }
 
+        const displayBaseDir = getDisplayBaseDir(targets)
         const aggregate: IAggregateValidationResult = {
             mode,
             status: 'passed',
@@ -338,6 +100,7 @@ export const validateTargets = (
             warnings: 0,
             notices: 0,
             infos: 0,
+            displayBaseDir,
             results: [],
         }
 
@@ -421,7 +184,8 @@ const collectFilesFromTargets = (
         }
     }
 
-    return [...out]
+    // Sort the files before validation for stable output.
+    return [...out].sort((a, b) => a.localeCompare(b))
 }
 
 const collectFilesFromDirectory = (
@@ -608,6 +372,34 @@ const getValidationExitCode = (
 
 // --- Text output -------------------------------------------------------------
 
+const getDisplayBaseDir = (targets: string[]): string => {
+    if (!targets.length) {
+        return process.cwd()
+    }
+
+    if (targets.length === 1) {
+        const resolved = path.resolve(targets[0])
+
+        if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+            return resolved
+        }
+
+        return path.dirname(resolved)
+    }
+
+    return process.cwd()
+}
+
+const toDisplayPath = (filePath: string, baseDir: string): string => {
+    const relative = path.relative(baseDir, filePath)
+
+    if (!relative || relative.startsWith('..')) {
+        return filePath
+    }
+
+    return relative
+}
+
 const printTextReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
@@ -657,37 +449,33 @@ const printMultiFileTextReport = (
     options: IValidateCommandOptions,
 ) => {
     for (const result of aggregate.results) {
+        const displayPath = toDisplayPath(result.file, aggregate.displayBaseDir)
+
         if (result.status === 'failed') {
-            printStdout(options, `FAIL  "${result.file}"`)
+            printStdout(options, `FAIL  "${displayPath}"`)
         } else if (!options.quiet) {
-            printStdout(options, `OK    "${result.file}"`)
+            printStdout(options, `OK    "${displayPath}"`)
         }
     }
 
     printStdout(options, '')
-    printStdout(options, `Mode: ${aggregate.mode}`)
+    printStdout(options, `Base:    "${aggregate.displayBaseDir}"`)
+    printStdout(options, `Mode:    ${aggregate.mode}`)
     printStdout(
         options,
-        `Summary: ${aggregate.filesChecked} files checked, ${aggregate.errors} errors, ${aggregate.warnings} warnings, ${aggregate.failedFiles} failed`,
+        `Summary: ${aggregate.filesChecked} checked, ${aggregate.failedFiles} failed, ${aggregate.errors} errors, ${aggregate.warnings} warnings`,
     )
 
     for (const result of aggregate.results) {
         if (result.status !== 'failed') continue
-        printIssueDetailsForResult(result, options)
-
-        if (options.stats && result.metadata) {
-            printStdout(options, '')
-            printStdout(
-                options,
-                formatStatsReport(result.file, result.metadata),
-            )
-        }
+        printIssueDetailsForResult(result, options, aggregate.displayBaseDir)
     }
 }
 
 const printIssueDetailsForResult = (
     result: IFileValidationResult,
     options: IValidateCommandOptions,
+    displayBaseDir?: string,
 ) => {
     const printable = result.issues.filter(
         (issue) => issue.severity === 'error' || issue.severity === 'warning',
@@ -695,8 +483,12 @@ const printIssueDetailsForResult = (
 
     if (!printable.length) return
 
+    const displayPath = displayBaseDir
+        ? toDisplayPath(result.file, displayBaseDir)
+        : result.file
+
     printStderr(options, '')
-    printStderr(options, `"${result.file}"`)
+    printStderr(options, `"${displayPath}"`)
 
     printable.forEach((issue, index) => {
         const hasLocation =
