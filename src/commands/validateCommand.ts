@@ -698,20 +698,38 @@ const printIssueDetailsForResult = (
     printStderr(options, '')
     printStderr(options, `"${result.file}"`)
 
-    for (const issue of printable) {
+    printable.forEach((issue, index) => {
+        const hasLocation =
+            typeof issue.line === 'number' &&
+            typeof issue.column === 'number' &&
+            issue.line > 0 &&
+            issue.column > 0
+
+        const location = hasLocation
+            ? `${issue.line}:${issue.column}`.padEnd(7)
+            : ''.padEnd(7)
+
+        const severity = issue.severity.padEnd(8)
+
         printStderr(
             options,
-            `  ${issue.line}:${issue.column}  ${issue.severity.padEnd(7)} ${issue.message}`,
+            hasLocation
+                ? `  ${location} ${severity}${issue.message}`
+                : `  ${severity}${issue.message}`,
         )
 
         if (issue.advice && !options.quiet) {
-            printStderr(options, `           ${issue.advice}`)
+            printStderr(options, `          ${issue.advice}`)
         }
 
         if (issue.hint && !options.quiet) {
-            printStderr(options, `           ${issue.hint}`)
+            printStderr(options, `          ${issue.hint}`)
         }
-    }
+
+        if (index < printable.length - 1) {
+            printStderr(options, '')
+        }
+    })
 }
 
 // --- JSON output -------------------------------------------------------------
