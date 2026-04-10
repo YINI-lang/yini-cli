@@ -17,6 +17,8 @@
     - Prints a human-readable validation summary to the terminal.
     - Uses lenient mode by default.
     - Returns a non-zero exit code if one or more files contain validation errors.
+    - For single file-mode: summary first
+    - For multi file-mode: summary last
 
     Options
     -------
@@ -629,16 +631,17 @@ const printSingleFileTextReport = (
 
     if (result.status === 'failed') {
         const suffix = totalIssues > 0 ? ` (${totalIssues} issues)` : ''
-        printStdout(options, `✖ Validation failed${suffix}`)
+        printStdout(options, `✖  Validation failed${suffix}`)
     } else if (result.status === 'passed-with-warnings') {
-        printStdout(options, '✔ Validation successful (with warnings)')
+        printStdout(options, '✔  Validation successful (with warnings)')
     } else {
-        printStdout(options, '✔ Validation successful')
+        printStdout(options, '✔  Validation successful')
     }
 
-    printStdout(options, `File: "${result.file}"`)
-    printStdout(options, `Mode: ${result.mode}`)
-    printStdout(options, `Errors: ${result.errors}`)
+    printStdout(options, ``)
+    printStdout(options, `File:     "${result.file}"`)
+    printStdout(options, `Mode:     ${result.mode}`)
+    printStdout(options, `Errors:   ${result.errors}`)
     printStdout(options, `Warnings: ${result.warnings}`)
 
     printIssueDetailsForResult(result, options)
@@ -790,22 +793,15 @@ const formatStatsReport = (
 
     return `Statistics
 ----------
-File: "${fileWithPath}"
-Mode: ${metadata.mode}
-Issues: ${issuesCount}
-
-Errors: ${diag.errors.errorCount}
-Warnings: ${diag.warnings.warningCount}
-Notices: ${diag.notices.noticeCount}
-Infos: ${diag.infos.infoCount}
-
-Line Count: ${metadata.source.lineCount}
+Notices:       ${diag.notices.noticeCount}
+Infos:         ${diag.infos.infoCount}
+Line Count:    ${metadata.source.lineCount}
 Section Count: ${metadata.structure.sectionCount}
-Member Count: ${metadata.structure.memberCount}
+Member Count:  ${metadata.structure.memberCount}
 Nesting Depth: ${metadata.structure.maxDepth}
-Has @YINI: ${metadata.source.hasYiniMarker}
-Has /END: ${metadata.source.hasDocumentTerminator}
-Byte Size: ${
+Has @YINI:     ${metadata.source.hasYiniMarker}
+Has /END:      ${metadata.source.hasDocumentTerminator}
+Byte Size:     ${
         metadata.source.sourceType === 'inline'
             ? 'n/a'
             : `${metadata.source.byteSize} bytes`
