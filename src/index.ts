@@ -59,7 +59,7 @@ const program = new Command()
         '-v, --version',
         'Display the version number.',
     )
-    .helpOption('-h, --help', 'Display full help for all commands.')
+    .helpOption('-h, --help', 'Display full help for all commands.') // Yes, shows help for ALL commands via the enableHelpAll() function.
     .helpCommand('help <command>', 'Display help for a specific command.')
 
 program.addHelpText('before', getHelpTextBefore())

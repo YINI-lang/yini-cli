@@ -1,4 +1,5 @@
 // src/commands/commonFunctions.ts
+import path from 'node:path'
 import { IGlobalOptions } from '../types.js'
 
 export const printStdout = (options: IGlobalOptions, text: string) => {
@@ -26,4 +27,27 @@ export const resolveStrictMode = (options: IGlobalOptions): boolean => {
     if (options.lenient) return false
 
     return false // Default = lenient
+}
+
+/**
+ *
+ * @note Windows safe, since Windows paths are case-insensitive,
+ * so on Windows cases are normalized too.
+ */
+export const assertInputAndOutputAreDifferent = (
+    srcPath: string,
+    destPath: string,
+) => {
+    const resolvedSrc = path.resolve(srcPath)
+    const resolvedDest = path.resolve(destPath)
+
+    const normalizedSrc =
+        process.platform === 'win32' ? resolvedSrc.toLowerCase() : resolvedSrc
+
+    const normalizedDest =
+        process.platform === 'win32' ? resolvedDest.toLowerCase() : resolvedDest
+
+    if (normalizedSrc === normalizedDest) {
+        throw new Error('Output file must be different from the input file.')
+    }
 }

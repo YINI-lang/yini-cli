@@ -1,5 +1,4 @@
 // tests/command-parse.test.ts
-
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -586,5 +585,30 @@ describe('Test parse command usage:', () => {
         const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
 
         expect(exitCode).toBe(1)
+    })
+
+    it('10.a) Should fail when output file is the same as the input file.', async () => {
+        const fileName = 'valid-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const { exitCode } = await yiniCLI(
+            `parse ${fullPath} --output ${fullPath}`,
+        )
+
+        expect(exitCode).toBe(1)
+    })
+
+    it('10.b) Should fail when output file is the same as the input file.', async () => {
+        const fileName = 'valid-config-2.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        const { exitCode, stderr } = await yiniCLI(
+            `parse ${fullPath} --output ${fullPath}`,
+        )
+
+        expect(exitCode).toBe(1)
+        expect(stderr).toMatch(
+            /output file must be different from the input file/i,
+        )
     })
 })

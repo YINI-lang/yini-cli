@@ -1,7 +1,8 @@
 # CHANGELOG
 
-## 1.xxxx.0-beta - 2026 Mar
-- - **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent` (due to this is very common UX-behavior).
+## 1.4.0 + UPDATES - 2026 Mar + xxx
+- **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent` (due to this is very common UX-behavior).
+- **Improved:** Improved the usability of the command parse.
 
 ## 1.4.0 - 2026 Apr
 - Bumped dependency `yini-parser` to `^1.5.0` which brings:

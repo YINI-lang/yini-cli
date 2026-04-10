@@ -6,6 +6,7 @@ import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
 import { debugPrint, printObject } from '../utils/print.js'
 import {
+    assertInputAndOutputAreDifferent,
     printStderr,
     printStdout,
     printWarning,
@@ -38,7 +39,7 @@ export interface IParseCommandOptions extends IGlobalOptions {
  * @returns
  */
 export const shouldSkipBecauseDestNewer = (
-    commandOptions: IParseCommandOptions,
+    // commandOptions: IParseCommandOptions,
     file: string,
     optionOverwrite?: boolean | undefined,
     // optionVerbose?: boolean | undefined,
@@ -244,11 +245,16 @@ const doParseFile = (
             includeDiagnostics: true,
         }
 
+        // Check that output and input file are not the same.
+        if (outputFile) {
+            assertInputAndOutputAreDifferent(file, outputFile)
+        }
+
         // Check early if should skip before parsing,
         // saves a lot of time in some cases.
         if (
             shouldSkipBecauseDestNewer(
-                commandOptions,
+                // commandOptions,
                 file,
                 commandOptions.overwrite,
                 // commandOptions.verbose,
