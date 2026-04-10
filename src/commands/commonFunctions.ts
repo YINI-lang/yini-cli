@@ -1,3 +1,4 @@
+// src/commands/commonFunctions.ts
 import { IGlobalOptions } from '../types.js'
 
 export const printStdout = (options: IGlobalOptions, text: string) => {

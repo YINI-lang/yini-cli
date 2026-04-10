@@ -180,14 +180,19 @@ export const parseFile = (
 }
 
 const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
-    if (options.js && options.compact) {
-        throw new Error('--js and --compact cannot be combined.')
-    }
+    const selected = [
+        options.json ? 'json' : null,
+        options.compact ? 'json-compact' : null,
+        options.js ? 'js' : null,
+        options.yaml ? 'yaml' : null,
+        options.xml ? 'xml' : null,
+    ].filter(Boolean) as TOutputFormat[]
 
-    if (options.compact) return 'json-compact'
-    if (options.js) return 'js'
-    if (options.yaml) return 'yaml'
-    if (options.xml) return 'xml'
+    if (selected.length > 1) {
+        throw new Error(
+            'Choose only one output format: --json, --compact, --js, --yaml, or --xml.',
+        )
+    }
 
     if (options.pretty) {
         printWarning(
@@ -196,7 +201,7 @@ const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {
         )
     }
 
-    return 'json'
+    return selected[0] ?? 'json'
 }
 
 /**
@@ -229,38 +234,40 @@ const doParseFile = (
     debugPrint('File = ' + file)
     debugPrint('outputFormat = ' + outputFormat)
 
-    const parseOptions: ParseOptions = {
-        strictMode: resolveStrictMode(commandOptions),
-        failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
-        includeMetadata: true,
-        includeDiagnostics: true,
-    }
+    try {
+        const strictMode = resolveStrictMode(commandOptions)
 
-    // Check early if should skip before parsing,
-    // saves a lot of time in some cases.
-    if (
-        shouldSkipBecauseDestNewer(
-            commandOptions,
-            file,
-            commandOptions.overwrite,
-            // commandOptions.verbose,
-            outputFile,
-        )
-    ) {
-        if (commandOptions.verbose) {
-            const resolved = path.resolve(outputFile)
-            reportAction(
-                commandOptions,
-                'skip',
-                resolved,
-                `newer than source "${file}"`,
-            )
+        const parseOptions: ParseOptions = {
+            strictMode: strictMode,
+            failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
+            includeMetadata: true,
+            includeDiagnostics: true,
         }
 
-        return
-    }
+        // Check early if should skip before parsing,
+        // saves a lot of time in some cases.
+        if (
+            shouldSkipBecauseDestNewer(
+                commandOptions,
+                file,
+                commandOptions.overwrite,
+                // commandOptions.verbose,
+                outputFile,
+            )
+        ) {
+            if (commandOptions.verbose) {
+                const resolved = path.resolve(outputFile)
+                reportAction(
+                    commandOptions,
+                    'skip',
+                    resolved,
+                    `newer than source "${file}"`,
+                )
+            }
 
-    try {
+            return
+        }
+
         const parsedWithMeta: YiniParseResult = YINI.parseFile(
             file,
             parseOptions,
@@ -273,7 +280,7 @@ const doParseFile = (
 
         const hasErrors = errorCount > 0
         const bestEffort = !!commandOptions.bestEffort
-        const strictMode = resolveStrictMode(commandOptions)
+        // const strictMode = resolveStrictMode(commandOptions)
         const shouldFailHard =
             hasErrors && !bestEffort && (strictMode || !hasUsableOutput)
 

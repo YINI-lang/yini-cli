@@ -2,7 +2,7 @@
 //
 // (!) IMPORTANT: Leave the top shebang as the very first line! (otherwise command will break)
 //
-// /index.ts
+// src/index.ts
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
