@@ -1,3 +1,248 @@
+/*
+    TODO / SHOULD-DO:
+
+    yini validate <fileOrDirectory...> [options]
+
+    Validate one or more YINI files.
+
+    <file> = Validate one file
+    <directory> = Validate .yini files in the directory
+
+    Multiple files and directories may be provided, separated by spaces.
+
+    Default behavior
+    ----------------
+    - Validates one or more files or directories.
+    - If a directory is provided, all .yini files are validated recursively by default.
+    - Prints a human-readable validation summary to the terminal.
+    - Uses lenient mode by default.
+    - Returns a non-zero exit code if one or more files contain validation errors.
+
+    Options
+    -------
+
+    Validation mode:
+    --strict                     Validate in strict mode
+    --lenient                    Validate in lenient mode (default)
+
+    Output verbosity:
+    --quiet, -q                  Suppress successful per-file output; show failed files, issue details for failures, and final summary only
+                                 - suppress OK ... lines
+                                 - still show FAIL ... lines
+                                 - still show per-file issue details for failed files
+                                 - still show final summary
+                                 - still show fatal CLI/runtime errors
+
+    --silent, -s                 Show no output; exit code only. Suppresses validation output. CLI/framework-level argument errors may still print help or error text unless explicitly intercepted.
+                                 - no summary
+                                 - no per-file lines
+                                 - no warnings
+                                 - no issue details
+                                 - no success output
+                                 - no validation failure output
+
+    --verbose                    Show extra processing details
+    --stats                      Include optional statistics in the report
+                                 TODO: Based on and in the formatToStatsReport(..) function.
+    --format <text|json>         Output format for validation results (default: text)
+
+    Input handling:
+    <file>                       Validate a single YINI file
+    <directory>                  Validate all .yini files in the directory
+	--no-recursive/--no-subdirs  Do not descend into subdirectories
+
+    Execution controls:
+    --fail-fast                 Stop on the first file that fails
+    --max-errors <n>            Stop validation after reporting <n> total errors across all input files
+    --warnings-as-errors        Treat warnings as errors for exit code purposes. 
+                                - Warnings retain warning severity in the output.
+                                - Exit code becomes non-zero (failure) if any warning exists.
+
+    Output handling: 
+    (WAIT WITH THIS) --no-summary
+    (WAIT WITH THIS) --output, -o <file> = Save/write report to file (No overwrite if dest is more recent than source file (override with --overwrite).)
+	(WAIT WITH THIS) --overwrite = Allow to save/write over existing report file.
+	(WAIT WITH THIS) --no-overwrite = Do not save/write over existing report file.
+
+    Policy controls (advanced, WAIT WITH THESE):
+    (WAIT WITH THIS) --duplicates-policy <error|warn|allow>
+    (WAIT WITH THIS) --reserved-policy <error|warn|allow>
+
+    Exit codes:
+    0 = all files valid
+    1 = one or more files invalid (validation failure)
+    2 = CLI usage/runtime error (bad arguments, unreadable directory, internal failure)
+
+    ==========================================================
+    OUTPUT RULES
+    ==========================================================
+
+    Human-readable output should be the default.
+
+    Single file mode
+    ----------------
+    - The summary for single file mode should feel more friendly.
+
+    * On success (exit 0)
+
+    To stdout:
+    ✔ Validation successful
+    File: "configfile.yini"
+    Mode: lenient
+    Errors: 0
+    Warnings: 0
+
+    * Failure:
+      - Validation failure (exit 1).
+      - CLI/runtime failure (exit 2).
+
+    To stdout:
+    ✖ Validation failed (3 issues)
+    File: "configfile.yini"
+    Mode: strict
+    Errors: 2
+    Warnings: 1
+
+    To stderr:
+      12:8  error    Unexpected token '}'
+      27:1  warning  Duplicate key: "port" in ...
+
+    ---
+
+    Multi-file mode (when a directory is given)
+    -------------------------------------------
+   - The summary for multi-file mode is different from single file mode.
+
+
+    * On success (exit 0)
+
+    To stdout:
+    OK    "configs/file.yini"
+    OK    "configs/db.yini"
+    OK    "configs/prod.yini"
+
+    Mode: strict
+    Summary: 3 files checked, 0 errors, 0 warnings, 0 failed
+
+    * Failure:
+      - Validation failure (exit 1).
+      - CLI/runtime failure (exit 2).
+
+    To stdout:
+    OK    "configs/file.yini"
+    FAIL  "configs/db.yini"
+    OK    "configs/prod.yini"
+
+    To stdout:
+    Mode: strict
+    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
+
+    To stderr:
+    "configs/db.yini"
+      12:8  error    Unexpected token '}'
+      27:1  warning  Duplicate key: "port" in ...
+
+    Detailed issues are printed only for failed files.
+
+    ---
+
+    REQUIREMENTS for report output:
+
+    The output should:
+        1. Be human-readable by default
+        2. Give a clear verdict
+        3. Show useful context for each problem
+        4. Be machine-friendly when requested (--format json)
+        5. Be stable and predictable for CI usage
+
+    * Header / Summary:
+    On success:
+    ✔ Validation successful
+    File: "config.yini"
+    Mode: lenient
+    Errors: 0
+    Warnings: 2
+
+    On failure:
+    ✖ Validation failed
+    File: "config.yini"
+    Mode: strict
+    Errors: 3
+    Warnings: 1
+
+    * Issues sections:
+    Each issue:
+        Severity	error / warning
+        Code	stable identifier (DUPLICATE_KEY, UNKNOWN_CONSTRUCT, etc.)
+        Message	short explanation
+        Location	file + line + column
+        Context	snippet of the file (if helpful)
+    
+    Example:
+        Errors:
+        [E001] Duplicate key "host"
+            at config.yini:14:5
+            Previous definition at line 7
+            → host = "localhost"
+
+        Warnings:
+        [W002] Reserved construct used: "$schema"
+            at config.yini:3:1
+
+    * Optional statistics section --stats
+        Statistics:
+        Sections: 5
+        Keys: 27
+        Lists: 4
+        Objects: 3
+        Nesting depth: 4
+
+    * Exit code contract
+        - Success, no warnings → 0
+        - Warnings only → 0
+        - Warnings only with --warnings-as-errors → 1
+        - One or more validation errors → 1
+        - CLI/runtime failure → 2
+
+    Example: JSON format (--format json)
+        {
+            "file": "config.yini",
+            "mode": "strict",
+            "status": "failed",
+            "summary": {
+                "filesChecked": 1,
+                "failedFiles": 1,
+                "errors": 2,
+                "warnings": 1
+            },
+          "issues": [
+            {
+            "severity": "error",
+            "code": "DUPLICATE_KEY",
+            "message": "Duplicate key \"host\"",
+            "location": { "line": 14, "column": 5 }
+            },
+            {
+            "severity": "error",
+            "code": "INVALID_TYPE",
+            "message": "Expected number, got string",
+            "location": { "line": 22, "column": 12 }
+            },
+            {
+            "severity": "warning",
+            "code": "RESERVED_CONSTRUCT",
+            "message": "Reserved construct \"$schema\"",
+            "location": { "line": 3, "column": 1 }
+            }
+        ],
+        "stats": {
+            "sections": 5,
+            "keys": 27,
+            "nestingDepth": 4
+        }
+        }
+*/
+
 // commands/validateCommand.ts
 import fs from 'node:fs'
 import path from 'node:path'
@@ -205,231 +450,6 @@ export const formatText = (report: ValidationReport): string => {
     return out
 }
 
-/*
-    TODO / SHOULD-DO:
-
-    yini validate <file|path...> [options]
-
-    Validate one or more YINI files.
-
-    <file> = validate file
-    <path> = scan for .yini files
-
-    Default behavior
-    ----------------
-    - Validates one or more files or directories.
-    - If a directory is provided, all .yini files are validated recursively by default.
-    - Prints a human-readable validation summary to the terminal.
-    - Uses lenient mode by default.
-    - Returns a non-zero exit code if one or more files contain validation errors.
-
-    Options
-    -------
-
-    Validation mode:
-    --strict                    Validate in strict mode
-    --lenient                   Validate in lenient mode (default)
-
-    Output verbosity:
-    --quiet, -q                 Suppress successful per-file output; show failed files, issue details for failures, and final summary only
-    --silent, -s                Show no output; exit code only
-    --verbose                   Show extra processing details
-    --stats                     Include optional statistics in the report
-    --format <text|json>        Output format for validation results (default: text)
-
-    Input handling:
-    <file>                      Validate a single YINI file
-    <path>                      Validate all .yini files in the directory
-    --no-recursive              Do not scan subdirectories
-
-    Execution controls:
-    --fail-fast                 Stop on the first file that fails
-    --max-errors <n>            Stop validation after reporting <n> total errors across all input files
-    --warnings-as-errors        Treat warnings as errors for exit code purposes. 
-                                - Warnings still display as warnings.
-                                - Exit code becomes failure if any warning exists.
-
-    Output handling: 
-	--no-recursive/--no-subdirs   = Do not descend into subdirectories
-    (WAIT WITH THIS) --no-summary
-    (WAIT WITH THIS) --output, -o <file> = Save/write report to file (No overwrite if dest is more recent than source file (override with --overwrite).)
-	(WAIT WITH THIS) --overwrite = Allow to save/write over existing report file.
-	(WAIT WITH THIS) --no-overwrite = Do not save/write over existing report file.
-
-    Policy controls (advanced, WAIT WITH THESE):
-    (WAIT WITH THIS) --duplicates-policy <error|warn|allow>
-    (WAIT WITH THIS) --reserved-policy <error|warn|allow>
-
-    Exit codes:
-    0 = all files valid
-    1 = one or more files invalid
-    2 = CLI usage/runtime error (bad arguments, unreadable path, internal failure)
-
-    ==========================================================
-    OUTPUT RULES
-    ==========================================================
-
-    Human-readable output should be the default.
-
-    Single file mode
-    ----------------
-
-    * On success (exit 0)
-
-    To stdout:
-    ✔ Validation successful
-    File: "configfile.yini"
-    Mode: lenient
-    Errors: 0
-    Warnings: 0
-
-    * Failure:
-      - Validation failure (exit 1).
-      - CLI/runtime failure (exit 2).
-
-    To stdout:
-    ✖ Validation failed (3 issues)
-    File: "configfile.yini"
-    Mode: strict
-    Errors: 2
-    Warnings: 1
-
-    To stderr:
-      12:8  error    Unexpected token '}'
-      27:1  warning  Duplicate key: "port" in ...
-
-    ---
-
-    ***Multi file mode (when a path given):***
-
-    * On success (exit 0)
-
-    To stdout:
-    OK    "configs/file.yini"
-    OK    "configs/db.yini"
-    OK    "configs/prod.yini"
-
-    Mode: strict
-    Summary: 3 files checked, 0 errors, 0 warnings, 0 failed
-
-    * Failure:
-      - Validation failure (exit 1).
-      - CLI/runtime failure (exit 2).
-
-    To stdout:
-    OK    "configs/file.yini"
-    FAIL  "configs/db.yini"
-    OK    "configs/prod.yini"
-
-    Mode: strict
-    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
-
-
-    To stdout:
-    Mode: strict
-    Summary: 3 files checked, 2 errors, 0 warnings, 1 failed
-
-    To stderr:
-    "configs/db.yini"
-      12:8  error    Unexpected token '}'
-      27:1  warning  Duplicate key: "port" in ...
-
-    Detailed issues are printed only for failed files.
-
-    ---
-
-    REQUIREMENTS for report output:
-
-    The output should:
-        1. Be human-readable by default
-        2. Give a clear verdict
-        3. Show useful context for each problem
-        4. Be machine-friendly when requested (--format json)
-        5. Be stable and predictable for CI usage
-
-    * Header / Summary:
-    On success:
-    ✔ Validation successful
-    File: "config.yini"
-    Mode: lenient
-    Errors: 0
-    Warnings: 2
-
-    On failure:
-    ✖ Validation failed
-    File: "config.yini"
-    Mode: strict
-    Errors: 3
-    Warnings: 1
-
-    * Issues sections:
-    Each issue:
-        Severity	error / warning
-        Code	stable identifier (DUPLICATE_KEY, UNKNOWN_CONSTRUCT, etc.)
-        Message	short explanation
-        Location	file + line + column
-        Context	snippet of the file (if helpful)
-    
-    Example:
-        Errors:
-        [E001] Duplicate key "host"
-            at config.yini:14:5
-            Previous definition at line 7
-            → host = "localhost"
-
-        Warnings:
-        [W002] Reserved construct used: "$schema"
-            at config.yini:3:1
-
-    * Optional meta-data section --stats
-        Statistics:
-        Sections: 5
-        Keys: 27
-        Lists: 4
-        Objects: 3
-        Nesting depth: 4
-
-    * Exit code contract
-        Success, no warnings	0
-        Warnings only	0 (or 1 if --warnings-as-errors)
-        Errors	1
-
-    Example: JSON format (--format json)
-        {
-        "file": "config.yini",
-        "mode": "strict",
-        "summary": {
-            "errors": 2,
-            "warnings": 1
-        },
-        "issues": [
-            {
-            "severity": "error",
-            "code": "DUPLICATE_KEY",
-            "message": "Duplicate key \"host\"",
-            "location": { "line": 14, "column": 5 }
-            },
-            {
-            "severity": "error",
-            "code": "INVALID_TYPE",
-            "message": "Expected number, got string",
-            "location": { "line": 22, "column": 12 }
-            },
-            {
-            "severity": "warning",
-            "code": "RESERVED_CONSTRUCT",
-            "message": "Reserved construct \"$schema\"",
-            "location": { "line": 3, "column": 1 }
-            }
-        ],
-        "stats": {
-            "sections": 5,
-            "keys": 27,
-            "nestingDepth": 4
-        }
-        }
-
-*/
 // export const validateFile = (
 //     file: string,
 //     options: IValidateCommandOptions = {},

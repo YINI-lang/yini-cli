@@ -66,16 +66,22 @@ program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The (main/global) options: "--strict, --quite, --silent"
+ * The (main/global) options: "--strict, --quiet, --silent"
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
     .option('--strict', 'Enable strict parsing mode.')
     .option('--lenient', 'Use lenient mode (this is the default).')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
-    .option('-q, --quiet', 'Reduce output (show only errors).')
-    .option('-s, --silent', 'Show no output, not even errors, exit code only.')
-    .option('--verbose', 'Display extra information.')
+    .option(
+        '-q, --quiet',
+        'Suppress successful per-file output; still show failures and final summary.',
+    )
+    .option(
+        '-s, --silent',
+        'Suppress validation output and use exit code only.',
+    )
+    .option('--verbose', 'Show extra processing details.')
     .action((options) => {
         debugPrint('Run global options')
         if (isDebug()) {
@@ -134,19 +140,25 @@ const parseCmd = program
 appendGlobalOptionsTo(parseCmd)
 
 /**
- * The command: "validate <file|path...>"
+ * The command: "validate <fileOrDirectory...>"
  */
 const validateCmd = program
-    .command('validate <fileOrPath...>')
+    .command('validate <fileOrDirectory...>')
     .description(descr['For-command-validate'])
 
     // ─────────────────────────────
     // Reporting / behavior
     // ─────────────────────────────
-    .option('--warnings-as-errors', 'Treat warnings as errors.')
-    .option('--stats', 'Include statistics section in output.')
+    .option(
+        '--warnings-as-errors',
+        'Treat warnings as errors for exit code purposes.',
+    )
+    .option('--stats', 'Include optional statistics in the validation report.')
     .addOption(
-        new Option('--format <type>', 'Output format: text | json')
+        new Option(
+            '--format <type>',
+            'Output format for validation results: text | json',
+        )
             .choices(['text', 'json'])
             .default('text'),
     )
@@ -169,7 +181,7 @@ const validateCmd = program
     // Input handling
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
-    .option('--no-recursive, --no-subdirs', 'Do not scan sub-directories.')
+    .option('--no-recursive, --no-subdirs', 'Do not scan subdirectories.')
 
     // ─────────────────────────────
     // Output handling - WAIT WITH THESE
@@ -178,7 +190,7 @@ const validateCmd = program
     // .option('--overwrite', 'Allow overwriting an existing output file.')
     // .option('--no-overwrite', 'Prevent overwriting an existing output file.')
 
-    .action((fileOrPaths: string[], options: IValidateCommandOptions) => {
+    .action((fileOrDirectories: string[], options: IValidateCommandOptions) => {
         const globals = program.opts()
         const mergedOptions = { ...globals, ...options }
 
@@ -191,9 +203,9 @@ const validateCmd = program
             console.log(toPrettyJSON(mergedOptions))
         }
 
-        if (!fileOrPaths?.length) program.help()
+        if (!fileOrDirectories?.length) program.help()
 
-        validateTargets(fileOrPaths, mergedOptions)
+        validateTargets(fileOrDirectories, mergedOptions)
     })
 appendGlobalOptionsTo(validateCmd)
 
