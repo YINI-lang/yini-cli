@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 1.4.0 + UPDATES - 2026 Mar + xxx
-- **Updated:** With a new command `validate`.
+- **Added:** New `validate` command.
 - ```txt
   Validate one or more YINI files.
 
@@ -20,8 +20,8 @@
     --no-recursive        Do not scan subdirectories.
     -h, --help            Display full help for all commands.
   ```
-- **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent` (due to this is very common UX-behavior).
-- **Improved:** Improved the usability of the command parse.
+- **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent`, which aligns better with common CLI conventions.
+- **Improved:** Improved the usability of the `parse` command.
 - **Improved:** Test fixtures and CLI tests were reorganized for better clarity, separation, and Windows-safe argument handling.
 
 ## 1.4.0 - 2026 Apr
