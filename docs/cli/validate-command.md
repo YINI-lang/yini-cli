@@ -217,7 +217,6 @@ To stdout:
 OK    "a.yini"
 FAIL  "b.yini"
 
-Base:    "<absolute path>"
 Mode:    strict
 Summary: 2 checked, 1 failed, 2 errors, 0 warnings
 ```
@@ -298,7 +297,7 @@ Summary: 67 checked, 14 failed, 132 errors, 0 warnings
 "settings-bad-escaping.yini"
   10:8   error    Invalid escape sequence in string.
           Invalid escape sequence "\\l".
-          Use "\\\\" in C-strings, or use a raw string.
+          Use "\\" in C-strings, or use a raw string.
 ```
 
 ---
@@ -394,7 +393,7 @@ Example:
     {
       "severity": "error",
       "code": "DUPLICATE_KEY",
-      "message": "Duplicate key \\\"host\\\"",
+      "message": "Duplicate key \"host\"",
       "location": {
         "line": 14,
         "column": 5
@@ -404,7 +403,7 @@ Example:
     {
       "severity": "warning",
       "code": "RESERVED_CONSTRUCT",
-      "message": "Reserved construct \\\"$schema\\\"",
+      "message": "Reserved construct \"$schema\"",
       "location": {
         "line": 3,
         "column": 1
@@ -457,7 +456,7 @@ Example:
         {
           "severity": "error",
           "code": "DUPLICATE_KEY",
-          "message": "Duplicate key \\\"host\\\"",
+          "message": "Duplicate key \"host\"",
           "location": {
             "line": 14,
             "column": 5
@@ -466,7 +465,7 @@ Example:
         {
           "severity": "warning",
           "code": "RESERVED_CONSTRUCT",
-          "message": "Reserved construct \\\"$schema\\\"",
+          "message": "Reserved construct \"$schema\"",
           "location": {
             "line": 3,
             "column": 1
