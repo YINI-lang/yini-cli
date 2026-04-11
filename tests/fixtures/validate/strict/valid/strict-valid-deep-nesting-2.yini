@@ -1,0 +1,38 @@
+^ Company
+name = "Acme Systems"
+
+    ^^ Platform
+    environment = "production"
+
+        ^^^ API
+        host = "api.acme.test"
+        port = 8443
+
+            ^^^^ Auth
+            provider = "oauth2"
+            enabled = true
+
+                ^^^^^ Clients
+                web = { id: "web-client", redirectUri: "https://app.acme.test/callback" }
+                mobile = { id: "mobile-client", redirectUri: "acme://callback" }
+
+                    ^^^^^^ Limits
+                    tokenTTL = 3600
+                    maxRetries = 5
+
+^7 Internal
+auditEnabled = true
+metricsEnabled = true
+
+    ^8 Secrets
+    apiKey = "abc123"
+    rotationDays = 30
+
+        ^9 Backup
+        enabled = true
+        region = "eu-north-1"
+
+            ^10 Archive
+            retentionDays = 365
+
+/END

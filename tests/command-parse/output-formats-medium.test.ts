@@ -6,7 +6,7 @@ import { yiniCLI } from '../test-helpers'
 
 const FIXTURE = path.join(
     __dirname,
-    '../fixtures/lenient/valid/medium-config.yini',
+    '../fixtures/parse/lenient/valid/medium-config.yini',
 )
 
 const expected = {
@@ -27,12 +27,12 @@ const expected = {
 
 describe('CLI parse command: medium output formats', () => {
     describe('JSON output', () => {
-        it('1) Outputs formatted JSON with --json', async () => {
+        it('1) Outputs formatted JSON with --json.', async () => {
             // Arrange.
-            const command = `parse ${FIXTURE} --json`
+            const args = ['parse', FIXTURE, '--json']
 
             // Act.
-            const { stdout, exitCode } = await yiniCLI(command)
+            const { stdout, exitCode } = await yiniCLI(args)
             const parsed = JSON.parse(stdout)
 
             // Assert.
@@ -40,12 +40,12 @@ describe('CLI parse command: medium output formats', () => {
             expect(parsed).toEqual(expected)
         })
 
-        it('2) Outputs compact JSON with --compact', async () => {
+        it('2) Outputs compact JSON with --compact.', async () => {
             // Arrange.
-            const command = `parse ${FIXTURE} --compact`
+            const args = ['parse', FIXTURE, '--compact']
 
             // Act.
-            const { stdout, exitCode } = await yiniCLI(command)
+            const { stdout, exitCode } = await yiniCLI(args)
             const parsed = JSON.parse(stdout)
 
             // Assert.
@@ -55,12 +55,12 @@ describe('CLI parse command: medium output formats', () => {
     })
 
     describe('JavaScript output', () => {
-        it('3) Outputs JavaScript with --js', async () => {
+        it('3) Outputs JavaScript with --js.', async () => {
             // Arrange.
-            const command = `parse ${FIXTURE} --js`
+            const args = ['parse', FIXTURE, '--js']
 
             // Act.
-            const { stdout, exitCode } = await yiniCLI(command)
+            const { stdout, exitCode } = await yiniCLI(args)
             const parsed = eval(`(${stdout})`)
 
             // Assert.
@@ -70,12 +70,12 @@ describe('CLI parse command: medium output formats', () => {
     })
 
     describe('YAML output', () => {
-        it('4) Outputs YAML with --yaml', async () => {
+        it('4) Outputs YAML with --yaml.', async () => {
             // Arrange.
-            const command = `parse ${FIXTURE} --yaml`
+            const args = ['parse', FIXTURE, '--yaml']
 
             // Act.
-            const { stdout, exitCode } = await yiniCLI(command)
+            const { stdout, exitCode } = await yiniCLI(args)
             const parsed = YAML.parse(stdout)
 
             // Assert.
@@ -85,12 +85,12 @@ describe('CLI parse command: medium output formats', () => {
     })
 
     describe('XML output', () => {
-        it('5) Outputs XML with --xml', async () => {
+        it('5) Outputs XML with --xml.', async () => {
             // Arrange.
-            const command = `parse ${FIXTURE} --xml`
+            const args = ['parse', FIXTURE, '--xml']
 
             // Act.
-            const { stdout, exitCode } = await yiniCLI(command)
+            const { stdout, exitCode } = await yiniCLI(args)
 
             // Assert.
             expect(exitCode).toBe(0)

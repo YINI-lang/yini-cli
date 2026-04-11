@@ -155,7 +155,7 @@ const validateCmd = program
     )
     .option(
         '--stats',
-        'Include optional statistics in the report (single-file mode only).',
+        'In text mode, stats only shown when file mode validates exactly one file.',
     )
     .addOption(
         new Option(

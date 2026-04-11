@@ -1,0 +1,6 @@
+^ App
+title = "My App"
+
+^^^ Advanced   // ERROR: invalid section jump, level 2 is missing
+
+debug = true

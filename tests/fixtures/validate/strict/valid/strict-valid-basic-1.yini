@@ -1,0 +1,7 @@
+^ App
+title = "My App"
+version = "1.0.0"
+enabled = true
+maxItems = 25
+
+/END

@@ -5,7 +5,7 @@
  * see docs/cli/validate-command.md
  */
 
-// commands/validateCommand.ts
+// src/commands/validateCommand.ts
 import fs from 'node:fs'
 import path from 'node:path'
 import YINI, {
@@ -16,9 +16,13 @@ import YINI, {
 } from 'yini-parser'
 import { IGlobalOptions } from '../types.js'
 import {
+    getDisplayBaseDir,
     printStderr,
     printStdout,
+    resolveRunModeFromTargets,
     resolveStrictMode,
+    toDisplayPath,
+    TValidateRunMode,
 } from './commonFunctions.js'
 
 // --- CLI command "validate" commandOptions -----------------------------------
@@ -61,6 +65,7 @@ interface IFileValidationResult {
 }
 
 interface IAggregateValidationResult {
+    runMode: TValidateRunMode
     mode: 'strict' | 'lenient'
     status: TOverallStatus
     filesChecked: number
@@ -82,6 +87,7 @@ export const validateTargets = (
     try {
         const strictMode = resolveStrictMode(options)
         const mode: 'strict' | 'lenient' = strictMode ? 'strict' : 'lenient'
+        const runMode = resolveRunModeFromTargets(targets)
         const recursive = options.recursive ?? true
 
         const files = collectFilesFromTargets(targets, recursive)
@@ -91,7 +97,9 @@ export const validateTargets = (
         }
 
         const displayBaseDir = getDisplayBaseDir(targets)
+
         const aggregate: IAggregateValidationResult = {
+            runMode,
             mode,
             status: 'passed',
             filesChecked: 0,
@@ -144,11 +152,10 @@ export const validateTargets = (
             }
         }
 
-        const exitCode = getValidationExitCode(aggregate, options)
-        process.exit(exitCode)
+        process.exit(getValidationExitCode(aggregate, options))
     } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err)
-        printStderr(options, `Error: ${msg}`)
+        const message = err instanceof Error ? err.message : String(err)
+        printStderr(options, `Error: ${message}`)
         process.exit(2)
     }
 }
@@ -184,7 +191,6 @@ const collectFilesFromTargets = (
         }
     }
 
-    // Sort the files before validation for stable output.
     return [...out].sort((a, b) => a.localeCompare(b))
 }
 
@@ -269,15 +275,13 @@ const validateOneFile = (
         const notices = diagnostics.notices.noticeCount
         const infos = diagnostics.infos.infoCount
 
-        const status = resolveFileStatus(errors, warnings, options)
-
         return {
             file,
             mode:
                 metadata?.mode === 'strict' || metadata?.mode === 'lenient'
                     ? metadata.mode
                     : 'custom',
-            status,
+            status: resolveFileStatus(errors, warnings, options),
             errors,
             warnings,
             notices,
@@ -372,46 +376,21 @@ const getValidationExitCode = (
 
 // --- Text output -------------------------------------------------------------
 
-const getDisplayBaseDir = (targets: string[]): string => {
-    if (!targets.length) {
-        return process.cwd()
-    }
-
-    if (targets.length === 1) {
-        const resolved = path.resolve(targets[0])
-
-        if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
-            return resolved
-        }
-
-        return path.dirname(resolved)
-    }
-
-    return process.cwd()
-}
-
-const toDisplayPath = (filePath: string, baseDir: string): string => {
-    const relative = path.relative(baseDir, filePath)
-
-    if (!relative || relative.startsWith('..')) {
-        return filePath
-    }
-
-    return relative
-}
-
 const printTextReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
 ) => {
-    const isSingleFile = aggregate.results.length === 1
+    if (aggregate.runMode === 'directory') {
+        printDirectoryModeTextReport(aggregate, options)
+        return
+    }
 
-    if (isSingleFile) {
+    if (aggregate.results.length === 1) {
         printSingleFileTextReport(aggregate.results[0], options)
         return
     }
 
-    printMultiFileTextReport(aggregate, options)
+    printFileModeTextReport(aggregate, options)
 }
 
 const printSingleFileTextReport = (
@@ -430,7 +409,7 @@ const printSingleFileTextReport = (
         printStdout(options, '✔  Validation successful')
     }
 
-    printStdout(options, ``)
+    printStdout(options, '')
     printStdout(options, `File:     "${result.file}"`)
     printStdout(options, `Mode:     ${result.mode}`)
     printStdout(options, `Errors:   ${result.errors}`)
@@ -440,11 +419,36 @@ const printSingleFileTextReport = (
 
     if (options.stats && result.metadata) {
         printStdout(options, '')
-        printStdout(options, formatStatsReport(result.file, result.metadata))
+        printStdout(options, formatStatsReport(result.metadata))
     }
 }
 
-const printMultiFileTextReport = (
+const printFileModeTextReport = (
+    aggregate: IAggregateValidationResult,
+    options: IValidateCommandOptions,
+) => {
+    for (const result of aggregate.results) {
+        if (result.status === 'failed') {
+            printStdout(options, `FAIL  "${result.file}"`)
+        } else if (!options.quiet) {
+            printStdout(options, `OK    "${result.file}"`)
+        }
+    }
+
+    printStdout(options, '')
+    printStdout(options, `Mode:    ${aggregate.mode}`)
+    printStdout(
+        options,
+        `Summary: ${aggregate.filesChecked} checked, ${aggregate.failedFiles} failed, ${aggregate.errors} errors, ${aggregate.warnings} warnings`,
+    )
+
+    for (const result of aggregate.results) {
+        if (result.status !== 'failed') continue
+        printIssueDetailsForResult(result, options)
+    }
+}
+
+const printDirectoryModeTextReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
 ) => {
@@ -530,9 +534,15 @@ const formatJsonReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
 ): string => {
-    const isSingleFile = aggregate.results.length === 1
+    if (aggregate.runMode === 'directory') {
+        return JSON.stringify(
+            toDirectoryModeJsonReport(aggregate, options),
+            null,
+            2,
+        )
+    }
 
-    if (isSingleFile) {
+    if (aggregate.results.length === 1) {
         return JSON.stringify(
             toSingleFileJsonReport(aggregate.results[0], options),
             null,
@@ -540,7 +550,7 @@ const formatJsonReport = (
         )
     }
 
-    return JSON.stringify(toMultiFileJsonReport(aggregate, options), null, 2)
+    return JSON.stringify(toFileModeJsonReport(aggregate, options), null, 2)
 }
 
 const toSingleFileJsonReport = (
@@ -549,6 +559,7 @@ const toSingleFileJsonReport = (
 ) => {
     return {
         file: result.file,
+        runMode: 'file' as const,
         mode: result.mode,
         status: result.status,
         summary: {
@@ -562,12 +573,45 @@ const toSingleFileJsonReport = (
     }
 }
 
-const toMultiFileJsonReport = (
+const toFileModeJsonReport = (
+    aggregate: IAggregateValidationResult,
+    options: IValidateCommandOptions,
+) => {
+    return {
+        runMode: 'file' as const,
+        mode: aggregate.mode,
+        status: aggregate.status,
+        summary: {
+            filesChecked: aggregate.filesChecked,
+            failedFiles: aggregate.failedFiles,
+            errors: aggregate.errors,
+            warnings: aggregate.warnings,
+            notices: aggregate.notices,
+            infos: aggregate.infos,
+        },
+        files: aggregate.results.map((result) => ({
+            file: result.file,
+            mode: result.mode,
+            status: result.status,
+            summary: {
+                errors: result.errors,
+                warnings: result.warnings,
+                notices: result.notices,
+                infos: result.infos,
+            },
+            issues: result.issues.map(mapIssueToJson),
+            stats: toStatsJson(result.metadata, options),
+        })),
+    }
+}
+
+const toDirectoryModeJsonReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
 ) => {
     return {
         base: aggregate.displayBaseDir,
+        runMode: 'directory' as const,
         mode: aggregate.mode,
         status: aggregate.status,
         summary: {
@@ -640,20 +684,12 @@ const toStatsJson = (
 
 // --- Stats -------------------------------------------------------------------
 
-const formatStatsReport = (
-    fileWithPath: string,
-    metadata: ResultMetadata,
-): string => {
+const formatStatsReport = (metadata: ResultMetadata): string => {
     if (!metadata?.diagnostics) {
         throw new Error('Internal error: Missing diagnostics metadata.')
     }
 
     const diag = metadata.diagnostics
-    const issuesCount =
-        diag.errors.errorCount +
-        diag.warnings.warningCount +
-        diag.notices.noticeCount +
-        diag.infos.infoCount
 
     return `Statistics
 ----------
@@ -671,67 +707,3 @@ Byte Size:     ${
             : `${metadata.source.byteSize} bytes`
     }`
 }
-
-/*
-    - Produce a summary-level validation report.
-    - Output is structured and concise (e.g. JSON or table-like).
-    - Focus on counts, pass/fail, severity summary.
-
-    Example:
-    Validation report for config.yini:
-    Errors:   3
-    Warnings: 1
-    Notices:  0
-    Result: INVALID
-*/
-/*
-const old_formatToStatsReport = (
-    fileWithPath: string,
-    metadata: ResultMetadata,
-): string => {
-    // console.log('formatToStatsReport(..)')
-    // printObject(metadata)
-    // console.log()
-
-    if (!metadata?.diagnostics) {
-        console.error('Internal error: Missing diagnostics')
-        exit(1)
-    }
-    const diag = metadata.diagnostics
-
-    const issuesCount: number =
-        diag.errors.errorCount +
-        diag.warnings.warningCount +
-        diag.notices.noticeCount +
-        diag.infos.infoCount
-    const str = `Validation Report
-=================
-
-File      "${fileWithPath}"
-Issues:   ${issuesCount}
-
-Summary
--------
-Mode:     ${metadata.mode}
-Strict:   ${metadata.mode === 'strict'}
-
-Errors:   ${diag.errors.errorCount}
-Warnings: ${diag.warnings.warningCount}
-Notices:  ${diag.notices.noticeCount}
-Infos:    ${diag.infos.infoCount}
-
-Stats
------
-Line Count:    ${metadata.source.lineCount}
-Section Count: ${metadata.structure.sectionCount}
-Member Count:  ${metadata.structure.memberCount}
-Nesting Depth: ${metadata.structure.maxDepth}
-
-Has @YINI:     ${metadata.source.hasYiniMarker}
-Has /END:      ${metadata.source.hasDocumentTerminator}
-Byte Size:     ${metadata.source.sourceType === 'inline' ? 'n/a' : metadata.source.byteSize + ' bytes'}
-`
-
-    return str
-}
-*/

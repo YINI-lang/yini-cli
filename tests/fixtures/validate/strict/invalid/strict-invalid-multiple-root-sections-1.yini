@@ -1,0 +1,7 @@
+^ App
+title = "My App"
+
+^ Logging   // ERROR: second top-level section; strict mode requires exactly one explicit top-level section
+level = "info"
+
+/END

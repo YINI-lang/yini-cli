@@ -18,10 +18,28 @@ Multiple files and directories may be provided, separated by spaces.
 - Prints a human-readable validation summary to the terminal.
 - Uses lenient mode by default.
 - Returns a non-zero exit code if validation fails for one or more files, or if warnings are treated as errors.
-- In single-file mode: show the summary first, then issue details.
-- In multi-file mode: show per-file `OK` / `FAIL` lines first, then final summary, then issue details for failed files.
-- In text output, `--stats` applies to single-file mode only.
+- In **file mode**:
+  - For one validated file, show a friendly summary first, then issue details.
+  - For multiple file targets, show per-file `OK` / `FAIL` lines, then a final summary, then issue details for failed files.
+- In **directory mode**:
+  - Show per-file `OK` / `FAIL` lines first, then a final summary, then issue details for failed files.
+- In text output, `--stats` is shown only when file mode validates exactly one file.
 - In JSON output, `--stats` may be included for each validated file.
+
+### Run modes
+
+The validate command operates in two run modes: **file mode** and **directory mode**.
+
+- **File mode** is used when all original input targets are files.
+- **Directory mode** is used when at least one original input target is a directory.
+
+Examples:
+
+- `yini validate config.yini` → file mode
+- `yini validate a.yini b.yini` → file mode
+- `yini validate .` → directory mode
+- `yini validate configs/` → directory mode
+- `yini validate a.yini configs/` → directory mode
 
 ---
 
@@ -46,28 +64,28 @@ yini validate <fileOrDirectory...> [options]
 ### Output verbosity
 
 - `--quiet, -q`  
-  Suppress successful per-file output; show failed files, issue details for failures, and final summary only
-  - suppress `OK ...` lines
-  - still show `FAIL ...` lines
-  - still show per-file issue details for failed files
-  - still show final summary
-  - still show fatal CLI/runtime errors
+  Suppress successful per-file output; show failed files, issue details for failures, and final summary only.
+  - Suppress `OK ...` lines
+  - Still show `FAIL ...` lines
+  - Still show per-file issue details for failed files
+  - Still show the final summary
+  - Still show fatal CLI/runtime errors
 
 - `--silent, -s`  
   Show no output; exit code only. Suppresses validation output.  
   CLI/framework-level argument errors may still print help or error text unless explicitly intercepted.
-  - no summary
-  - no per-file lines
-  - no warnings
-  - no issue details
-  - no success output
-  - no validation failure output
+  - No summary
+  - No per-file lines
+  - No warnings
+  - No issue details
+  - No success output
+  - No validation failure output
 
 - `--verbose`  
   Show extra processing details
 
 - `--stats`  
-  Include optional statistics in the report
+  Include optional statistics in the report. In text output, statistics are shown only when file mode validates exactly one file.
 
 - `--format <text|json>`  
   Output format for validation results (default: `text`)
@@ -93,8 +111,8 @@ yini validate <fileOrDirectory...> [options]
 
 - `--warnings-as-errors`  
   Treat warnings as errors for exit code purposes
-  - Warnings retain warning severity in the output.
-  - Exit code becomes non-zero (failure) if any warning exists.
+  - Warnings retain warning severity in the output
+  - Exit code becomes non-zero if any warning exists
 
 ### Output handling
 
@@ -122,12 +140,21 @@ yini validate <fileOrDirectory...> [options]
 
 Human-readable output should be the default.
 
-### Single-file mode
+### File mode
 
-- The summary for single-file mode should feel friendly and come first.
-- If `--stats` is enabled, show statistics after the issue details.
+File mode is used when **all original input targets are files**.
 
-#### On success (exit 0)
+This mode has two common cases:
+
+- **One file target**  
+  Show a friendly summary first, then issue details.
+
+- **Multiple file targets**  
+  Show per-file `OK` / `FAIL` lines first, then a final summary, then issue details for failed files.
+
+In text output, `--stats` is shown only when file mode validates exactly one file.
+
+#### File mode with one file target: success (exit 0)
 
 To stdout:
 
@@ -140,7 +167,7 @@ Errors:   0
 Warnings: 0
 ```
 
-#### On validation failure (exit 1)
+#### File mode with one file target: validation failure (exit 1)
 
 To stdout:
 
@@ -160,7 +187,7 @@ To stderr:
   27:1   warning  Duplicate key: "port"
 ```
 
-#### Optional statistics (`--stats`)
+#### Optional statistics in file mode (`--stats`)
 
 ```txt
 Statistics
@@ -176,15 +203,45 @@ Has /END:      false
 Byte Size:     135 bytes
 ```
 
-### Multi-file mode
+#### File mode with multiple file targets
 
-- The summary for multi-file mode is different from single-file mode.
-- Show per-file `OK` / `FAIL` lines first.
-- Show the summary after the per-file lines.
-- Then show issue details only for failed files.
-- In text output, do not show per-file statistics blocks in multi-file mode, even if `--stats` is set.
+Example input:
 
-#### On success (exit 0)
+```sh
+yini validate a.yini b.yini
+```
+
+To stdout:
+
+```txt
+OK    "a.yini"
+FAIL  "b.yini"
+
+Base:    "<absolute path>"
+Mode:    strict
+Summary: 2 checked, 1 failed, 2 errors, 0 warnings
+```
+
+To stderr:
+
+```txt
+"b.yini"
+  12:8   error    Unexpected token '}'
+  27:1   warning  Duplicate key: "port"
+```
+
+---
+
+### Directory mode
+
+Directory mode is used when **at least one original input target is a directory**.
+
+- Show per-file `OK` / `FAIL` lines first
+- Show the summary after the per-file lines
+- Then show issue details only for failed files
+- In text output, do not show per-file statistics blocks in directory mode, even if `--stats` is set
+
+#### Directory mode: success (exit 0)
 
 To stdout:
 
@@ -198,7 +255,7 @@ Mode:    strict
 Summary: 3 checked, 0 failed, 0 errors, 0 warnings
 ```
 
-#### On validation failure (exit 1)
+#### Directory mode: validation failure (exit 1)
 
 To stdout:
 
@@ -222,7 +279,7 @@ To stderr:
 
 Detailed issues are printed only for failed files.
 
-#### Example
+#### Directory mode example
 
 ```txt
 OK    "indent-ex-conf1.yini"
@@ -240,8 +297,8 @@ Summary: 67 checked, 14 failed, 132 errors, 0 warnings
 
 "settings-bad-escaping.yini"
   10:8   error    Invalid escape sequence in string.
-          Invalid escape sequence "\l".
-          Use "\\" in C-strings, or use a raw string.
+          Invalid escape sequence "\\l".
+          Use "\\\\" in C-strings, or use a raw string.
 ```
 
 ---
@@ -256,7 +313,7 @@ The output should:
 4. Be machine-friendly when requested (`--format json`)
 5. Be stable and predictable for CI usage
 
-### Header / Summary
+### Header / summary
 
 #### On success
 
@@ -288,7 +345,7 @@ Each issue should show:
 - Code: stable identifier (`DUPLICATE_KEY`, `UNKNOWN_CONSTRUCT`, etc.)
 - Message: short explanation
 - Location: file + line + column
-- Context: snippet of the file (if helpful)
+- Context: snippet of the file, if helpful
 
 #### Example
 
@@ -316,7 +373,11 @@ Warnings:
 
 ## Example: JSON format (`--format json`)
 
-### Single-file mode
+### File mode
+
+File mode is used when all original input targets are files.
+
+Example:
 
 ```json
 {
@@ -333,7 +394,7 @@ Warnings:
     {
       "severity": "error",
       "code": "DUPLICATE_KEY",
-      "message": "Duplicate key \"host\"",
+      "message": "Duplicate key \\\"host\\\"",
       "location": {
         "line": 14,
         "column": 5
@@ -343,7 +404,7 @@ Warnings:
     {
       "severity": "warning",
       "code": "RESERVED_CONSTRUCT",
-      "message": "Reserved construct \"$schema\"",
+      "message": "Reserved construct \\\"$schema\\\"",
       "location": {
         "line": 3,
         "column": 1
@@ -362,7 +423,11 @@ Warnings:
 }
 ```
 
-### Multi-file mode
+### Directory mode
+
+Directory mode is used when at least one original input target is a directory.
+
+Example:
 
 ```json
 {
@@ -392,7 +457,7 @@ Warnings:
         {
           "severity": "error",
           "code": "DUPLICATE_KEY",
-          "message": "Duplicate key \"host\"",
+          "message": "Duplicate key \\\"host\\\"",
           "location": {
             "line": 14,
             "column": 5
@@ -401,7 +466,7 @@ Warnings:
         {
           "severity": "warning",
           "code": "RESERVED_CONSTRUCT",
-          "message": "Reserved construct \"$schema\"",
+          "message": "Reserved construct \\\"$schema\\\"",
           "location": {
             "line": 3,
             "column": 1

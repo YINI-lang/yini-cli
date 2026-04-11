@@ -35,7 +35,7 @@ describe('Test main (global) options in yini CLI:', () => {
         // Here, execa(..) is used to run CLI script (like tsx src/index.ts myfile.yini),
         // and to capture stdout, stderr, exitCode, etc.
         //const { stdout } = await yiniCLI(`parse ${fullPath}`)
-        const { stdout } = await yiniCLI(`--version`)
+        const { stdout } = await yiniCLI([`--version`])
         debugPrint('Test: 1:')
         debugPrint('stdout:')
         printObject(stdout)
@@ -50,7 +50,7 @@ describe('Test main (global) options in yini CLI:', () => {
      */
     it('1.b) The yini option "-v" (lowercase) correctly outputs version.', async () => {
         // Arrange and Act.
-        const { stdout } = await yiniCLI(`-v`)
+        const { stdout } = await yiniCLI([`-v`])
         debugPrint('Test: 1:')
         debugPrint('stdout:')
         printObject(stdout)
@@ -64,7 +64,7 @@ describe('Test main (global) options in yini CLI:', () => {
      */
     it('2.a) The yini option "--help" correctly outputs help/usage message.', async () => {
         // Arrange and Act.
-        const { stdout } = await yiniCLI(`--help`)
+        const { stdout } = await yiniCLI([`--help`])
         debugPrint('Test: 1:')
         debugPrint('stdout:')
         printObject(stdout)
@@ -82,7 +82,7 @@ describe('Test main (global) options in yini CLI:', () => {
      */
     it('2.b) The yini option "-h" correctly outputs help/usage message.', async () => {
         // Arrange and Act.
-        const { stdout } = await yiniCLI(`-h`)
+        const { stdout } = await yiniCLI([`-h`])
         debugPrint('Test: 1:')
         debugPrint('stdout:')
         printObject(stdout)

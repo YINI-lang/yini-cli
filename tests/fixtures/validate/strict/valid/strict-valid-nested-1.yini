@@ -1,0 +1,14 @@
+^ App
+name = "Nebula"
+
+    ^^ Window
+    title = "Main Window"
+    width = 1280
+    height = 720
+
+    ^^ Network
+    host = "127.0.0.1"
+    port = 8080
+    useTLS = false
+
+/END

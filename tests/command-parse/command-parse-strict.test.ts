@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { debugPrint, printObject } from '../../src/utils/print'
 import { yiniCLI } from '../test-helpers'
 
-const FIXTURES_DIR = path.join(__dirname, '../fixtures')
+const FIXTURES_DIR = path.join(__dirname, '../fixtures/parse')
 
 const strictValid = (...parts: string[]) =>
     path.join(FIXTURES_DIR, 'strict', 'valid', ...parts)
@@ -19,7 +19,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictValid('strict-common-config-1.yini')
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { stdout } = await yiniCLI(['parse', fullPath, '--strict'])
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -40,7 +40,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictValid('strict-common-config-2.yini')
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { stdout } = await yiniCLI(['parse', fullPath, '--strict'])
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -86,7 +86,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictValid('strict-common-config-2.yini')
 
         // Act.
-        const { stdout } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { stdout } = await yiniCLI(['parse', fullPath, '--strict'])
         debugPrint('stdout:')
         printObject(stdout)
 
@@ -110,7 +110,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictInvalid('invalid-in-strict-mode-1.yini')
 
         // Act.
-        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { exitCode } = await yiniCLI(['parse', fullPath, '--strict'])
 
         // Assert.
         expect(exitCode).toBe(1)
@@ -121,7 +121,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictInvalid('invalid-in-strict-mode-2.yini')
 
         // Act.
-        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { exitCode } = await yiniCLI(['parse', fullPath, '--strict'])
 
         // Assert.
         expect(exitCode).toBe(1)
@@ -132,7 +132,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictInvalid('incorrect-section-name-strict-1.yini')
 
         // Act.
-        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { exitCode } = await yiniCLI(['parse', fullPath, '--strict'])
 
         // Assert.
         expect(exitCode).toBe(1)
@@ -143,7 +143,7 @@ describe('parse command - strict mode', () => {
         const fullPath = strictInvalid('incorrect-section-name-strict-2.yini')
 
         // Act.
-        const { exitCode } = await yiniCLI(`parse ${fullPath} --strict`)
+        const { exitCode } = await yiniCLI(['parse', fullPath, '--strict'])
 
         // Assert.
         expect(exitCode).toBe(1)

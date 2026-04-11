@@ -1,0 +1,8 @@
+^ App
+name = "Example App"
+ports = [80, 443, 8080]
+features = ["search", "export", "analytics"]
+admins = ["alice@example.com", "bob@example.com"]
+thresholds = [0.1, 0.5, 0.9]
+
+/END

@@ -1,12 +1,11 @@
+// tests/test-helpers.ts
 import { execa } from 'execa'
 
 /**
- * @param argsLine A line of arguments (command and options) to pass to yini
- * (yini-cli) on execution in CLI.
- * @returns
+ * Run the YINI CLI with a list of arguments.
  */
-export const yiniCLI = (argsLine: string, options = {}) =>
-    execa('tsx', ['src/index.ts', ...argsLine.split(/\s+/)], {
+export const yiniCLI = (args: string[], options = {}) =>
+    execa('tsx', ['src/index.ts', ...args], {
         reject: false,
         ...options,
     })

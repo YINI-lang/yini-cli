@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest'
 import { debugPrint, printObject, toJSON } from '../src/utils/print'
 import { yiniCLI } from './test-helpers'
 
-const DIR_OF_FIXTURES = 'fixtures'
+const DIR_OF_FIXTURES = 'fixtures/parse'
 
 describe('Smoke tests: yini CLI basic usage', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
@@ -21,7 +21,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             const fullPath = fixture('lenient', 'valid', 'valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath}`)
+            const { stdout } = await yiniCLI(['parse', fullPath])
             debugPrint('Test 1 stdout:')
             printObject(stdout)
 
@@ -36,7 +36,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             const fullPath = fixture('lenient', 'valid', 'valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--js'])
             debugPrint('Test 2 stdout:')
             printObject(stdout)
 
@@ -52,7 +52,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             const fullPath = fixture('lenient', 'valid', 'nested-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--js'])
             debugPrint('Test 3 stdout:')
             printObject(stdout)
 
@@ -68,7 +68,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             const fullPath = fixture('lenient', 'valid', 'nested-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--json'])
             debugPrint('Test 4 stdout:')
             printObject(stdout)
 
@@ -84,7 +84,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             const fullPath = fixture('lenient', 'valid', 'nested-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('Test 5 stdout:')
             printObject(stdout)
 
@@ -105,7 +105,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             )
 
             // Act.
-            const { stderr, exitCode } = await yiniCLI(`parse ${fullPath}`)
+            const { stderr, exitCode } = await yiniCLI(['parse', fullPath])
             debugPrint('Test 6 stderr:')
             printObject(stderr)
             debugPrint('Test 6 exitCode:')
@@ -125,7 +125,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
             )
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('Test 7 stdout:')
             printObject(stdout)
 
@@ -136,7 +136,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
     })
 
     describe('parse command: strict fixtures', () => {
-        it.skip('8. Shows an error when parsing a invalid YINI file in strict mode.', async () => {
+        it.skip('8. Shows an error when parsing an invalid YINI file in strict mode.', async () => {
             // Arrange.
             const fullPath = fixture(
                 'strict',
@@ -145,9 +145,11 @@ describe('Smoke tests: yini CLI basic usage', () => {
             )
 
             // Act.
-            const { stderr, exitCode } = await yiniCLI(
-                `parse ${fullPath} --strict`,
-            )
+            const { stderr, exitCode } = await yiniCLI([
+                'parse',
+                fullPath,
+                '--strict',
+            ])
             debugPrint('Test 8 stderr:')
             printObject(stderr)
             debugPrint('Test 8 exitCode:')

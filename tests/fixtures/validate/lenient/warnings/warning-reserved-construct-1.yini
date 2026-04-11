@@ -1,0 +1,6 @@
+^ App
+name = "Demo App"
+
+@include "other-config.yini"   // WARNING: reserved construct / future syntax, not active in current YINI version
+
+enabled = ON

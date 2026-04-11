@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { debugPrint, printObject, toPrettyJSON } from '../../src/utils/print'
 import { yiniCLI } from '../test-helpers'
 
-const FIXTURES_DIR = path.join(__dirname, '../fixtures')
+const FIXTURES_DIR = path.join(__dirname, '../fixtures/parse')
 const TEMP_DIR = path.join(__dirname, '../temp')
 
 const ensureTempDir = () => {
@@ -29,7 +29,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath}`)
+            const { stdout } = await yiniCLI(['parse', fullPath])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -47,7 +47,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath}`)
+            const { stdout } = await yiniCLI(['parse', fullPath])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -92,7 +92,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath}`)
+            const { stdout } = await yiniCLI(['parse', fullPath])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -126,7 +126,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--json'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -148,7 +148,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--json'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -187,7 +187,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --json`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--json'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -225,7 +225,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -245,7 +245,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -282,7 +282,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-3.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -318,7 +318,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --js`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--js'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -341,7 +341,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientInvalid('corrupt-config-1.yini')
 
             // Act.
-            const { stdout } = await yiniCLI(`parse ${fullPath} --compact`)
+            const { stdout } = await yiniCLI(['parse', fullPath, '--compact'])
             debugPrint('stdout:')
             printObject(stdout)
 
@@ -355,7 +355,7 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientInvalid('invalid-config-1.yini')
 
             // Act.
-            const { stderr, exitCode } = await yiniCLI(`parse ${fullPath}`)
+            const { stderr, exitCode } = await yiniCLI(['parse', fullPath])
             debugPrint('stderr:')
             printObject(stderr)
             debugPrint('exitCode:')
@@ -377,9 +377,12 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath}`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                ])
 
                 // Assert.
                 expect(exitCode).toBe(0)
@@ -400,9 +403,12 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath}`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                ])
 
                 // Assert.
                 expect(exitCode).toBe(0)
@@ -425,9 +431,12 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath}`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                ])
 
                 // Assert.
                 expect(exitCode).toBe(0)
@@ -449,9 +458,12 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath}`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                ])
 
                 // Assert.
                 expect(exitCode).toBe(0)
@@ -469,9 +481,13 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath} --overwrite`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                    '--overwrite',
+                ])
 
                 // Assert.
                 expect(exitCode).toBe(0)
@@ -489,9 +505,13 @@ describe('parse command - lenient mode', () => {
 
             try {
                 // Act.
-                const { exitCode } = await yiniCLI(
-                    `parse ${fullPath} --output ${outPath} --no-overwrite`,
-                )
+                const { exitCode } = await yiniCLI([
+                    'parse',
+                    fullPath,
+                    '--output',
+                    outPath,
+                    '--no-overwrite',
+                ])
 
                 // Assert.
                 expect(exitCode).not.toBe(0)
@@ -505,9 +525,12 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-1.yini')
 
             // Act.
-            const { exitCode } = await yiniCLI(
-                `parse ${fullPath} --output ${fullPath}`,
-            )
+            const { exitCode } = await yiniCLI([
+                'parse',
+                fullPath,
+                '--output',
+                fullPath,
+            ])
 
             // Assert.
             expect(exitCode).toBe(1)
@@ -518,9 +541,12 @@ describe('parse command - lenient mode', () => {
             const fullPath = lenientValid('valid-config-2.yini')
 
             // Act.
-            const { exitCode, stderr } = await yiniCLI(
-                `parse ${fullPath} --output ${fullPath}`,
-            )
+            const { exitCode, stderr } = await yiniCLI([
+                'parse',
+                fullPath,
+                '--output',
+                fullPath,
+            ])
 
             // Assert.
             expect(exitCode).toBe(1)

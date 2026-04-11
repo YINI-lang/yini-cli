@@ -1,6 +1,9 @@
 // src/commands/commonFunctions.ts
+import fs from 'node:fs'
 import path from 'node:path'
 import { IGlobalOptions } from '../types.js'
+
+export type TValidateRunMode = 'file' | 'directory'
 
 export const printStdout = (options: IGlobalOptions, text: string) => {
     if (options.silent) return
@@ -27,6 +30,52 @@ export const resolveStrictMode = (options: IGlobalOptions): boolean => {
     if (options.lenient) return false
 
     return false // Default = lenient
+}
+
+export const resolveRunModeFromTargets = (
+    targets: string[],
+): TValidateRunMode => {
+    for (const target of targets) {
+        const resolved = path.resolve(target)
+
+        if (!fs.existsSync(resolved)) {
+            throw new Error(`Path does not exist: "${target}"`)
+        }
+
+        if (fs.statSync(resolved).isDirectory()) {
+            return 'directory'
+        }
+    }
+
+    return 'file'
+}
+
+export const getDisplayBaseDir = (targets: string[]): string => {
+    if (!targets.length) {
+        return process.cwd()
+    }
+
+    if (targets.length === 1) {
+        const resolved = path.resolve(targets[0])
+
+        if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+            return resolved
+        }
+
+        return path.dirname(resolved)
+    }
+
+    return process.cwd()
+}
+
+export const toDisplayPath = (filePath: string, baseDir: string): string => {
+    const relative = path.relative(baseDir, filePath)
+
+    if (!relative || relative.startsWith('..')) {
+        return filePath
+    }
+
+    return relative
 }
 
 /**

@@ -1,0 +1,6 @@
+title = "My App"   // ERROR: top-level member is not allowed in strict mode
+
+^ App
+enabled = true
+
+/END

@@ -1,0 +1,5 @@
+^ App.Title   // ERROR: invalid section name; dots are not allowed in simple identifiers
+title = "My App"
+enabled = true
+
+/END
