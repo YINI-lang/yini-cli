@@ -1,3 +1,5 @@
+// src/utils/string.ts
+
 export const toColRow = (size: number, label: string, value: string) => {
     return `${label.padEnd(size)} ${value}`
 }

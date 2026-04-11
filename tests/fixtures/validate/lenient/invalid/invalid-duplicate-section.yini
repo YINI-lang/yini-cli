@@ -1,0 +1,8 @@
+^ App
+title = "My App"
+enabled = true
+
+^ App	// WARNING: duplicate section name
+title2 = "My App"
+
+/END

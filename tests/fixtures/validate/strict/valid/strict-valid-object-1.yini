@@ -1,0 +1,7 @@
+^ App
+name = "Example App"
+window = { title: "Main", width: 1280, height: 720 }
+logging = { level: "info", file: "logs/app.log", rotate: true }
+database = { host: "localhost", port: 5432, ssl: false }
+
+/END

@@ -1,0 +1,7 @@
+^ App
+title = "My App"
+enabled = ON
+
+??? this is garbage ???   // ERROR: garbage / unrecognized line
+
+version = "1.0.0"

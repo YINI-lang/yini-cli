@@ -1,0 +1,3 @@
+[App]	// INVALID section header: square-bracket syntax is not valid in YINI.
+title = "My App"
+enabled = ON

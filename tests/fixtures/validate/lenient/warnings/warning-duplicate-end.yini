@@ -1,0 +1,7 @@
+^ App
+title = "My App"
+enabled = true
+
+
+/END
+/END	// WARNING: duplicate /END

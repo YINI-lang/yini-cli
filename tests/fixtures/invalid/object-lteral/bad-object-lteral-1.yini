@@ -1,2 +1,0 @@
-^ Database
-pool = { max = 10, min = 2, idle = 10000 }

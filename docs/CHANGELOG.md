@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 1.4.0 + UPDATES - 2026 Mar + xxx
+- **Added:** New `validate` command.
+- ```txt
+  Validate one or more YINI files.
+
+  <file>       Validate a single file.
+  <directory>  Validate all .yini files in the directory.
+
+  You can provide multiple files and directories, separated by spaces.
+
+  Options:
+    --warnings-as-errors  Treat warnings as errors for exit code purposes.
+    --stats               In text mode, stats only shown when file mode validates exactly one file.
+    --format <type>       Output format for validation results: text | json (choices: "text", "json",
+                          default: "text")
+    --fail-fast           Stop after first file that fails validation.
+    --max-errors <n>      Stop after N total errors (across files).
+    --no-recursive        Do not scan subdirectories.
+    -h, --help            Display full help for all commands.
+  ```
+- **Changed:** The short flag for strict mode is now `-S` (capital). Lowercase `-s` is now reserved for `--silent`, which aligns better with common CLI conventions.
+- **Improved:** Improved the usability of the `parse` command.
+- **Improved:** Test fixtures and CLI tests were reorganized for better clarity, separation, and Windows-safe argument handling.
+
 ## 1.4.0 - 2026 Apr
 - Bumped dependency `yini-parser` to `^1.5.0` which brings:
   - **Updated** to match **YINI Specification RC.5**: includes synced grammar files and the latest section-header parsing rules.

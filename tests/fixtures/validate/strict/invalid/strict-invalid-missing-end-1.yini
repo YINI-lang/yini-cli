@@ -1,0 +1,5 @@
+^ App
+title = "My App"
+enabled = true
+
+// ERROR: missing /END terminator

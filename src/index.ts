@@ -2,7 +2,7 @@
 //
 // (!) IMPORTANT: Leave the top shebang as the very first line! (otherwise command will break)
 //
-// index.ts
+// src/index.ts
 import { createRequire } from 'module'
 import { Command, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
@@ -10,7 +10,7 @@ import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
     IValidateCommandOptions,
-    validateFile,
+    validateTargets,
 } from './commands/validateCommand.js'
 import { isDebug, isDev } from './config/env.js'
 import { descriptions as descr } from './descriptions.js'
@@ -59,25 +59,29 @@ const program = new Command()
         '-v, --version',
         'Display the version number.',
     )
-    .helpOption('-h, --help', 'Display full help for all commands.')
+    .helpOption('-h, --help', 'Display full help for all commands.') // Yes, shows help for ALL commands via the enableHelpAll() function.
     .helpCommand('help <command>', 'Display help for a specific command.')
 
 program.addHelpText('before', getHelpTextBefore())
 program.addHelpText('after', getHelpTextAfter())
 
 /**
- * The (main/global) option: "--strict, --quite, --silent"
+ * The (main/global) options: "--strict, --quiet, --silent"
  */
 // Suggestions for future: --verbose, --debug, --no-color, --color, --timing, --stdin
 program
     .option('--strict', 'Enable strict parsing mode.')
+    .option('--lenient', 'Use lenient mode (this is the default).')
     // .option('-f, --force', 'Continue parsing even if errors occur.')
-    .option('-q, --quiet', 'Reduce output (show only errors).')
+    .option(
+        '-q, --quiet',
+        'Suppress successful per-file output; still show failures and final summary.',
+    )
     .option(
         '-s, --silent',
-        'Suppress all output (even errors, exit code only).',
+        'Suppress validation output and use exit code only.',
     )
-    .option('--verbose', 'Display extra information.')
+    .option('--verbose', 'Show extra processing details.')
     .action((options) => {
         debugPrint('Run global options')
         if (isDebug()) {
@@ -122,11 +126,6 @@ const parseCmd = program
         const globals = program.opts() // Global options.
         const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
 
-        if (mergedOptions.js && mergedOptions.compact) {
-            console.error('Error: --js and --compact cannot be combined.')
-            process.exit(1)
-        }
-
         debugPrint('Run command "parse"')
         debugPrint('isDebug(): ' + isDebug())
         debugPrint('isDev()  : ' + isDev())
@@ -141,36 +140,77 @@ const parseCmd = program
 appendGlobalOptionsTo(parseCmd)
 
 /**
- * The command: "validate <file>"
+ * The command: "validate <fileOrDirectory...>"
  */
 const validateCmd = program
-    .command('validate <file>')
+    .command('validate <fileOrDirectory...>')
     .description(descr['For-command-validate'])
+
+    // ─────────────────────────────
+    // Reporting / behavior
+    // ─────────────────────────────
+    .option(
+        '--warnings-as-errors',
+        'Treat warnings as errors for exit code purposes.',
+    )
     .option(
         '--stats',
-        'Include a statistics section (e.g., key count, nesting depth, etc.).',
+        'In text mode, stats only shown when file mode validates exactly one file.',
     )
-    // .option(
-    //     '--details',
-    //     'Print detailed validation info (e.g., line locations, error codes, descriptive text, etc.).',
-    // )
-    .action((file, options: IValidateCommandOptions) => {
-        const globals = program.opts() // Global options.
-        const mergedOptions = { ...globals, ...options } // Merge global options with per-command options.
+    .addOption(
+        new Option(
+            '--format <type>',
+            'Output format for validation results: text | json',
+        )
+            .choices(['text', 'json'])
+            .default('text'),
+    )
 
-        debugPrint('Run command "parse"')
+    // Execution controls (nice-to-have)
+    .option('--fail-fast', 'Stop after first file that fails validation.')
+    .option(
+        '--max-errors <n>',
+        'Stop after N total errors (across files).',
+        (v) => {
+            const n = Number.parseInt(v, 10)
+            if (!Number.isFinite(n) || n < 1) {
+                throw new Error('--max-errors must be a positive integer.')
+            }
+            return n
+        },
+    )
+
+    // ─────────────────────────────
+    // Input handling
+    // ─────────────────────────────
+    // Default: recursive (so only expose the negated option)
+    .option('--no-recursive', 'Do not scan subdirectories.')
+
+    // ─────────────────────────────
+    // Output handling - WAIT WITH THESE
+    // ─────────────────────────────
+    // .option('-o, --output <file>', 'Write validation report to file.')
+    // .option('--overwrite', 'Allow overwriting an existing output file.')
+    // .option('--no-overwrite', 'Prevent overwriting an existing output file.')
+
+    .action((fileOrDirectories: string[], options: IValidateCommandOptions) => {
+        const globals = program.opts()
+        const mergedOptions = { ...globals, ...options }
+
+        debugPrint('Run command "validate"')
         debugPrint('isDebug(): ' + isDebug())
-        debugPrint('isDev()  : ' + isDev())
-        debugPrint(`<file> = ${file}`)
+        debugPrint('isDev(): ' + isDev())
+        // console.log('options:')
+        // console.log(options)
+
         if (isDebug()) {
             console.log('mergedOptions:')
             console.log(toPrettyJSON(mergedOptions))
         }
-        if (file) {
-            validateFile(file, mergedOptions)
-        } else {
-            program.help()
-        }
+
+        if (!fileOrDirectories?.length) program.help()
+
+        validateTargets(fileOrDirectories, mergedOptions)
     })
 appendGlobalOptionsTo(validateCmd)
 
@@ -194,4 +234,9 @@ appendGlobalOptionsTo(infoCmd)
 
 enableHelpAll(program)
 
-program.parseAsync()
+// program.parseAsync()
+const normalizedArgv = process.argv.map((arg) =>
+    arg === '--no-subdirs' ? '--no-recursive' : arg,
+)
+
+program.parseAsync(normalizedArgv)

@@ -1,0 +1,5 @@
+^ App
+title = "My App"
+enabled = true
+
+title = "My Renamed App"   // WARNING: duplicate key in the same section
