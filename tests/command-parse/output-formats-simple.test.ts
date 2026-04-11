@@ -1,11 +1,13 @@
-// tests/output-formats-simple.test.ts
-
+// tests/command-parse/output-formats-simple.test.ts
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import YAML from 'yaml'
 import { yiniCLI } from '../test-helpers'
 
-const FIXTURE = path.join(__dirname, '../fixtures/simple-config.yini')
+const FIXTURE = path.join(
+    __dirname,
+    '../fixtures/lenient/valid/simple-config.yini',
+)
 
 const expected = {
     App: {
@@ -15,43 +17,76 @@ const expected = {
     },
 }
 
-describe('CLI output formats', () => {
-    it('1: Outputs formatted JSON (--json)', async () => {
-        const { stdout } = await yiniCLI(`parse ${FIXTURE} --json`)
-        const parsed = JSON.parse(stdout)
+describe('CLI parse command: simple output formats', () => {
+    describe('JSON output', () => {
+        it('1) Outputs formatted JSON with --json', async () => {
+            // Arrange.
+            const command = `parse ${FIXTURE} --json`
 
-        expect(parsed).toEqual(expected)
+            // Act.
+            const { stdout } = await yiniCLI(command)
+            const parsed = JSON.parse(stdout)
+
+            // Assert.
+            expect(parsed).toEqual(expected)
+        })
+
+        it('2) Outputs compact JSON with --compact', async () => {
+            // Arrange.
+            const command = `parse ${FIXTURE} --compact`
+
+            // Act.
+            const { stdout } = await yiniCLI(command)
+            const parsed = JSON.parse(stdout)
+
+            // Assert.
+            expect(parsed).toEqual(expected)
+        })
     })
 
-    it('2: Outputs compact JSON (--compact)', async () => {
-        const { stdout } = await yiniCLI(`parse ${FIXTURE} --compact`)
-        const parsed = JSON.parse(stdout)
+    describe('JavaScript output', () => {
+        it('3) Outputs JavaScript with --js', async () => {
+            // Arrange.
+            const command = `parse ${FIXTURE} --js`
 
-        expect(parsed).toEqual(expected)
+            // Act.
+            const { stdout } = await yiniCLI(command)
+            const parsed = eval(`(${stdout})`)
+
+            // Assert.
+            expect(parsed).toEqual(expected)
+        })
     })
 
-    it('3: Outputs JavaScript (--js)', async () => {
-        const { stdout } = await yiniCLI(`parse ${FIXTURE} --js`)
+    describe('YAML output', () => {
+        it('4) Outputs YAML with --yaml', async () => {
+            // Arrange.
+            const command = `parse ${FIXTURE} --yaml`
 
-        const parsed = eval(`(${stdout})`)
+            // Act.
+            const { stdout } = await yiniCLI(command)
+            const parsed = YAML.parse(stdout)
 
-        expect(parsed).toEqual(expected)
+            // Assert.
+            expect(parsed).toEqual(expected)
+        })
     })
 
-    it('4: Outputs YAML (--yaml)', async () => {
-        const { stdout } = await yiniCLI(`parse ${FIXTURE} --yaml`)
+    describe('XML output', () => {
+        it('5) Outputs XML with --xml', async () => {
+            // Arrange.
+            const command = `parse ${FIXTURE} --xml`
 
-        const parsed = YAML.parse(stdout)
+            // Act.
+            const { stdout } = await yiniCLI(command)
 
-        expect(parsed).toEqual(expected)
-    })
-
-    it('5: Outputs XML (--xml)', async () => {
-        const { stdout } = await yiniCLI(`parse ${FIXTURE} --xml`)
-
-        expect(stdout).toContain('<yini>')
-        expect(stdout).toContain('<App>')
-        expect(stdout).toContain('<name>Demo</name>')
-        expect(stdout).toContain('<version>1.0</version>')
+            // Assert.
+            expect(stdout).toContain('<yini>')
+            expect(stdout).toContain('<App>')
+            expect(stdout).toContain('<name>Demo</name>')
+            expect(stdout).toContain('<version>1.0</version>')
+            expect(stdout).toContain('</App>')
+            expect(stdout).toContain('</yini>')
+        })
     })
 })

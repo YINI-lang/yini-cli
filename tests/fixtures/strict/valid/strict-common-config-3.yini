@@ -1,0 +1,28 @@
+^ Pipeline
+
+name = "Release Pipeline"
+active = true
+trigger = "push"
+defaultBranch = "main"
+notifications = { email: "devops@example.com", slack: "#deployments" }
+
+    ^^ Build
+    nodeVersion = 20
+    install = { command: "npm ci", retries: 2 }
+    test = { command: "npm run test", coverageRequired: true }
+    artifacts = ["dist/", "coverage/", "docs/"]
+
+    ^^ Deploy
+    strategy = "rolling"
+    environments = [
+        { name: "staging", autoApprove: true },
+        { name: "production", autoApprove: false }
+    ]
+    rollback = { enabled: true, keepReleases: 5 }
+
+    ^^ Security
+    scanDependencies = true
+    failOnWarnings = false
+    secretsProvider = "vault"
+
+/END

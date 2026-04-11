@@ -1,0 +1,39 @@
+^ Home
+
+name = "North House"
+timezone = "Europe/Stockholm"
+alarmEnabled = true
+
+    ^^ Rooms
+        ^^^ Kitchen
+        lights = true
+        thermostat = 21
+        sensors = ["temperature", "smoke", "motion"]
+
+        ^^^ LivingRoom
+        lights = true
+        thermostat = 22
+        sensors = ["temperature", "motion"]
+
+        ^^^ Garage
+        lights = false
+        thermostat = 10
+        sensors = ["door", "motion"]
+
+    ^^ Automation
+        ^^^ Morning
+        enabled = true
+        startsAt = "06:30"
+        actions = ["open-blinds", "start-coffee", "set-thermostat"]
+
+        ^^^ Night
+        enabled = true
+        startsAt = "23:00"
+        actions = ["lock-doors", "turn-off-lights", "arm-alarm"]
+
+    ^^ Network
+    controllerIp = "192.168.1.50"
+    controllerPort = 8443
+    useTLS = true
+
+/END
