@@ -5,9 +5,9 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import YAML from 'yaml'
-import { yiniCLI } from './test-helpers'
+import { yiniCLI } from '../test-helpers'
 
-const FIXTURE = path.resolve(__dirname, 'fixtures/medium-config.yini')
+const FIXTURE = path.resolve(__dirname, '../fixtures/medium-config.yini')
 
 const expected = {
     App: {

@@ -7,10 +7,10 @@ import {
     printObject,
     toJSON,
     toPrettyJSON,
-} from '../src/utils/print'
-import { yiniCLI } from './test-helpers'
+} from '../../src/utils/print'
+import { yiniCLI } from '../test-helpers'
 
-const DIR_OF_FIXTURES = 'fixtures/'
+const DIR_OF_FIXTURES = '../fixtures/'
 
 describe('Test parse command usage:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)

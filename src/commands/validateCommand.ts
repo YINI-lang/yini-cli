@@ -530,7 +530,44 @@ const formatJsonReport = (
     aggregate: IAggregateValidationResult,
     options: IValidateCommandOptions,
 ): string => {
-    const payload = {
+    const isSingleFile = aggregate.results.length === 1
+
+    if (isSingleFile) {
+        return JSON.stringify(
+            toSingleFileJsonReport(aggregate.results[0], options),
+            null,
+            2,
+        )
+    }
+
+    return JSON.stringify(toMultiFileJsonReport(aggregate, options), null, 2)
+}
+
+const toSingleFileJsonReport = (
+    result: IFileValidationResult,
+    options: IValidateCommandOptions,
+) => {
+    return {
+        file: result.file,
+        mode: result.mode,
+        status: result.status,
+        summary: {
+            errors: result.errors,
+            warnings: result.warnings,
+            notices: result.notices,
+            infos: result.infos,
+        },
+        issues: result.issues.map(mapIssueToJson),
+        stats: toStatsJson(result.metadata, options),
+    }
+}
+
+const toMultiFileJsonReport = (
+    aggregate: IAggregateValidationResult,
+    options: IValidateCommandOptions,
+) => {
+    return {
+        base: aggregate.displayBaseDir,
         mode: aggregate.mode,
         status: aggregate.status,
         summary: {
@@ -542,7 +579,7 @@ const formatJsonReport = (
             infos: aggregate.infos,
         },
         files: aggregate.results.map((result) => ({
-            file: result.file,
+            file: toDisplayPath(result.file, aggregate.displayBaseDir),
             mode: result.mode,
             status: result.status,
             summary: {
@@ -551,37 +588,54 @@ const formatJsonReport = (
                 notices: result.notices,
                 infos: result.infos,
             },
-            issues: result.issues.map((issue) => ({
-                severity: issue.severity,
-                code: issue.code,
-                message: issue.message,
-                location: {
-                    line: issue.line,
-                    column: issue.column,
-                },
-                advice: issue.advice,
-                hint: issue.hint,
-            })),
-            stats:
-                options.stats && result.metadata
-                    ? {
-                          lineCount: result.metadata.source.lineCount,
-                          byteSize:
-                              result.metadata.source.sourceType === 'inline'
-                                  ? null
-                                  : result.metadata.source.byteSize,
-                          sections: result.metadata.structure.sectionCount,
-                          keys: result.metadata.structure.memberCount,
-                          nestingDepth: result.metadata.structure.maxDepth,
-                          hasYiniMarker: result.metadata.source.hasYiniMarker,
-                          hasDocumentTerminator:
-                              result.metadata.source.hasDocumentTerminator,
-                      }
-                    : undefined,
+            issues: result.issues.map(mapIssueToJson),
+            stats: toStatsJson(result.metadata, options),
         })),
     }
+}
 
-    return JSON.stringify(payload, null, 2)
+const mapIssueToJson = (issue: IValidationIssue) => {
+    const hasLocation =
+        typeof issue.line === 'number' &&
+        typeof issue.column === 'number' &&
+        issue.line > 0 &&
+        issue.column > 0
+
+    return {
+        severity: issue.severity,
+        code: issue.code,
+        message: issue.message,
+        location: hasLocation
+            ? {
+                  line: issue.line,
+                  column: issue.column,
+              }
+            : undefined,
+        advice: issue.advice,
+        hint: issue.hint,
+    }
+}
+
+const toStatsJson = (
+    metadata: ResultMetadata | null,
+    options: IValidateCommandOptions,
+) => {
+    if (!options.stats || !metadata) {
+        return undefined
+    }
+
+    return {
+        lineCount: metadata.source.lineCount,
+        byteSize:
+            metadata.source.sourceType === 'inline'
+                ? null
+                : metadata.source.byteSize,
+        sectionCount: metadata.structure.sectionCount,
+        memberCount: metadata.structure.memberCount,
+        nestingDepth: metadata.structure.maxDepth,
+        hasYiniMarker: metadata.source.hasYiniMarker,
+        hasDocumentTerminator: metadata.source.hasDocumentTerminator,
+    }
 }
 
 // --- Stats -------------------------------------------------------------------

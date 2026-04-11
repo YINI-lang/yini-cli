@@ -184,7 +184,7 @@ const validateCmd = program
     // Input handling
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
-    .option('--no-recursive, --no-subdirs', 'Do not scan subdirectories.')
+    .option('--no-recursive', 'Do not scan subdirectories.')
 
     // ─────────────────────────────
     // Output handling - WAIT WITH THESE
@@ -200,6 +200,8 @@ const validateCmd = program
         debugPrint('Run command "validate"')
         debugPrint('isDebug(): ' + isDebug())
         debugPrint('isDev(): ' + isDev())
+        // console.log('options:')
+        // console.log(options)
 
         if (isDebug()) {
             console.log('mergedOptions:')
@@ -232,4 +234,9 @@ appendGlobalOptionsTo(infoCmd)
 
 enableHelpAll(program)
 
-program.parseAsync()
+// program.parseAsync()
+const normalizedArgv = process.argv.map((arg) =>
+    arg === '--no-subdirs' ? '--no-recursive' : arg,
+)
+
+program.parseAsync(normalizedArgv)

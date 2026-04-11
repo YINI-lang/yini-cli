@@ -9,22 +9,29 @@ Validate one or more YINI files.
 
 Multiple files and directories may be provided, separated by spaces.
 
+---
+
 ## Default behavior
 
 - Validates one or more files or directories.
 - If a directory is provided, all `.yini` files are validated recursively by default.
 - Prints a human-readable validation summary to the terminal.
 - Uses lenient mode by default.
-- Returns a non-zero exit code if one or more files contain validation errors.
+- Returns a non-zero exit code if validation fails for one or more files, or if warnings are treated as errors.
 - In single-file mode: show the summary first, then issue details.
 - In multi-file mode: show per-file `OK` / `FAIL` lines first, then final summary, then issue details for failed files.
-- `--stats` applies to single-file mode only.
+- In text output, `--stats` applies to single-file mode only.
+- In JSON output, `--stats` may be included for each validated file.
+
+---
 
 ## CLI syntax
 
 ```sh
 yini validate <fileOrDirectory...> [options]
 ```
+
+---
 
 ## Options
 
@@ -60,7 +67,7 @@ yini validate <fileOrDirectory...> [options]
   Show extra processing details
 
 - `--stats`  
-  Include optional statistics in the report (single-file mode only)
+  Include optional statistics in the report
 
 - `--format <text|json>`  
   Output format for validation results (default: `text`)
@@ -101,6 +108,8 @@ yini validate <fileOrDirectory...> [options]
 - `(WAIT WITH THIS) --duplicates-policy <error|warn|allow>`
 - `(WAIT WITH THIS) --reserved-policy <error|warn|allow>`
 
+---
+
 ## Exit codes
 
 - `0` = all files valid
@@ -109,16 +118,16 @@ yini validate <fileOrDirectory...> [options]
 
 ---
 
-# Output rules
+## Output rules
 
 Human-readable output should be the default.
 
-## Single-file mode
+### Single-file mode
 
 - The summary for single-file mode should feel friendly and come first.
 - If `--stats` is enabled, show statistics after the issue details.
 
-### On success (exit 0)
+#### On success (exit 0)
 
 To stdout:
 
@@ -131,7 +140,7 @@ Errors:   0
 Warnings: 0
 ```
 
-### On validation failure (exit 1)
+#### On validation failure (exit 1)
 
 To stdout:
 
@@ -151,7 +160,7 @@ To stderr:
   27:1   warning  Duplicate key: "port"
 ```
 
-### Optional statistics (`--stats`)
+#### Optional statistics (`--stats`)
 
 ```txt
 Statistics
@@ -167,17 +176,15 @@ Has /END:      false
 Byte Size:     135 bytes
 ```
 
----
-
-## Multi-file mode
+### Multi-file mode
 
 - The summary for multi-file mode is different from single-file mode.
 - Show per-file `OK` / `FAIL` lines first.
 - Show the summary after the per-file lines.
 - Then show issue details only for failed files.
-- Do not show per-file statistics blocks in multi-file mode, even if `--stats` is set.
+- In text output, do not show per-file statistics blocks in multi-file mode, even if `--stats` is set.
 
-### On success (exit 0)
+#### On success (exit 0)
 
 To stdout:
 
@@ -186,11 +193,12 @@ OK    "configs/file.yini"
 OK    "configs/db.yini"
 OK    "configs/prod.yini"
 
-Mode: strict
+Base:    "<absolute path>"
+Mode:    strict
 Summary: 3 checked, 0 failed, 0 errors, 0 warnings
 ```
 
-### On validation failure (exit 1)
+#### On validation failure (exit 1)
 
 To stdout:
 
@@ -199,7 +207,8 @@ OK    "configs/file.yini"
 FAIL  "configs/db.yini"
 OK    "configs/prod.yini"
 
-Mode: strict
+Base:    "<absolute path>"
+Mode:    strict
 Summary: 3 checked, 1 failed, 2 errors, 0 warnings
 ```
 
@@ -213,7 +222,7 @@ To stderr:
 
 Detailed issues are printed only for failed files.
 
-### Example
+#### Example
 
 ```txt
 OK    "indent-ex-conf1.yini"
@@ -221,7 +230,8 @@ OK    "indent-ex-conf2.yini"
 FAIL  "config3.yini"
 FAIL  "settings-bad-escaping.yini"
 
-Mode: lenient
+Base:    "<absolute path>"
+Mode:    lenient
 Summary: 67 checked, 14 failed, 132 errors, 0 warnings
 
 "config3.yini"
@@ -236,7 +246,7 @@ Summary: 67 checked, 14 failed, 132 errors, 0 warnings
 
 ---
 
-# Requirements for report output
+## Requirements for report output
 
 The output should:
 
@@ -246,9 +256,9 @@ The output should:
 4. Be machine-friendly when requested (`--format json`)
 5. Be stable and predictable for CI usage
 
-## Header / Summary
+### Header / Summary
 
-### On success
+#### On success
 
 ```txt
 ✔  Validation successful
@@ -259,7 +269,7 @@ Errors:   0
 Warnings: 0
 ```
 
-### On failure
+#### On failure
 
 ```txt
 ✖  Validation failed
@@ -270,7 +280,7 @@ Errors:   3
 Warnings: 1
 ```
 
-## Issue details
+### Issue details
 
 Each issue should show:
 
@@ -280,7 +290,7 @@ Each issue should show:
 - Location: file + line + column
 - Context: snippet of the file (if helpful)
 
-### Example
+#### Example
 
 ```txt
 Errors:
@@ -294,7 +304,7 @@ Warnings:
     at config.yini:3:1
 ```
 
-## Exit code contract
+### Exit code contract
 
 - Success, no warnings → `0`
 - Warnings only → `0`
@@ -302,21 +312,74 @@ Warnings:
 - One or more validation errors → `1`
 - CLI/runtime failure → `2`
 
+---
+
 ## Example: JSON format (`--format json`)
+
+### Single-file mode
 
 ```json
 {
+  "file": "config.yini",
   "mode": "strict",
   "status": "failed",
   "summary": {
-    "filesChecked": 1,
+    "errors": 2,
+    "warnings": 1,
+    "notices": 0,
+    "infos": 0
+  },
+  "issues": [
+    {
+      "severity": "error",
+      "code": "DUPLICATE_KEY",
+      "message": "Duplicate key \"host\"",
+      "location": {
+        "line": 14,
+        "column": 5
+      },
+      "advice": "Rename or remove one of the keys."
+    },
+    {
+      "severity": "warning",
+      "code": "RESERVED_CONSTRUCT",
+      "message": "Reserved construct \"$schema\"",
+      "location": {
+        "line": 3,
+        "column": 1
+      }
+    }
+  ],
+  "stats": {
+    "lineCount": 42,
+    "byteSize": 805,
+    "sectionCount": 8,
+    "memberCount": 21,
+    "nestingDepth": 2,
+    "hasYiniMarker": true,
+    "hasDocumentTerminator": false
+  }
+}
+```
+
+### Multi-file mode
+
+```json
+{
+  "base": "<absolute path>",
+  "mode": "strict",
+  "status": "failed",
+  "summary": {
+    "filesChecked": 3,
     "failedFiles": 1,
     "errors": 2,
-    "warnings": 1
+    "warnings": 1,
+    "notices": 0,
+    "infos": 0
   },
   "files": [
     {
-      "file": "config.yini",
+      "file": "configs/db.yini",
       "mode": "strict",
       "status": "failed",
       "summary": {
@@ -330,20 +393,26 @@ Warnings:
           "severity": "error",
           "code": "DUPLICATE_KEY",
           "message": "Duplicate key \"host\"",
-          "location": { "line": 14, "column": 5 }
+          "location": {
+            "line": 14,
+            "column": 5
+          }
         },
         {
           "severity": "warning",
           "code": "RESERVED_CONSTRUCT",
           "message": "Reserved construct \"$schema\"",
-          "location": { "line": 3, "column": 1 }
+          "location": {
+            "line": 3,
+            "column": 1
+          }
         }
       ],
       "stats": {
         "lineCount": 42,
         "byteSize": 805,
-        "sections": 8,
-        "keys": 21,
+        "sectionCount": 8,
+        "memberCount": 21,
         "nestingDepth": 2,
         "hasYiniMarker": true,
         "hasDocumentTerminator": false
