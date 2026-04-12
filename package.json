@@ -1,6 +1,6 @@
 {
     "name": "yini-cli",
-    "version": "1.3.4",
+    "version": "1.4.0",
     "description": "Official YINI CLI for validating, parsing, and converting a human-friendly config format with real structure, nested sections, and predictable strict or lenient parsing.",
     "keywords": [
         "yini",
