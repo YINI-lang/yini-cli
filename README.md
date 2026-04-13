@@ -1,13 +1,12 @@
 # YINI CLI
-> **Readable configuration without indentation pitfalls or JSON verbosity.**  
 
-**The official CLI for validating, inspecting, and converting YINI configuration files to JSON or JavaScript, built by the YINI-lang project.**
+The official CLI for validating, inspecting, and converting YINI configuration files to JSON or JavaScript, maintained by the YINI-lang project.
 
-*YINI is an INI-inspired, human-friendly configuration format with real structure, nested sections, comments, and predictable parsing.*
+YINI is an INI-inspired, human-readable configuration format with explicit structure, nested sections, comments, and predictable parsing.
+
+YINI is intended to emphasize clarity, readability, explicit structure, predictability, and deterministic parsing, while remaining simple, but not simplistic.
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml) [![Regression Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml) [![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-cli)](https://www.npmjs.com/package/yini-cli)
-
-Designed for developers and teams who want human-edited configuration with explicit structure and no indentation-based semantics.
 
 ## Quick Start
 
@@ -82,11 +81,11 @@ Source: [config.yini](./samples/config.yini)
 
 ---
 
-## 🙋‍♀️ Why YINI?
+## YINI characteristics
 - **Indentation-independent structure:** YINI is indentation-independent — whitespace never alters structural meaning.
-- **Explicit nesting:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy, making large configurations easier to scan and refactor.
+- **Explicit nesting:** Section markers such as `^`, `^^`, and `^^^` define hierarchy explicitly.
 - **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`), making it easier to document configuration directly in the file.
+- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) for documenting configuration directly in the file.
 - **Predictable parsing:** Well-defined rules with optional strict and lenient modes for different use cases.
 
 ---
@@ -177,10 +176,8 @@ Here's a small example showing YINI structure and comments:
 }
 ```
 
-That's it!
-
-- ▶️ See more on [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_middle).
-- ▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
+- [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_middle).
+- [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with usage examples.
 
 ---
 
@@ -196,8 +193,8 @@ The `parse` command supports multiple output formats:
 | `yini parse config.yini --js`           | JavaScript object    | JavaScript-style object (unquoted keys, single quotes). |
 | `yini parse config.yini -o out.json`    | File output          | Writes formatted JSON to file (default format). |
 
->💡 `--js` and `--compact` are mutually exclusive.  
->💡 Tip: You can combine --output with any style flag to control both formatting and destination.
+> `--js` and `--compact` are mutually exclusive.  
+> `--output` can be combined with a style flag to control both formatting and destination.
 
 ### Output File Handling
 
@@ -237,20 +234,22 @@ Use `--overwrite` to force replacement.
 ---
 
 ## Contributing
-Contributions, bug reports, and feedback are welcome. Even small improvements or suggestions are appreciated.  
+Bug reports, feedback, and contributions are welcome.  
 
-If this tool is useful to you, a GitHub star helps more people discover the project and supports future development.
+GitHub Issues and Discussions are available for feedback and project discussion.
 
 ---
 
 ## License
-This project is licensed under the Apache-2.0 license — see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the Apache License 2.0 — see the [LICENSE](./LICENSE) file for details.
 
-In this project on GitHub, the `libs` directory contains third party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
+In this project on GitHub, the `libs` directory contains third-party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
 
 ---
 
 **^YINI ≡**  
-> Readable like INI. Structured like JSON. No indentation surprises.  
+> YINI is a human-readable configuration format designed for clarity, readability, explicit structure, predictability, and deterministic parsing.
+> 
+> See the specification for syntax and format details.  
 
 [yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI-lang on GitHub](https://github.com/YINI-lang)  

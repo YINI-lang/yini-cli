@@ -1,7 +1,7 @@
 {
     "name": "yini-cli",
     "version": "1.4.0",
-    "description": "Official YINI CLI for validating, parsing, and converting a human-friendly config format with real structure, nested sections, and predictable strict or lenient parsing.",
+    "description": "Official command-line tool for validating and converting YINI files — YINI is an INI-inspired, human-readable configuration format with explicit structure and predictable parsing.",
     "keywords": [
         "yini",
         "cli",
