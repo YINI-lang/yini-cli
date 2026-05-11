@@ -108,7 +108,7 @@ const parseCmd = program
     // File handling options.
     .option(
         '-o, --output <file>',
-        'Write output to <file>. By default, an existing file is only overwritten if it is older than the input YINI file.',
+        'Write output to <file>. By default, an existing output file is only overwritten if it is older than the input YINI file.',
     )
     .option(
         '--overwrite',
