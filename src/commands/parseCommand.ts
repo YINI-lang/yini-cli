@@ -226,6 +226,58 @@ const hasMeaningfulParsedData = (value: unknown): boolean => {
     return Object.keys(value as Record<string, unknown>).length > 0
 }
 
+const formatParserDiagnostics = (parsed: YiniParseResult): string[] => {
+    const errors = parsed.meta?.diagnostics?.errors?.payload ?? []
+
+    return errors.map((diagnostic: unknown) => {
+        if (typeof diagnostic === 'string') {
+            return diagnostic
+        }
+
+        if (!diagnostic || typeof diagnostic !== 'object') {
+            return String(diagnostic)
+        }
+
+        const issue = diagnostic as {
+            message?: unknown
+            code?: unknown
+            line?: unknown
+            column?: unknown
+        }
+
+        const message = issue.message ?? issue.code ?? 'Unknown parser error'
+
+        const location =
+            issue.line != null
+                ? `line ${issue.line}${
+                      issue.column != null ? `:${issue.column}` : ''
+                  }: `
+                : ''
+
+        return `${location}${String(message)}`
+    })
+}
+
+const printParseFailure = (
+    commandOptions: IParseCommandOptions,
+    parsed: YiniParseResult,
+): void => {
+    const messages = formatParserDiagnostics(parsed)
+
+    if (messages.length === 0) {
+        printStderr(commandOptions, 'Syntax error: failed to parse YINI input.')
+        return
+    }
+
+    for (const message of messages) {
+        const normalizedMessage = message.toLowerCase().includes('syntax error')
+            ? message
+            : `Syntax error: ${message}`
+
+        printStderr(commandOptions, normalizedMessage)
+    }
+}
+
 const doParseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
@@ -278,6 +330,7 @@ const doParseFile = (
             file,
             parseOptions,
         )
+
         const errorCount =
             parsedWithMeta?.meta?.diagnostics?.errors?.errorCount ?? 0
 
@@ -286,11 +339,11 @@ const doParseFile = (
 
         const hasErrors = errorCount > 0
         const bestEffort = !!commandOptions.bestEffort
-        // const strictMode = resolveStrictMode(commandOptions)
         const shouldFailHard =
             hasErrors && !bestEffort && (strictMode || !hasUsableOutput)
 
         if (shouldFailHard) {
+            printParseFailure(commandOptions, parsedWithMeta)
             process.exit(1)
         }
 

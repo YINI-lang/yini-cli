@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 1.5.0 - 2026 May
+- Bumped dependency `yini-parser` to `^1.6.0` with YINI Specification RC 6 parser support, which brings:
+  - Improved parser diagnostics and structured issue reporting.
+  - Support for the latest RC 6 mode-declaration behavior.
+  - Improved handling of duplicate sections and duplicate keys.
+  - Improved section marker parsing, including marker separators.
+  - Improved string concatenation validation.
+  - Improved EOF handling for files without a final trailing newline.
+
+- Fixed CLI parse error reporting so parse failures are printed by `yini-cli` instead of relying on the parser library to write diagnostics directly to `stderr`.
+- Updated validation behavior to support the newer parser diagnostics model, including `passed-with-warnings` results for valid files that produce warnings.
+- Updated tests and fixtures for the newer parser behavior, including coverage for valid files without a final newline at EOF.
+- Confirmed that `yini-cli` remains quiet by default for JSON validation output, while text-mode validation still reports user-facing diagnostics where appropriate.
+
 ## 1.4.0 - 2026 Apr
 - Bumped dependency `yini-parser` to `^1.5.0` which brings:
   - **Updated** to match **YINI Specification RC.5**: includes synced grammar files and the latest section-header parsing rules.

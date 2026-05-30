@@ -61,9 +61,7 @@ describe('Validate command in lenient mode.', () => {
 
         it('1.c) Produces file-mode JSON for one valid file.', async () => {
             // Arrange.
-            const fullPath = validFixture(
-                'validate-valid-no-newline-at-eof.yini',
-            )
+            const fullPath = validFixture('validate-valid-basic-1.yini')
 
             // Act.
             const { stdout, stderr, exitCode } = await yiniCLI([
@@ -85,6 +83,34 @@ describe('Validate command in lenient mode.', () => {
             expect(parsed.summary.errors).toBe(0)
             expect(parsed.summary.warnings).toBe(0)
             expect(Array.isArray(parsed.issues)).toBe(true)
+        })
+
+        it('1.d) Accepts a valid file without a final newline at EOF.', async () => {
+            // Arrange.
+            const fullPath = validFixture(
+                'validate-valid-no-newline-at-eof.yini',
+            )
+
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                fullPath,
+                '--lenient',
+                '--format',
+                'json',
+            ])
+
+            // Assert.
+            const parsed = JSON.parse(stdout)
+
+            expect(exitCode).toBe(0)
+            expect(stderr).toBe('')
+            expect(parsed.file).toBe(fullPath)
+            expect(parsed.mode).toBe('lenient')
+            expect(parsed.summary.errors).toBe(0)
+            expect(Array.isArray(parsed.issues)).toBe(true)
+            expect(parsed.status).toBe('passed-with-warnings')
+            expect(parsed.summary.warnings).toBeGreaterThan(0)
         })
     })
 
