@@ -51,7 +51,7 @@
         "run:parse": "npm run start -- parse sample.yini",
         "run:validate": "npm run start -- validate sample.yini",
         "test:smoke": "vitest tests/smoke",
-        "test:general": "vitest tests/general",
+        "test:general": "vitest tests/global-options.test.ts",
         "test": "vitest run",
         "test:debug": "cross-env isDebug=1 vitest run --reporter=verbose",
         "test:general:debug": "cross-env isDebug=1 npm run test:general",
@@ -63,7 +63,7 @@
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
         "build": "tsc",
-        "clean": "rm -rf dist",
+        "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
         "prepare": "npm run build",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
@@ -95,7 +95,7 @@
     },
     "lint-staged": {
         "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
-            "prettier --config ./.prettierrc --write"
+            "prettier --config ./prettier.config.cjs --write"
         ]
     },
     "engines": {

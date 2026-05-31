@@ -26,11 +26,12 @@ yini-cli/
 |   |
 │   ├── globalOptions/
 │   │   └── helpOption.ts
-│   │   └── infoOption.ts
 │   │
 │   ├── commands/
-│   │   └── parse.ts
-│   │   └── validate.ts
+│   │   └── commonFunctions.ts
+│   │   └── infoCommand.ts
+│   │   └── parseCommand.ts
+│   │   └── validateCommand.ts
 │   │   └── ...
 │   │
 │   └── index.ts

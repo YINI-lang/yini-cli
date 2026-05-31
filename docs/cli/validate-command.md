@@ -381,6 +381,7 @@ Example:
 ```json
 {
   "file": "config.yini",
+  "runMode": "file",
   "mode": "strict",
   "status": "failed",
   "summary": {
@@ -431,6 +432,7 @@ Example:
 ```json
 {
   "base": "<absolute path>",
+  "runMode": "directory",
   "mode": "strict",
   "status": "failed",
   "summary": {

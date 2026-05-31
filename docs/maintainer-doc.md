@@ -79,11 +79,11 @@ In here is **internal-only notes**: Release process, package testing, etc.
    ```bash
    yini parse sample.yini
    ```
-   This should print the result as a JS object.
+   This should print the result as pretty-printed JSON.
 
    Try **parsing and outputting as pretty JSON**, e.g.:
    ```bash
-   yini parse sample.yini --pretty
+   yini parse sample.yini --json
    ```
    This should print the result as pretty-printed JSON.
 
