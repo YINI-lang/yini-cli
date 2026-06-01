@@ -1,6 +1,6 @@
 // src/commands/parseCommand.ts
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'fs'
+import path from 'path'
 import YINI, { ParseOptions, YiniParseResult } from 'yini-parser'
 import { getSerializer, TOutputFormat } from '../serializers/index.js'
 import { IGlobalOptions } from '../types.js'
