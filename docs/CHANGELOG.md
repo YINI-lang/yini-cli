@@ -1,9 +1,9 @@
 # CHANGELOG
 
-## 1.5.0 - 2026 May
+## 1.5.0 - 2026 June
 - Bumped dependency `yini-parser` to `^1.6.0` with YINI Specification RC 6 parser support, which brings:
   - Improved parser diagnostics and structured issue reporting.
-  - Support for the latest RC 6 mode-declaration behavior.
+  - Support for the latest **RC 6** mode-declaration behavior.
   - Improved handling of duplicate sections and duplicate keys.
   - Improved section marker parsing, including marker separators.
   - Improved string concatenation validation.
