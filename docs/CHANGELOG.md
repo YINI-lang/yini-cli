@@ -8,6 +8,7 @@
   - Improved section marker parsing, including marker separators.
   - Improved string concatenation validation.
   - Improved EOF handling for files without a final trailing newline.
+  - And more.
 
 - **Improvement:** Included `docs/CHANGELOG.md` in the package.
 - Fixed CLI parse error reporting so parse failures are printed by `yini-cli` instead of relying on the parser library to write diagnostics directly to `stderr`.
