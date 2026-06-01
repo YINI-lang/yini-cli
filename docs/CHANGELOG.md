@@ -9,6 +9,7 @@
   - Improved string concatenation validation.
   - Improved EOF handling for files without a final trailing newline.
 
+- **Improvement:** Included `docs/CHANGELOG.md` in the package.
 - Fixed CLI parse error reporting so parse failures are printed by `yini-cli` instead of relying on the parser library to write diagnostics directly to `stderr`.
 - Updated validation behavior to support the newer parser diagnostics model, including `passed-with-warnings` results for valid files that produce warnings.
 - Updated tests and fixtures for the newer parser behavior, including coverage for valid files without a final newline at EOF.

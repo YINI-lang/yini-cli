@@ -26,19 +26,20 @@
         }
     },
     "bin": {
-        "yini": "./dist/index.js"
+        "yini": "dist/index.js"
     },
     "homepage": "https://yini-lang.org/",
     "license": "Apache-2.0",
     "files": [
         "dist/",
         "README.md",
+        "docs/CHANGELOG.md",
         "LICENSE",
         "sample.yini"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/YINI-lang/yini-cli.git"
+        "url": "git+https://github.com/YINI-lang/yini-cli.git"
     },
     "private": false,
     "scripts": {
@@ -99,6 +100,6 @@
         ]
     },
     "engines": {
-        "node": ">=13"
+        "node": ">=18"
     }
 }
