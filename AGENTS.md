@@ -89,7 +89,6 @@ npm run test:cov
 ```
 
 Notes:
-
 - There is no dedicated `typecheck` script at the time of writing; `npm run
   build` runs `tsc` and is the typecheck.
 - CI uses `npm ci --ignore-scripts`, then build/lint/test steps depending on
@@ -155,7 +154,6 @@ Follow the existing style of the repository.
 ## Testing
 
 When changing behavior:
-
 - Add or update focused Vitest tests near the affected command or feature.
 - Add or update fixture files under `tests/fixtures/` when parser-facing
   behavior changes.
@@ -172,7 +170,6 @@ When changing behavior:
 ## Documentation Guidance
 
 Update documentation when a change affects:
-
 - public CLI commands, options, or exit codes,
 - parse or validate behavior,
 - supported output formats,
@@ -188,7 +185,6 @@ current YINI specification.
 Do not add new runtime dependencies unless clearly necessary.
 
 Before adding a dependency, prefer:
-
 1. Existing project utilities.
 2. Node.js standard library functionality.
 3. Small local helper functions.
@@ -202,7 +198,7 @@ If a new dependency is necessary, explain why it is justified. Do not modify
 
 - Run tests before submitting any change.
 - Match the code patterns in the file you are editing.
-- Keep changes focused — one concern per PR.
+- Keep changes focused: one concern per PR.
 - When editing Markdown files, if a line introduces a bulleted list and ends with a colon (`:`), place the first bullet immediately on the next line. Do not insert a blank line between the introductory line and the first bullet.
 
 ### Ask First
@@ -215,7 +211,6 @@ If a new dependency is necessary, explain why it is justified. Do not modify
 ### Never Do
 
 Do not modify:
-
 - secrets, credentials, private keys, or `.env` files,
 - generated files such as `dist/`, `coverage/`, or `.nyc_output/` unless
   generation is explicitly part of the task,
@@ -223,7 +218,6 @@ Do not modify:
 - unrelated formatting or whitespace.
 
 Do not perform destructive operations such as:
-
 - deleting large parts of the repository,
 - resetting history,
 - force-pushing,
@@ -249,6 +243,3 @@ Do not create commits, tags, branches, or releases unless explicitly requested.
   behavior unless the task explicitly changes it.
 - Parser behavior must match the current YINI specification and the
   `yini-parser` dependency contract.
-ch the current YINI specification.
-- Add or update golden tests when parsing behavior changes.
-- Prefer precise diagnostics over vague errors.
