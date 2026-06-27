@@ -1,6 +1,6 @@
 {
     "name": "yini-cli",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "description": "Official command-line tool for validating and converting YINI files — YINI is an INI-inspired, human-readable configuration format with explicit structure and predictable parsing.",
     "keywords": [
         "yini",
@@ -73,7 +73,7 @@
         "commander": "^14.0.1",
         "xmlbuilder2": "^4.0.3",
         "yaml": "^2.8.2",
-        "yini-parser": "^1.6.0"
+        "yini-parser": "^1.6.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.31.0",

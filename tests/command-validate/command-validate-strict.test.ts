@@ -31,11 +31,9 @@ describe('Validate command in strict mode.', () => {
             expect(stdout).toContain(`File:     "${fullPath}"`)
             expect(stdout).toContain('Mode:     strict')
             expect(stdout).toContain('Errors:   0')
+            expect(stdout).toContain('Warnings: 0')
 
-            expect(stderr.toLowerCase()).toContain('warning')
-            expect(stderr).toContain(
-                'Strict initialMode is not yet fully implemented',
-            )
+            expect(stderr).toBe('')
         })
 
         it('1.b) Includes statistics for one valid strict file when --stats is used.', async () => {
@@ -83,11 +81,11 @@ describe('Validate command in strict mode.', () => {
             expect(parsed.file).toBe(fullPath)
             expect(parsed.mode).toBe('strict')
 
-            expect(parsed.status).toBe('passed-with-warnings')
-            expect(parsed.summary.warnings).toBeGreaterThan(0)
-
+            expect(parsed.status).toBe('passed')
             expect(parsed.summary.errors).toBe(0)
+            expect(parsed.summary.warnings).toBe(0)
             expect(Array.isArray(parsed.issues)).toBe(true)
+            expect(parsed.issues).toHaveLength(0)
         })
     })
 

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.5.1 - 2026 June
+- Bumped dependency `yini-parser` to `^1.6.1` with the following changes:
+  * **Fixed:** Aligned parser behavior with the external `yini-test-suite` conformance suite for shebang comments, misplaced `@yini` directives, and triple-quoted string line endings.
+  * **Fixed:** `#!` lines after `@yini` are now treated as comments; misplaced `@yini` directives now produce syntax errors in both modes.
+  * **Fixed:** Triple-quoted raw and Classic strings now normalize `CRLF`/`CR` line endings to `LF` for stable cross-platform output.
+  * **Fixed:** Diagnostic line numbers now stay correct after shebang lines and strict-mode trailing-comma errors.
+  * **Fixed:** Removed the outdated strict-mode implementation warning; strict mode now targets the latest YINI Specification RC 6.
+  * **Improved:** Parse errors now use concise `YiniParseError` messages, including clearer strict-mode `/END` diagnostics.
+
 ## 1.5.0 - 2026 June
 - Bumped dependency `yini-parser` to `^1.6.0` with **YINI Specification RC 6** parser support, which brings:
   - Improved parser diagnostics and structured issue reporting.
