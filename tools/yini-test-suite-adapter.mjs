@@ -46,7 +46,9 @@ const runYiniCli = (args) => {
     })
 }
 
-const getExitCode = (result) => result.status ?? 1
+const getExitCode = (result) => {
+    return result.status ?? 1
+}
 
 const writeStderr = (text) => {
     const trimmed = text.trim()
@@ -56,33 +58,63 @@ const writeStderr = (text) => {
     }
 }
 
+const getProcessErrorMessage = (result) => {
+    if (!result.error) {
+        return ''
+    }
+
+    return result.error instanceof Error
+        ? result.error.message
+        : String(result.error)
+}
+
 try {
     const { input, mode } = parseArgs(process.argv.slice(2))
     const modeFlag = `--${mode}`
 
     const validate = runYiniCli([modeFlag, 'validate', input, '--silent'])
 
-    if (validate.status !== 0) {
+    if (getExitCode(validate) !== 0) {
         writeStderr(
             validate.stderr ||
+                validate.stdout ||
+                getProcessErrorMessage(validate) ||
                 `Validation failed for "${input}" in ${mode} mode.`,
         )
+
         process.exit(getExitCode(validate))
     }
 
     const parse = runYiniCli([modeFlag, 'parse', input, '--compact'])
 
-    if (parse.status !== 0) {
+    if (getExitCode(parse) !== 0) {
         writeStderr(
             parse.stderr ||
                 parse.stdout ||
+                getProcessErrorMessage(parse) ||
                 `Parse failed for "${input}" in ${mode} mode.`,
         )
+
         process.exit(getExitCode(parse))
     }
 
-    process.stdout.write(parse.stdout)
+    let parsedJson
+
+    try {
+        parsedJson = JSON.parse(parse.stdout)
+    } catch {
+        writeStderr(
+            parse.stderr ||
+                parse.stdout ||
+                `Parse output was not valid JSON for "${input}" in ${mode} mode.`,
+        )
+
+        process.exit(1)
+    }
+
+    process.stdout.write(JSON.stringify(parsedJson))
     writeStderr(parse.stderr)
+
     process.exit(0)
 } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
