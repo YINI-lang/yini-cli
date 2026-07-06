@@ -1,6 +1,6 @@
 # Runs the shared YINI conformance smoke suite against the built yini-cli command.
 
-name: YINI Test Suite Smoke Tests
+name: (external) YINI Test Suite Smoke Tests
 
 on:
     push:
