@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## [Upcoming/Unreleased] - FUTURE
+
 ## 1.5.1 - 2026 June
 - Bumped dependency `yini-parser` to `^1.6.1` with the following changes:
   * **Fixed:** Aligned parser behavior with the external `yini-test-suite` conformance suite for shebang comments, misplaced `@yini` directives, and triple-quoted string line endings.
