@@ -28,12 +28,26 @@ export const getHelpTextAfter = () => {
 ========================================================
 
 Quick Examples:
-  $ yini parse file.yini
-  $ yini parse file.yini --json
-  $ yini parse file.yini --js
-  $ yini parse file.yini -o output.json
-  $ yini validate config.yini --stats
-  $ yini validate . --strict
+  Parse config.yini and print formatted JSON:
+    $ yini parse config.yini
+
+  Parse config.yini and explicitly output JSON:
+    $ yini parse config.yini --json
+
+  Parse config.yini as a JavaScript object:
+    $ yini parse config.yini --js
+
+  Parse config.yini and write the output to a file:
+    $ yini parse config.yini -o output.json
+
+  Validate one YINI file and show stats:
+    $ yini validate config.yini --stats
+
+  Check whether one YINI file is valid:
+    $ yini check config.yini
+
+  Validate all YINI files in the current directory:
+    $ yini validate .
 
 For help with a specific command, use -h or --help. For example:
   $ yini validate --help

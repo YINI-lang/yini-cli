@@ -2,10 +2,7 @@
     "App": {
         "name": "Demo App",
         "version": 1.2,
-        "features": [
-            "search",
-            "logs"
-        ],
+        "features": ["search", "logs"],
         "debug": false,
         "pageSize": 25,
         "Server": {

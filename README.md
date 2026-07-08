@@ -122,6 +122,11 @@ yini validate --strict config.yini
 ```
 → Validate using strict mode.
 
+```bash
+yini check config.yini
+```
+→ Alias for `yini validate config.yini`.
+
 For help with a specific command:
 
 ```bash
