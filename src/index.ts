@@ -144,6 +144,7 @@ appendGlobalOptionsTo(parseCmd)
  */
 const validateCmd = program
     .command('validate <fileOrDirectory...>')
+    .alias('check')
     .description(descr['For-command-validate'])
 
     // ─────────────────────────────

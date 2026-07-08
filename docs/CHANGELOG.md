@@ -1,6 +1,9 @@
 # CHANGELOG
 
+**Changelog** for `yini-cli`.
+
 ## [Upcoming/Unreleased] - FUTURE
+- **Added:** Added the command `check` as alias for the command `validate`.
 
 ## 1.5.1 - 2026 June
 - Bumped dependency `yini-parser` to `^1.6.1` with the following changes:

@@ -9,6 +9,8 @@ Validate one or more YINI files.
 
 Multiple files and directories may be provided, separated by spaces.
 
+The `check` command is an alias for `validate`.
+
 ---
 
 ## Default behavior
@@ -36,6 +38,7 @@ The validate command operates in two run modes: **file mode** and **directory mo
 Examples:
 
 - `yini validate config.yini` → file mode
+- `yini check config.yini` → file mode
 - `yini validate a.yini b.yini` → file mode
 - `yini validate .` → directory mode
 - `yini validate configs/` → directory mode
@@ -47,6 +50,7 @@ Examples:
 
 ```sh
 yini validate <fileOrDirectory...> [options]
+yini check <fileOrDirectory...> [options]
 ```
 
 ---
