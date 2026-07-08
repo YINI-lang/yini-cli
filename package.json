@@ -62,7 +62,7 @@
         "ci:test:smoke": "vitest run tests/smoke --reporter=verbose",
         "lint": "eslint src --ext .ts",
         "format": "prettier --check .",
-        "format:fix": "prettier --write .",
+        "format:fix": "prettier --write . \"!**/*.md\"",
         "build": "tsc",
         "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
         "prepare": "npm run build",
