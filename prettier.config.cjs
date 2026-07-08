@@ -14,7 +14,7 @@ module.exports = {
     tabWidth: 4,
     singleQuote: true,
     trailingComma: 'all',
-    jsxBracketSameLine: true,
+    bracketSameLine: true,
     semi: false,
     // Whether to add a space between brackets in object literals
     bracketSpacing: true,
