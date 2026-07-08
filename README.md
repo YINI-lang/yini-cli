@@ -225,15 +225,19 @@ YINI may not be the right choice when you need mature ecosystem support, existin
 If you find a problem, please open an issue on GitHub:
 
 - [Report a bug or issue](https://github.com/YINI-lang/yini-cli/issues)
+- [Join project discussions](https://github.com/YINI-lang/yini-cli/discussions)
+
+### Help and more information
+
+- [YINI Homepage](https://yini-lang.org)
+- [YINI-lang on GitHub](https://github.com/YINI-lang)
 
 When reporting parser behavior, it is helpful to include:
+
 - The YINI input that caused the issue.
 - The command and options used.
 - The expected result.
-- The actual result or error message.
-- The installed `yini-cli` version.
-- The Node.js version used.
-- The operating system and version used.
+- Etc.
 
 ---
 

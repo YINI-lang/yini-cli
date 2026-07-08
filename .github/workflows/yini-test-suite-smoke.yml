@@ -1,4 +1,5 @@
-# Runs the shared YINI conformance smoke suite against the built yini-cli command.
+# GitHub Actions workflow for checking yini-cli against the shared YINI test suite.
+# It builds the CLI, installs the external test suite, and runs smoke tests in lenient and strict modes.
 
 name: (external) YINI Test Suite Smoke Tests
 

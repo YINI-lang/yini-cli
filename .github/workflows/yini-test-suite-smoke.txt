@@ -1,0 +1,5 @@
+External YINI test suite (conformance) smoke tests workflow:
+
+- Builds yini-cli from the current repository checkout.
+- Installs the external YINI test suite.
+- Runs smoke tests against the built CLI in both lenient and strict modes.
