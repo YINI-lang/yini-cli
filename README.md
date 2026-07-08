@@ -229,7 +229,7 @@ If you find a problem, please open an issue on GitHub:
 
 ### Help and more information
 
-- [YINI Homepage](https://yini-lang.org)
+- [YINI homepage](https://yini-lang.org?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_project_links)
 - [YINI-lang on GitHub](https://github.com/YINI-lang)
 
 When reporting parser behavior, it is helpful to include:
