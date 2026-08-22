@@ -2,7 +2,7 @@
 
 **Changelog** for `yini-cli`.
 
-## 1.6.0 - 2026 August
+## 1.6.1 - 2026 August
 - **Added:** Added the command `check` as alias for the command `validate`.
 - **Added:** Added `--ignore <glob...>` to `validate` and `check` for excluding matching files during directory validation, including recursive patterns such as `**/*.invalid.yini`.
 - **Fixed:** Resolved all 9 package vulnerabilities, bringing the total to zero.
