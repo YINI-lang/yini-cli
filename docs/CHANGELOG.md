@@ -4,6 +4,7 @@
 
 ## [Upcoming/Unreleased] - FUTURE
 - **Added:** Added the command `check` as alias for the command `validate`.
+- **Added:** Added `--ignore <glob...>` to `validate` and `check` for excluding matching files during directory validation, including recursive patterns such as `**/*.invalid.yini`.
 
 ## 1.5.1 - 2026 June
 - Bumped dependency `yini-parser` to `^1.6.1` with the following changes:

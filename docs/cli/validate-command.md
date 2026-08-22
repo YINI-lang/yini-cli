@@ -9,6 +9,8 @@ Validate one or more YINI files.
 
 Multiple files and directories may be provided, separated by spaces.
 
+Use `--ignore <glob...>` to exclude files matched by one or more glob patterns.
+
 The `check` command is an alias for `validate`.
 
 ---
@@ -102,8 +104,19 @@ yini check <fileOrDirectory...> [options]
 - `<directory>`  
   Validate all `.yini` files in the directory
 
+- `--ignore <glob...>`
+  Exclude files matching one or more glob patterns. Patterns are matched relative to each validated directory.
+  - `*.invalid.yini` excludes matching files in the validated directory
+  - `**/*.invalid.yini` also excludes matching files in its subdirectories
+
 - `--no-recursive, --no-subdirs`  
   Do not descend into subdirectories
+
+Example:
+
+```sh
+yini validate src/content/examples --ignore "**/*.invalid.yini"
+```
 
 ### Execution controls
 
