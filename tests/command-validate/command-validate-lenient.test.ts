@@ -6,6 +6,7 @@ import { yiniCLI } from '../test-helpers'
 const FIXTURES_DIR = path.resolve(__dirname, '../fixtures/validate/lenient')
 const VALID_DIR = path.join(FIXTURES_DIR, 'valid')
 const INVALID_DIR = path.join(FIXTURES_DIR, 'invalid')
+const IGNORE_DIR = path.resolve(__dirname, '../fixtures/validate/ignore')
 
 const validFixture = (fileName: string) => path.join(VALID_DIR, fileName)
 const invalidFixture = (fileName: string) => path.join(INVALID_DIR, fileName)
@@ -423,7 +424,135 @@ describe('Validate command in lenient mode.', () => {
     })
 
     describe('Input handling.', () => {
-        it('6.a) Fails when the target path does not exist.', async () => {
+        it('6.a) Describes ignore glob patterns in command help.', async () => {
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                '--help',
+            ])
+
+            // Assert.
+            expect(exitCode).toBe(0)
+            expect(stderr).toBe('')
+            expect(stdout).toContain('--ignore <glob...>')
+            expect(stdout).toContain('Exclude files matching glob patterns')
+            expect(stdout).toContain('**/*.invalid.yini')
+        })
+
+        it('6.b) Excludes matching files at every directory depth with an ignore glob.', async () => {
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                IGNORE_DIR,
+                '--lenient',
+                '--format',
+                'json',
+                '--ignore',
+                '**/*.invalid.yini',
+            ])
+
+            // Assert.
+            const parsed = JSON.parse(stdout)
+            const files = parsed.files.map(
+                (file: { file: string }) => file.file,
+            )
+
+            expect(exitCode).toBe(0)
+            expect(stderr).toBe('')
+            expect(parsed.summary.filesChecked).toBe(2)
+            expect(files).toContain('root-valid.yini')
+            expect(files).toContain(path.join('nested', 'nested-valid.yini'))
+            expect(files).not.toContain('root.invalid.yini')
+            expect(files).not.toContain(
+                path.join('nested', 'nested.invalid.yini'),
+            )
+        })
+
+        it('6.c) Applies a single-star ignore glob only in the validated directory.', async () => {
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                IGNORE_DIR,
+                '--lenient',
+                '--format',
+                'json',
+                '--ignore',
+                '*.invalid.yini',
+            ])
+
+            // Assert.
+            const parsed = JSON.parse(stdout)
+            const files = parsed.files.map(
+                (file: { file: string }) => file.file,
+            )
+
+            expect(exitCode).toBe(1)
+            expect(stderr).toBe('')
+            expect(parsed.summary.filesChecked).toBe(3)
+            expect(files).not.toContain('root.invalid.yini')
+            expect(files).toContain(path.join('nested', 'nested.invalid.yini'))
+        })
+
+        it('6.d) Accepts multiple ignore glob patterns.', async () => {
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                IGNORE_DIR,
+                '--lenient',
+                '--format',
+                'json',
+                '--ignore',
+                '*.invalid.yini',
+                '**/*.invalid.yini',
+            ])
+
+            // Assert.
+            const parsed = JSON.parse(stdout)
+
+            expect(exitCode).toBe(0)
+            expect(stderr).toBe('')
+            expect(parsed.summary.filesChecked).toBe(2)
+        })
+
+        it('6.e) Applies ignore globs before non-recursive directory validation.', async () => {
+            // Act.
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'validate',
+                IGNORE_DIR,
+                '--lenient',
+                '--format',
+                'json',
+                '--no-recursive',
+                '--ignore',
+                '*.invalid.yini',
+            ])
+
+            // Assert.
+            const parsed = JSON.parse(stdout)
+
+            expect(exitCode).toBe(0)
+            expect(stderr).toBe('')
+            expect(parsed.summary.filesChecked).toBe(1)
+        })
+
+        it('6.f) Fails when ignore globs exclude every selected file.', async () => {
+            // Act.
+            const { stderr, exitCode } = await yiniCLI([
+                'validate',
+                IGNORE_DIR,
+                '--lenient',
+                '--format',
+                'text',
+                '--ignore',
+                '**/*.yini',
+            ])
+
+            // Assert.
+            expect(exitCode).toBe(2)
+            expect(stderr).toContain('No YINI files found to validate')
+        })
+
+        it('6.g) Fails when the target path does not exist.', async () => {
             // Arrange.
             const fullPath = path.join(FIXTURES_DIR, 'does-not-exist')
 
@@ -441,7 +570,7 @@ describe('Validate command in lenient mode.', () => {
             expect(stderr).toContain('Path does not exist')
         })
 
-        it('6.b) Does not descend into subdirectories when --no-recursive is used.', async () => {
+        it('6.h) Does not descend into subdirectories when --no-recursive is used.', async () => {
             // Arrange.
             const fullPath = FIXTURES_DIR
 

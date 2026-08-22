@@ -7,7 +7,8 @@ export const descriptions = {
 <file>       Validate a single file.
 <directory>  Validate all .yini files in the directory.
 
-You can provide multiple files and directories, separated by spaces.`,
+You can provide multiple files and directories, separated by spaces.
+Use --ignore <glob...> to exclude files matching one or more glob patterns.`,
     'For-command-info':
         'Display extended information about the YINI CLI environment.',
 }

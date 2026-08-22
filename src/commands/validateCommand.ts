@@ -32,6 +32,7 @@ export interface IValidateCommandOptions extends IGlobalOptions {
     format?: 'json' | 'text'
     failFast?: boolean
     recursive?: boolean
+    ignore?: string[]
     maxErrors?: number
 }
 // -----------------------------------------------------------------------------
@@ -90,7 +91,11 @@ export const validateTargets = (
         const runMode = resolveRunModeFromTargets(targets)
         const recursive = options.recursive ?? true
 
-        const files = collectFilesFromTargets(targets, recursive)
+        const files = collectFilesFromTargets(
+            targets,
+            recursive,
+            options.ignore ?? [],
+        )
 
         if (!files.length) {
             throw new Error('No YINI files found to validate.')
@@ -165,6 +170,7 @@ export const validateTargets = (
 const collectFilesFromTargets = (
     targets: string[],
     recursive: boolean,
+    ignorePatterns: string[],
 ): string[] => {
     const out = new Set<string>()
 
@@ -178,7 +184,15 @@ const collectFilesFromTargets = (
         const stat = fs.statSync(resolved)
 
         if (stat.isFile()) {
-            out.add(resolved)
+            if (
+                !matchesIgnorePattern(
+                    resolved,
+                    path.dirname(resolved),
+                    ignorePatterns,
+                )
+            ) {
+                out.add(resolved)
+            }
             continue
         }
 
@@ -187,11 +201,77 @@ const collectFilesFromTargets = (
         }
 
         for (const file of collectFilesFromDirectory(resolved, recursive)) {
-            out.add(file)
+            if (!matchesIgnorePattern(file, resolved, ignorePatterns)) {
+                out.add(file)
+            }
         }
     }
 
     return [...out].sort((a, b) => a.localeCompare(b))
+}
+
+const matchesIgnorePattern = (
+    filePath: string,
+    baseDir: string,
+    patterns: string[],
+): boolean => {
+    const relativePath = path.relative(baseDir, filePath)
+
+    return patterns.some((pattern) => matchesGlob(relativePath, pattern))
+}
+
+const matchesGlob = (filePath: string, pattern: string): boolean => {
+    const normalizedPath = normalizeGlobPath(filePath)
+    const normalizedPattern = normalizeGlobPath(pattern)
+
+    if (!normalizedPath || normalizedPath.startsWith('../')) {
+        return false
+    }
+
+    const pathSegments = normalizedPath.split('/')
+    const patternSegments = normalizedPattern.split('/')
+
+    const matchesSegments = (
+        pathIndex: number,
+        patternIndex: number,
+    ): boolean => {
+        if (patternIndex === patternSegments.length) {
+            return pathIndex === pathSegments.length
+        }
+
+        const patternSegment = patternSegments[patternIndex]
+
+        if (patternSegment === '**') {
+            return (
+                matchesSegments(pathIndex, patternIndex + 1) ||
+                (pathIndex < pathSegments.length &&
+                    matchesSegments(pathIndex + 1, patternIndex))
+            )
+        }
+
+        return (
+            pathIndex < pathSegments.length &&
+            matchesGlobSegment(pathSegments[pathIndex], patternSegment) &&
+            matchesSegments(pathIndex + 1, patternIndex + 1)
+        )
+    }
+
+    return matchesSegments(0, 0)
+}
+
+const normalizeGlobPath = (value: string): string => {
+    const normalized = value.replace(/\\/g, '/').replace(/^\.\//, '')
+
+    return process.platform === 'win32' ? normalized.toLowerCase() : normalized
+}
+
+const matchesGlobSegment = (value: string, pattern: string): boolean => {
+    const expression = pattern
+        .replace(/[|\\{}()[\]^$+?.]/g, '\\$&')
+        .replace(/\*/g, '[^/]*')
+        .replace(/\\\?/g, '[^/]')
+
+    return new RegExp(`^${expression}$`).test(value)
 }
 
 const collectFilesFromDirectory = (

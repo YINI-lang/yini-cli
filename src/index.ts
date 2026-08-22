@@ -186,6 +186,10 @@ const validateCmd = program
     // ─────────────────────────────
     // Default: recursive (so only expose the negated option)
     .option('--no-recursive', 'Do not scan subdirectories.')
+    .option(
+        '--ignore <glob...>',
+        'Exclude files matching glob patterns, such as "**/*.invalid.yini".',
+    )
 
     // ─────────────────────────────
     // Output handling - WAIT WITH THESE
