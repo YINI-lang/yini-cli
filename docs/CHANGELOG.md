@@ -3,7 +3,7 @@
 **Changelog** for `yini-cli`.
 
 ## 1.6.2 - 2026 August
-- **Updated:** Updated dependency `yini-parserto` the latest version `1.6.2`.
+- **Updated:** Updated dependency `yini-parser` to the latest version `1.6.2`.
 
 ## 1.6.1 - 2026 August
 - **Added:** Added the command `check` as alias for the command `validate`.
