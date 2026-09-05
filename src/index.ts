@@ -4,7 +4,7 @@
 //
 // src/index.ts
 import { createRequire } from 'module'
-import { Command, Option } from 'commander'
+import { Command, InvalidArgumentError, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
 import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
@@ -173,9 +173,11 @@ const validateCmd = program
         '--max-errors <n>',
         'Stop after N total errors (across files).',
         (v) => {
-            const n = Number.parseInt(v, 10)
-            if (!Number.isFinite(n) || n < 1) {
-                throw new Error('--max-errors must be a positive integer.')
+            const n = Number(v)
+            if (!Number.isSafeInteger(n) || n < 1) {
+                throw new InvalidArgumentError(
+                    '--max-errors must be a positive integer.',
+                )
             }
             return n
         },

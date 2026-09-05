@@ -1,6 +1,6 @@
-# Currently only run unit+smoke test on a matrix of os and node versions.
+# Run the complete source test suite on every supported Node.js and OS pair.
 
-name: Regression Tests
+name: Full regression tests
 
 on:
     push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
@@ -48,14 +48,5 @@ jobs:
             - name: Build
               run: npm run build --if-present
 
-            # todo: add to run unit tests here
-
-            # - name: Run unit tests
-            #   run: |
-            #       echo "Running test: ${{ github.event.inputs.testName }}"
-            #       npm run ci:test:unit
-
-            - name: Run smoke tests
-              run: |
-                  echo "Running test: ${{ github.event.inputs.testName }}"
-                  npm run ci:test:smoke
+            - name: Run all tests
+              run: npm run ci:test

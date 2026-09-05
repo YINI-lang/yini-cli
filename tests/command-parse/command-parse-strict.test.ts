@@ -13,26 +13,30 @@ const strictInvalid = (...parts: string[]) =>
     path.join(FIXTURES_DIR, 'strict', 'invalid', ...parts)
 
 describe('parse command - strict mode', () => {
-    //@todo Enable when can eval strings with escapes correctly, especially \\ -> \
-    it.skip('1.a) Have correct output when using the command "parse" with option --strict.', async () => {
+    it('1.a) Preserves escaped Windows paths in strict JSON output.', async () => {
         // Arrange.
         const fullPath = strictValid('strict-common-config-1.yini')
 
         // Act.
-        const { stdout } = await yiniCLI(['parse', fullPath, '--strict'])
+        const { stdout, stderr, exitCode } = await yiniCLI([
+            'parse',
+            fullPath,
+            '--strict',
+        ])
         debugPrint('stdout:')
         printObject(stdout)
 
         // Assert.
-        const correct = `{
-  MyPrefs: {
-    HomeDir: 'C:\\Users\\John Smith\\',
-    Buffers: 10,
-    IsNight: false,
-    KeyWords: [ 'Orange', 'Banana', 'Pear', 'Peach' ]
-  }
-}`
-        expect(stdout).toContain(correct)
+        expect(exitCode).toBe(0)
+        expect(stderr).toBe('')
+        expect(JSON.parse(stdout)).toEqual({
+            MyPrefs: {
+                HomeDir: 'C:\\Users\\John Smith\\',
+                Buffers: 10,
+                IsNight: false,
+                KeyWords: ['Orange', 'Banana', 'Pear', 'Peach'],
+            },
+        })
     })
 
     it('1.b) [strict] Have correct output when using the command "parse" with option --strict.', async () => {

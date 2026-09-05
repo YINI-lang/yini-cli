@@ -94,4 +94,23 @@ describe('Test main (global) options in yini CLI:', () => {
         expect(stdout).contain(descripts['For-command-parse'])
         expect(stdout).contain(descripts['For-command-validate'])
     })
+
+    it('3.a) The info command outputs environment information.', async () => {
+        const { stdout, stderr, exitCode } = await yiniCLI(['info'])
+
+        expect(exitCode).toBe(0)
+        expect(stderr).toBe('')
+        expect(stdout).toContain('YINI CLI')
+        expect(stdout).toContain('Environment Information')
+        expect(stdout).toContain('CLI Version:')
+        expect(stdout).toContain('Parser Version:')
+    })
+
+    it('3.b) Running without a command outputs environment information.', async () => {
+        const { stdout, stderr, exitCode } = await yiniCLI([])
+
+        expect(exitCode).toBe(0)
+        expect(stderr).toBe('')
+        expect(stdout).toContain('Environment Information')
+    })
 })

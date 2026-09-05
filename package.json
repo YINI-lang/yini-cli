@@ -48,7 +48,7 @@
         "start:dev:debug": "cross-env isDebug=1 npm run start:dev",
         "run:help": "npm run start -- --help",
         "run:version": "npm run start -- --version",
-        "run:info": "npm run start -- --info",
+        "run:info": "npm run start -- info",
         "run:parse": "npm run start -- parse sample.yini",
         "run:validate": "npm run start -- validate sample.yini",
         "test:smoke": "vitest tests/smoke",

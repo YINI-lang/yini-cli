@@ -277,16 +277,34 @@ const matchesGlobSegment = (value: string, pattern: string): boolean => {
 const collectFilesFromDirectory = (
     dirPath: string,
     recursive: boolean,
+    visitedDirectories = new Set<string>(),
 ): string[] => {
     const results: string[] = []
+    const realPath = fs.realpathSync(dirPath)
+    const directoryKey =
+        process.platform === 'win32' ? realPath.toLowerCase() : realPath
 
-    for (const entry of fs.readdirSync(dirPath)) {
+    if (visitedDirectories.has(directoryKey)) {
+        return results
+    }
+
+    visitedDirectories.add(directoryKey)
+
+    const entries = fs.readdirSync(dirPath).sort((a, b) => a.localeCompare(b))
+
+    for (const entry of entries) {
         const fullPath = path.join(dirPath, entry)
         const stat = fs.statSync(fullPath)
 
         if (stat.isDirectory()) {
             if (recursive) {
-                results.push(...collectFilesFromDirectory(fullPath, recursive))
+                results.push(
+                    ...collectFilesFromDirectory(
+                        fullPath,
+                        recursive,
+                        visitedDirectories,
+                    ),
+                )
             }
             continue
         }

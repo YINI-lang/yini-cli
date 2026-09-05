@@ -1,0 +1,32 @@
+name: Post-merge smoke tests
+
+on:
+    push:
+        branches: ['main']
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    smoke:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+
+            - name: Build
+              run: npm run build
+
+            - name: Run smoke tests
+              run: npm run ci:test:smoke

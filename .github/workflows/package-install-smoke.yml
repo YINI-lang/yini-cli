@@ -1,0 +1,72 @@
+name: Package install smoke tests
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+concurrency:
+    group: package-smoke-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    package-smoke:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [18, 20, 22, 24]
+                os: [ubuntu-latest, windows-latest, macos-latest]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+
+            - name: Build
+              run: npm run build
+
+            - name: Pack
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TARBALL="$(npm pack --silent)"
+                  echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+
+            - name: Install package globally
+              shell: bash
+              run: npm install --global "$TARBALL"
+
+            - name: Exercise installed CLI
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  yini --help >/dev/null
+                  yini --version
+                  yini info
+
+                  PARSED="$(yini parse sample.yini --compact)"
+                  node -e 'JSON.parse(process.argv[1])' "$PARSED"
+
+                  yini validate sample.yini --silent
+
+                  set +e
+                  yini validate tests/fixtures/validate/lenient/invalid/invalid-garbage-1.yini --silent
+                  STATUS=$?
+                  set -e
+
+                  if [ "$STATUS" -ne 1 ]; then
+                      echo "Expected invalid input to exit with status 1, got $STATUS."
+                      exit 1
+                  fi

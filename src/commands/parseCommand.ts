@@ -167,17 +167,49 @@ export const parseFile = (
     file: string,
     commandOptions: IParseCommandOptions,
 ) => {
-    const outputFile = commandOptions.output || ''
-    // const isStrictMode = !!commandOptions.strict
+    try {
+        assertOverwriteOptionsDoNotConflict(process.argv.slice(2))
 
-    const outputFormat = resolveOutputFormat(commandOptions)
+        const outputFile = commandOptions.output || ''
+        const outputFormat = resolveOutputFormat(commandOptions)
 
-    debugPrint('file = ' + file)
-    debugPrint('output = ' + commandOptions.output)
-    debugPrint('commandOptions:')
-    printObject(commandOptions)
+        debugPrint('file = ' + file)
+        debugPrint('output = ' + commandOptions.output)
+        debugPrint('commandOptions:')
+        printObject(commandOptions)
 
-    doParseFile(file, commandOptions, outputFormat, outputFile)
+        doParseFile(file, commandOptions, outputFormat, outputFile)
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err)
+
+        printStderr(commandOptions, `Error: ${message}`)
+        process.exit(1)
+    }
+}
+
+const assertOverwriteOptionsDoNotConflict = (args: string[]): void => {
+    let hasOverwrite = false
+    let hasNoOverwrite = false
+
+    for (let index = 0; index < args.length; index += 1) {
+        const arg = args[index]
+
+        if (arg === '--') break
+
+        if (arg === '--output' || arg === '-o') {
+            index += 1
+            continue
+        }
+
+        if (arg === '--overwrite') hasOverwrite = true
+        if (arg === '--no-overwrite') hasNoOverwrite = true
+    }
+
+    if (hasOverwrite && hasNoOverwrite) {
+        throw new Error(
+            '--overwrite and --no-overwrite cannot be used together.',
+        )
+    }
 }
 
 const resolveOutputFormat = (options: IParseCommandOptions): TOutputFormat => {

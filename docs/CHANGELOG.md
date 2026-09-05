@@ -2,6 +2,14 @@
 
 **Changelog** for `yini-cli`.
 
+## Upcoming
+- **Fixed:** Parse option conflicts now fail cleanly without exposing internal stack traces. The CLI rejects multiple output formats, rejects combining `--overwrite` with `--no-overwrite`, and requires `--max-errors` to be a positive integer without trailing or fractional input.
+- **Fixed:** Strengthened parse output-file protection so alternate paths, symbolic links, and hard links cannot cause the input file to be overwritten.
+- **Fixed:** Corrected `npm run run:info` to invoke the `info` command and corrected the JavaScript serializer's reported format.
+- **Improved:** Recursive directory validation now uses deterministic ordering and detects previously visited directories, preventing symbolic-link cycles from causing unbounded traversal.
+- **Improved:** Expanded CLI and serializer coverage for warning policies, quiet and silent output, best-effort parsing, early termination, JSON statistics, input collection, output-file safety, escaping, and malformed or conflicting options. All previously skipped tests are now active.
+- **CI:** The full regression suite now runs across Node.js 18, 20, 22, and 24 on Linux, Windows, and macOS. Installed-package and post-merge smoke workflows now have distinct names and responsibilities, and the installed package is exercised with help, version, info, parse, and validate commands.
+
 ## 1.6.2 - 2026 August
 - **Updated:** Updated dependency `yini-parser` to the latest version `1.6.2`.
 

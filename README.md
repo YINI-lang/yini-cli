@@ -7,8 +7,9 @@ YINI is an INI-inspired, human-readable configuration format with explicit struc
 YINI is intended to emphasize clarity, readability, explicit structure, predictability, and deterministic parsing, while remaining simple, but not simplistic.
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli)
-[![All Test Suites](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-all-tests.yml)
-[![CLI Test CI](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-cli-test.yml)
+[![Full regression tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml)
+[![Post-merge smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml)
+[![Package install smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml)
 [![YINI Test Suite Smoke Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml)  
 
 ## Quick Start

@@ -7,7 +7,7 @@ export type ToPrettyJSOptions = {
 }
 
 export class JSSerializer implements Serializer {
-    readonly format = 'json'
+    readonly format = 'js'
 
     serialize(data: unknown): string {
         return getPrettyJS(data)

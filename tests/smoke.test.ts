@@ -136,7 +136,7 @@ describe('Smoke tests: yini CLI basic usage', () => {
     })
 
     describe('parse command: strict fixtures', () => {
-        it.skip('8. Shows an error when parsing an invalid YINI file in strict mode.', async () => {
+        it('8. Shows an error when parsing an invalid YINI file in strict mode.', async () => {
             // Arrange.
             const fullPath = fixture(
                 'strict',

@@ -99,4 +99,15 @@ export const assertInputAndOutputAreDifferent = (
     if (normalizedSrc === normalizedDest) {
         throw new Error('Output file must be different from the input file.')
     }
+
+    if (!fs.existsSync(resolvedSrc) || !fs.existsSync(resolvedDest)) {
+        return
+    }
+
+    const srcStat = fs.statSync(resolvedSrc)
+    const destStat = fs.statSync(resolvedDest)
+
+    if (srcStat.dev === destStat.dev && srcStat.ino === destStat.ino) {
+        throw new Error('Output file must be different from the input file.')
+    }
 }
