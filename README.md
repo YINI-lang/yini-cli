@@ -1,6 +1,6 @@
 # YINI CLI
 
-The official CLI for validating, inspecting, and converting YINI configuration files to JSON or JavaScript, maintained by the YINI-lang project.
+The official CLI for validating, inspecting, and converting YINI configuration files to JSON, JavaScript, YAML, or XML, maintained by the YINI-lang project.
 
 YINI is an INI-inspired, human-readable configuration format with explicit structure, nested sections, comments, and predictable parsing.
 
@@ -15,7 +15,7 @@ YINI is intended to emphasize clarity, readability, explicit structure, predicta
 ## Quick Start
 
 ### Requirements
-YINI CLI requires Node.js **v20 or later**.  
+YINI CLI requires Node.js **v18 or later**.  
 
 ### Installation
 
@@ -114,19 +114,36 @@ yini parse config.yini --js
 → Output as JavaScript-style object.
 
 ```bash
+yini parse config.yini --yaml
+```
+→ Output as YAML.
+
+```bash
+yini parse config.yini --xml
+```
+→ Output as XML.
+
+```bash
 yini parse config.yini -o out.json
 ```
 → Write formatted JSON to a file.
 
 ```bash
-yini validate --strict config.yini
+yini validate config.yini
 ```
-→ Validate using strict mode.
+→ Validate one file in lenient mode (the default). Validation errors produce a non-zero exit code.
+
+```bash
+yini validate configs --strict --format json --warnings-as-errors
+```
+→ Recursively validate `.yini` files in `configs` using strict mode, print a machine-readable report, and treat warnings as failures for CI.
 
 ```bash
 yini check config.yini
 ```
 → Alias for `yini validate config.yini`.
+
+See the [validation command reference](./docs/cli/validate-command.md) for options such as `--ignore`, `--no-recursive`, `--fail-fast`, and `--max-errors`.
 
 For help with a specific command:
 
@@ -306,9 +323,11 @@ The `parse` command supports multiple output formats:
 | `yini parse config.yini --json`         | Pretty JSON          | Explicit pretty JSON output. |
 | `yini parse config.yini --compact`      | Compact JSON         | Minified JSON (no whitespace). |
 | `yini parse config.yini --js`           | JavaScript object    | JavaScript-style object (unquoted keys, single quotes). |
+| `yini parse config.yini --yaml`         | YAML                 | Serializes the parsed data as YAML. |
+| `yini parse config.yini --xml`          | XML                  | Serializes the parsed data as XML. |
 | `yini parse config.yini -o out.json`    | File output          | Writes formatted JSON to file (default format). |
 
-> `--js` and `--compact` are mutually exclusive.  
+> Choose only one output format: `--json`, `--compact`, `--js`, `--yaml`, or `--xml`.
 > `--output` can be combined with a style flag to control both formatting and destination.
 
 ### Output File Handling
