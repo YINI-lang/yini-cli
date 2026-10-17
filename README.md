@@ -15,7 +15,7 @@ YINI is intended to emphasize clarity, readability, explicit structure, predicta
 ## Quick Start
 
 ### Requirements
-YINI CLI requires Node.js **v18 or later**.  
+YINI CLI requires Node.js **v22 or later**.
 
 ### Installation
 

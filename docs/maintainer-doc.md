@@ -92,7 +92,7 @@ In here is **internal-only notes**: Release process, package testing, etc.
 5. OPTIONAL: **Check on another machine or in Docker**  
    To simulate a fresh environment:
    ```bash
-   docker run -it node:20-alpine sh
+   docker run -it node:22-alpine sh
    ```
 
    Then inside Docker:
