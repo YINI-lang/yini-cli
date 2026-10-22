@@ -236,7 +236,7 @@ describe('get command', () => {
         expect(unreadable.stdout).toBe('')
     })
 
-    it('provides equivalent alias, help, and argument errors', async () => {
+    it('provides an equivalent peek alias', async () => {
         const primary = await run(['get', values, 'App.name'])
         const alias = await run(['peek', values, 'App.name'])
         expect(alias).toMatchObject({
@@ -244,38 +244,43 @@ describe('get command', () => {
             stdout: primary.stdout,
             stderr: primary.stderr,
         })
+    })
+
+    it('shows get help with the alias and path escaping examples', async () => {
         const help = await run(['get', '--help'])
         expect(help.stdout).toContain('get|peek [options] <file> [path]')
         expect(help.stdout).toContain('peek')
         expect(help.stdout).toContain('connection\\.host')
         expect(help.stdout).toContain('App.slash\\\\key')
-        for (const args of [
-            ['get', values, '--format', 'yaml'],
-            ['get', values, 'App.name', 'extra'],
-            ['get'],
-        ]) {
-            const result = await run(args)
-            expect(result.exitCode).toBe(1)
-            expect(result.stdout).toBe('')
-            expect(result.stderr).not.toBe('')
-        }
-        const silentInvalid = await run([
+    })
+
+    it.each([
+        { name: 'unsupported format', args: ['get', values, '--format', 'yaml'] },
+        {
+            name: 'extra path argument',
+            args: ['get', values, 'App.name', 'extra'],
+        },
+        { name: 'missing file argument', args: ['get'] },
+    ])('rejects $name', async ({ args }) => {
+        const result = await run(args)
+        expect(result.exitCode).toBe(1)
+        expect(result.stdout).toBe('')
+        expect(result.stderr).not.toBe('')
+    })
+
+    it('suppresses invalid-argument diagnostics in silent mode', async () => {
+        const result = await run([
             '--silent',
             'get',
             values,
             '--format',
             'yaml',
         ])
-        expect(silentInvalid).toMatchObject({
-            exitCode: 1,
-            stdout: '',
-            stderr: '',
-        })
-        const silentHelp = await run(['--silent', 'get', '--help'])
-        expect(silentHelp).toMatchObject({
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-        })
+        expect(result).toMatchObject({ exitCode: 1, stdout: '', stderr: '' })
+    })
+
+    it('suppresses help in silent mode', async () => {
+        const result = await run(['--silent', 'get', '--help'])
+        expect(result).toMatchObject({ exitCode: 0, stdout: '', stderr: '' })
     })
 })
