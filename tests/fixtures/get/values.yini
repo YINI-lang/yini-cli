@@ -1,0 +1,16 @@
+^ App
+name = "Demo"
+empty = ""
+count = 0
+pi = 3.14
+enabled = false
+unset = null
+`connection.host` = "localhost"
+`0` = "numeric key"
+`slash\\key` = "backslash key"
+servers = [
+    { host: "alpha", port: 443 },
+    { host: "beta", port: 8443 }
+]
+settings = { theme: "dark", retries: 2 }
+

@@ -14,8 +14,8 @@ See also: [Shared AI agent instructions for the YINI project family](../AGENTS.m
 - **Purpose:** Official command-line tool for validating, inspecting, and
   converting YINI files.
 - **Language/runtime:** TypeScript 5.x on Node.js, full ESM.
-- **Node.js:** `package.json` declares `>=18`; CI covers Node 18, 20, 22, and
-  24; `.nvmrc` currently pins local development to Node 24.14.0.
+- **Node.js:** `package.json` declares `>=22`; CI covers Node 22 and 24;
+  `.nvmrc` currently pins local development to Node 24.14.0.
 - **Package manager:** npm (`package-lock.json` is committed).
 - **Framework/stack:** Commander.js CLI, `yini-parser`, Vitest, ESLint,
   Prettier, TypeScript `tsc`.

@@ -6,6 +6,7 @@
 import { createRequire } from 'module'
 import { Command, InvalidArgumentError, Option } from 'commander'
 import { enableHelpAll } from './cli/helpAll.js'
+import { getValue, IGetCommandOptions } from './commands/getCommand/index.js'
 import { printInfo } from './commands/infoCommand.js'
 import { IParseCommandOptions, parseFile } from './commands/parseCommand.js'
 import {
@@ -75,11 +76,11 @@ program
     // .option('-f, --force', 'Continue parsing even if errors occur.')
     .option(
         '-q, --quiet',
-        'Suppress successful per-file output; still show failures and final summary.',
+        'Reduce optional output; command results and errors remain visible.',
     )
     .option(
         '-s, --silent',
-        'Suppress validation output and use exit code only.',
+        'Suppress command output and use the exit code only.',
     )
     .option('--verbose', 'Show extra processing details.')
     .action((options) => {
@@ -138,6 +139,47 @@ const parseCmd = program
         parseFile(file, mergedOptions)
     })
 appendGlobalOptionsTo(parseCmd)
+
+/**
+ * The command: "get <file> [path]"
+ */
+const getCmd = program
+    .command('get <file> [path]')
+    .alias('peek')
+    .description(descr['For-command-get'])
+    .addOption(
+        new Option(
+            '--format <format>',
+            'Output format: text, json, or json-compact.',
+        ).choices(['text', 'json', 'json-compact']),
+    )
+    .addHelpText(
+        'after',
+        '\nPath: use dots between keys; escape a literal dot as \\. and a backslash as \\\\.\n' +
+            "POSIX shell: yini get config.yini 'database.connection\\.host'\n" +
+            "POSIX shell: yini get config.yini 'App.slash\\\\key'\n" +
+            'Windows Command Prompt: yini get config.yini "database.connection\\.host"\n' +
+            'Windows Command Prompt: yini get config.yini "App.slash\\\\key"',
+    )
+    .action(
+        async (
+            file: string,
+            path: string | undefined,
+            options: IGetCommandOptions,
+        ) => {
+            const mergedOptions = { ...program.opts(), ...options }
+            await getValue(file, path, mergedOptions)
+        },
+    )
+getCmd.configureOutput({
+    writeOut: (message) => {
+        if (!program.opts().silent) process.stdout.write(message)
+    },
+    writeErr: (message) => {
+        if (!program.opts().silent) process.stderr.write(message)
+    },
+})
+appendGlobalOptionsTo(getCmd)
 
 /**
  * The command: "validate <fileOrDirectory...>"

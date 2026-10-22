@@ -15,6 +15,15 @@ describe('Smoke tests: yini CLI basic usage', () => {
 
     const fixture = (...parts: string[]) => path.join(baseDir, ...parts)
 
+    it('gets a selected value from a YINI file', async () => {
+        const fullPath = path.join(__dirname, 'fixtures/get/values.yini')
+        const result = await yiniCLI(['get', fullPath, 'App.name'])
+
+        expect(result.exitCode).toBe(0)
+        expect(result.stdout).toBe('Demo')
+        expect(result.stderr).toBe('')
+    })
+
     describe('parse command: valid lenient fixtures', () => {
         it('1. Parses a valid YINI file and prints pretty JSON by default.', async () => {
             // Arrange.

@@ -1,7 +1,9 @@
 export const descriptions = {
-    yini: 'The official terminal / command-line (CLI) for parsing and validating YINI configuration files.',
+    yini: 'The official terminal / command-line (CLI) for reading, parsing, and validating YINI configuration files.',
     'For-command-parse':
         'Parse a YINI file (*.yini) and output the result as JSON or JavaScript.',
+    'For-command-get':
+        'Read a value or inspect data in a YINI file. Use "-" for stdin.',
     'For-command-validate': `Validate one or more YINI files.
 
 <file>       Validate a single file.
