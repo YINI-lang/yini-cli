@@ -104,6 +104,11 @@ yini parse config.yini
 → Parse and print formatted JSON (default).
 
 ```bash
+yini get config.yini App.name
+```
+→ Print the selected value as plain text. Use `yini get config.yini` to print the complete document as JSON. `peek` is an alias for `get`.
+
+```bash
 yini parse config.yini --compact
 ```
 → Output compact JSON (no whitespace).
@@ -144,6 +149,8 @@ yini check config.yini
 → Alias for `yini validate config.yini`.
 
 See the [validation command reference](./docs/cli/validate-command.md) for options such as `--ignore`, `--no-recursive`, `--fail-fast`, and `--max-errors`.
+
+See the [get command reference](./docs/cli/get-command.md) for paths, stdin, output formats, and shell quoting.
 
 For help with a specific command:
 
