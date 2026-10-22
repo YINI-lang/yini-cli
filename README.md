@@ -1,394 +1,84 @@
 # YINI CLI
 
-The official CLI for validating, inspecting, and converting YINI configuration files to JSON, JavaScript, YAML, or XML, maintained by the YINI-lang project.
-
-YINI is an INI-inspired, human-readable configuration format with explicit structure, nested sections, comments, and predictable parsing.
-
-YINI is intended to emphasize clarity, readability, explicit structure, predictability, and deterministic parsing, while remaining simple, but not simplistic.
+The official command-line tool for reading, validating, and converting YINI configuration files. YINI uses explicit sections, typed values, and comments while keeping configuration readable.
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli)
 [![Full regression tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml)
 [![Post-merge smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml)
 [![Package install smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml)
-[![YINI Test Suite Smoke Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml)  
+[![YINI Test Suite Smoke Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml)
 
-## Quick Start
+## Quick start
 
-### Requirements
-YINI CLI requires Node.js **v22 or later**.
+Requires Node.js 22 or later. Install the CLI:
 
-### Installation
+```sh
+npm install -g yini-cli
+yini --version
+```
 
-1. **Install globally from npm — (requires Node.js)**  
-    Open your terminal and run:
-    ```
-    npm install -g yini-cli
-    ```
+Save this as `config.yini`:
 
-2. **Verify installation**  
-    Run this in your terminal:
-    ```bash
-    yini --version
-    ```
-    This should print the installed version.
+```yini
+^ App
+name = "My App"
+enabled = true
+ports = [8080, 8081]
+```
 
-    Then try:
-    ```bash
-    yini --help
-    ```
-    This should show the CLI help.
+Then try the three main commands:
 
-3. **Test functionality**  
-    Create a simple test file, for example: `config.yini`:
-    ```ini
-    ^ App
-    name = "My App Title"
-    version = "1.2.3"
-    pageSize = 25
-    darkTheme = off
-    ```
-
-    Then run:
-    ```bash
-    yini parse config.yini
-    ```
-
-    Expected output:
-    ```json
-    {
-        "App": {
-            "name": "My App Title",
-            "version": "1.2.3",
-            "pageSize": 25,
-            "darkTheme": false
-        }
-    }    
-    ```
-
-### Typical use cases
-
-- Validating configuration files during development or CI.
-- Inspecting and debugging structured configuration.
-- Converting YINI files to JSON for tooling and automation.
-
----
-
-## What YINI looks like
-> A basic YINI configuration example, showing a section, nested section, comments:  
-![YINI Config Example](./samples/basic.yini.png)
-Source: [basic.yini](./samples/basic.yini)
-
-### A larger example
-> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
-![YINI Config Example](./samples/config.yini.png)
-Source: [config.yini](./samples/config.yini)
-
----
-
-## YINI characteristics
-- **Indentation-independent structure:** YINI is indentation-independent — whitespace never alters structural meaning.
-- **Explicit nesting:** Section markers such as `^`, `^^`, and `^^^` define hierarchy explicitly.
-- **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) for documenting configuration directly in the file.
-- **Predictable parsing:** Well-defined rules with optional strict and lenient modes for different use cases.
-
----
-
-## Usage
-
-### Quick Examples
-
-```bash
+```sh
+yini get config.yini App.name
+yini validate config.yini
 yini parse config.yini
 ```
-→ Parse and print formatted JSON (default).
 
-```bash
-yini get config.yini App.name
-```
-→ Print the selected value as plain text. Use `yini get config.yini` to print the complete document as JSON. `peek` is an alias for `get`.
+`get` prints `My App` without quotes. `validate` reports whether the file is valid. `parse` prints the complete document as formatted JSON. Parsing is lenient by default; strict mode (`--strict`) applies additional rules, including a required `/END` terminator.
 
-```bash
-yini parse config.yini --compact
-```
-→ Output compact JSON (no whitespace).
+## Commands
 
-```bash
-yini parse config.yini --js
-```
-→ Output as JavaScript-style object.
+| Command                         | What it does                                                                              |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| `yini get config.yini App.name` | Read one value. Omit the path to print the complete document as JSON. `peek` is an alias. |
+| `yini validate config.yini`     | Check a file. Directories are searched recursively by default. `check` is an alias.       |
+| `yini parse config.yini`        | Convert a file to formatted JSON by default.                                              |
+| `yini info`                     | Show CLI and parser information.                                                          |
 
-```bash
-yini parse config.yini --yaml
-```
-→ Output as YAML.
+### Common options
 
-```bash
-yini parse config.yini --xml
-```
-→ Output as XML.
+- `yini get config.yini App.name --format json` emits JSON instead of plain scalar text. Other choices are `text` and `json-compact`.
+- `yini parse config.yini --compact` emits compact JSON. Other formats use `--js`, `--yaml`, or `--xml`; `-o out.json` writes to a file.
+- `yini validate config.yini --strict --format json --warnings-as-errors` emits a JSON report and treats warnings as failures.
+- `--quiet` reduces optional output; `--silent` suppresses command output. Run `yini <command> --help` for all options.
 
-```bash
-yini parse config.yini -o out.json
-```
-→ Write formatted JSON to a file.
+See the [get command reference](./docs/cli/get-command.md) for paths, stdin, and output details, and the [validate command reference](./docs/cli/validate-command.md) for directory and reporting options.
 
-```bash
-yini validate config.yini
-```
-→ Validate one file in lenient mode (the default). Validation errors produce a non-zero exit code.
+When `parse` writes to a file, it skips a destination newer than the source by default and avoids rewriting unchanged output. Use `--overwrite` to allow replacement or `--no-overwrite` to fail if the destination exists.
 
-```bash
-yini validate configs --strict --format json --warnings-as-errors
-```
-→ Recursively validate `.yini` files in `configs` using strict mode, print a machine-readable report, and treat warnings as failures for CI.
+## Run from source
 
-```bash
-yini check config.yini
-```
-→ Alias for `yini validate config.yini`.
+From this repository's root directory:
 
-See the [validation command reference](./docs/cli/validate-command.md) for options such as `--ignore`, `--no-recursive`, `--fail-fast`, and `--max-errors`.
-
-See the [get command reference](./docs/cli/get-command.md) for paths, stdin, output formats, and shell quoting.
-
-For help with a specific command:
-
-```bash
-yini parse --help
+```sh
+npm ci
+npm run build
+npm test
+npm run start:dev -- --help
 ```
 
----
+See [project setup](./docs/project-setup.md), [contributing](./docs/contributing.md), and the [changelog](./docs/CHANGELOG.md) for more details.
 
-## Why YINI?
+## About YINI
 
-YINI is intended for configuration files where human readability, explicit structure, and predictable parsing are more important than minimal syntax or maximum flexibility.
+YINI uses section markers such as `^` and `^^` for explicit nesting. It supports strings, numbers, booleans, lists, inline objects, and comments. Indentation does not define structure. See the [basic sample](./samples/basic.yini), [larger sample](./samples/config.yini), or their [basic](./samples/basic.yini.png) and [larger](./samples/config.yini.png) previews.
 
-Compared with common configuration formats:
-- **INI:** YINI supports clearer nested sections and typed values.
-- **JSON:** YINI supports comments and is easier to edit by hand.
-- **YAML:** YINI does not use indentation to define structure.
-- **TOML:** YINI uses explicit section markers for hierarchy instead of dotted table names.
+The [YINI specification](https://yini-lang.org/refs/specification) has the full syntax rules. This CLI uses [yini-parser](https://www.npmjs.com/package/yini-parser); the [demo apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) show complete uses.
 
-The same small configuration can be written in several formats:
+## Feedback and license
 
-### YINI
-```ini
-^ Application
-name = 'demo'
-environment = 'dev'
+Report problems in [GitHub Issues](https://github.com/YINI-lang/yini-cli/issues) or use [Discussions](https://github.com/YINI-lang/yini-cli/discussions). For parser issues, include the YINI input, command, expected result, and actual result.
 
-^^ Server
-host = 'localhost'
-ports = [8080, 8081]
+This project is licensed under the Apache License 2.0; see [LICENSE](./LICENSE).
 
-^^^ TLS
-enabled = true
-mode = 'optional'
-```
-
-- `Application` contains the top-level application settings.
-- `Server` is nested under `Application`.
-- `TLS` is nested under `Server`.
-- The section markers `^` make the nesting explicit. Indentation is optional and not required for structure.
-- Strings can use either `'` or `"`.
-
-### JSON
-```json
-{
-  "Application": {
-    "name": "demo",
-    "environment": "dev",
-    "Server": {
-      "host": "localhost",
-      "ports": [8080, 8081],
-      "TLS": {
-        "enabled": true,
-        "mode": "optional"
-      }
-    }
-  }
-}
-```
-
-### YAML
-```yaml
-Application:
-  name: demo
-  environment: dev
-  Server:
-    host: localhost
-    ports:
-      - 8080
-      - 8081
-    TLS:
-      enabled: true
-      mode: optional
-```
-
-### TOML
-```toml
-[Application]
-name = "demo"
-environment = "dev"
-
-[Application.Server]
-host = "localhost"
-ports = [8080, 8081]
-
-[Application.Server.TLS]
-enabled = true
-mode = "optional"
-```
-
-YINI may not be the right choice when you need mature ecosystem support, existing schema tooling, or maximum compatibility with infrastructure that already expects JSON, YAML, or TOML. The format and parser are still alpha-stage and best suited for testing, experiments, and early integration feedback.
-
----
-
-## Feedback and bug reports
-
-If you find a problem, please open an issue on GitHub:
-
-- [Report a bug or issue](https://github.com/YINI-lang/yini-cli/issues)
-- [Join project discussions](https://github.com/YINI-lang/yini-cli/discussions)
-
-### Help and more information
-
-- [YINI homepage](https://yini-lang.org?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_project_links)
-- [YINI-lang on GitHub](https://github.com/YINI-lang)
-
-When reporting parser behavior, it is helpful to include:
-
-- The YINI input that caused the issue.
-- The command and options used.
-- The expected result.
-- Etc.
-
----
-
-## A closer look at YINI
-
-Here's a small example showing YINI structure and comments:
-```ini
-    // This is a comment in YINI
-
-    ^ App                      // Defines section (group) "App" 
-      name     = 'My Title'    // Keys and values are written as key = value
-      items    = 25
-      darkMode = true          // "ON" and "YES" works too
-
-        // Sub-section of the "App" section
-        ^^ Special
-           primaryColor = #336699   // Hex number format
-           isCaching    = false     // "OFF" and "NO" works too
-    
-    # This is a comment too.
-```
-
-**The above YINI as a JavaScript object:**
-```js
-{
-    App: {
-        name: 'My Title',
-        items: 25,
-        darkMode: true,
-        Special: { 
-            primaryColor: 3368601,
-            isCaching: false
-        }
-    }
-}
-```
-
-**In JSON:**
-```json
-{
-   "App":{
-      "name":"My Title",
-      "items":25,
-      "darkMode":true,
-      "Special":{
-         "primaryColor":3368601,
-         "isCaching":false
-      }
-   }
-}
-```
-
-- [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_middle).
-- [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with usage examples.
-
----
-
-## 📤 Output Modes for `yini parse`
-
-The `parse` command supports multiple output formats:
-
-| Command Example                         | Output Format       | Description |
-|------------------------------------------|----------------------|------------|
-| `yini parse config.yini`                | Pretty JSON (default) | Formatted JSON with indentation (4 spaces). |
-| `yini parse config.yini --json`         | Pretty JSON          | Explicit pretty JSON output. |
-| `yini parse config.yini --compact`      | Compact JSON         | Minified JSON (no whitespace). |
-| `yini parse config.yini --js`           | JavaScript object    | JavaScript-style object (unquoted keys, single quotes). |
-| `yini parse config.yini --yaml`         | YAML                 | Serializes the parsed data as YAML. |
-| `yini parse config.yini --xml`          | XML                  | Serializes the parsed data as XML. |
-| `yini parse config.yini -o out.json`    | File output          | Writes formatted JSON to file (default format). |
-
-> Choose only one output format: `--json`, `--compact`, `--js`, `--yaml`, or `--xml`.
-> `--output` can be combined with a style flag to control both formatting and destination.
-
-### Output File Handling
-
-When using `-o, --output <file>`, YINI CLI applies safe write rules:
-
-| Scenario | Result |
-|----------|--------|
-| File does not exist | File is written |
-| File exists and is **older** than the input YINI file | File is overwritten |
-| File exists and is **newer** than the input YINI file | Skipped by default |
-| File exists and output content is unchanged | Skipped |
-| `--overwrite` is used | File is always overwritten |
-| `--no-overwrite` is used | Command fails if file exists |
-
-This helps avoid overwriting newer generated files and avoids rewriting unchanged output unnecessarily.
-
-Use `--overwrite` to force replacement.
-
----
-
-## Links
-- ➡️ [YINI Homepage](https://yini-lang.org)  
-  *Tutorials, guides, and examples.*
-
-- ➡️ [Read the YINI Specification](https://yini-lang.org/refs/specification)  
-  *Full syntax and format reference.*
-
-- ➡️ [YINI Parser on npm](https://www.npmjs.com/package/yini-parser)  
-  *The TypeScript/Node.js parser used by this CLI.*
-
-- ➡️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
-  *Complete basic usage examples.*
-
-- ➡️ [YINI-lang Project](https://github.com/YINI-lang)  
-  *Repositories and related ecosystem projects.*
-
----
-
-## Contributing
-Bug reports, feedback, and contributions are welcome.  
-
-GitHub Issues and Discussions are available for feedback and project discussion.
-
----
-
-## License
-This project is licensed under the Apache License 2.0 — see the [LICENSE](./LICENSE) file for details.
-
----
-
-**^YINI ≡**  
-> YINI is a human-readable configuration format designed for clarity, readability, explicit structure, predictability, and deterministic parsing.
-> 
-> See the specification for syntax and format details.  
-
-[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme_footer) · [YINI-lang on GitHub](https://github.com/YINI-lang)  
+**^YINI ≡**
