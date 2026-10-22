@@ -9,30 +9,28 @@ const run = (args: string[], options = {}) =>
     yiniCLI(args, { stripFinalNewline: false, ...options })
 
 describe('get command', () => {
-    it('prints the complete document and selected objects or lists as pretty JSON', async () => {
+    it('prints the complete document as pretty JSON', async () => {
         const whole = await run(['get', values])
         expect(whole.exitCode).toBe(0)
         expect(whole.stderr).toBe('')
         expect(JSON.parse(whole.stdout)).toHaveProperty('App.name', 'Demo')
         expect(whole.stdout).toContain('\n    "App": {')
         expect(whole.stdout.endsWith('\n')).toBe(true)
+    })
 
-        for (const selected of ['App.settings', 'App.servers']) {
-            const result = await run(['get', values, selected])
-            expect(result.exitCode).toBe(0)
-            expect(result.stdout).toBe(
-                `${JSON.stringify(
-                    selected === 'App.settings'
-                        ? { theme: 'dark', retries: 2 }
-                        : [
-                              { host: 'alpha', port: 443 },
-                              { host: 'beta', port: 8443 },
-                          ],
-                    null,
-                    4,
-                )}\n`,
-            )
-        }
+    it.each([
+        ['App.settings', { theme: 'dark', retries: 2 }],
+        [
+            'App.servers',
+            [
+                { host: 'alpha', port: 443 },
+                { host: 'beta', port: 8443 },
+            ],
+        ],
+    ])('prints %s as pretty JSON', async (selected, expected) => {
+        const result = await run(['get', values, selected])
+        expect(result.exitCode).toBe(0)
+        expect(result.stdout).toBe(`${JSON.stringify(expected, null, 4)}\n`)
     })
 
     it.each([
@@ -56,28 +54,27 @@ describe('get command', () => {
         })
     })
 
-    it('supports all explicit formats and rejects text for structured values', async () => {
-        expect(
-            (await run(['get', values, 'App.name', '--format', 'json'])).stdout,
-        ).toBe('"Demo"\n')
-        expect(
-            (await run(['get', values, 'App.name', '--format', 'json-compact']))
-                .stdout,
-        ).toBe('"Demo"\n')
-        expect(
-            (await run(['get', values, 'App.name', '--format', 'text'])).stdout,
-        ).toBe('Demo\n')
-        expect(
-            (
-                await run([
-                    'get',
-                    values,
-                    'App.settings',
-                    '--format',
-                    'json-compact',
-                ])
-            ).stdout,
-        ).toBe('{"theme":"dark","retries":2}\n')
+    it.each([
+        ['json', '"Demo"\n'],
+        ['json-compact', '"Demo"\n'],
+        ['text', 'Demo\n'],
+    ])('prints a scalar with --format %s', async (format, expected) => {
+        const result = await run(['get', values, 'App.name', '--format', format])
+        expect(result.stdout).toBe(expected)
+    })
+
+    it('prints structured values as compact JSON when requested', async () => {
+        const result = await run([
+            'get',
+            values,
+            'App.settings',
+            '--format',
+            'json-compact',
+        ])
+        expect(result.stdout).toBe('{"theme":"dark","retries":2}\n')
+    })
+
+    it('rejects text output for structured values', async () => {
         const invalid = await run([
             'get',
             values,
@@ -92,27 +89,34 @@ describe('get command', () => {
         )
     })
 
-    it('preserves multiline string contents and adds at most one final line feed', async () => {
-        const input =
-            '^ App\nmessage = """Hello\nworld"""\nending = """Hello\n"""\n'
-        const multiline = await run(['get', '-', 'App.message'], { input })
-        expect(multiline.stdout).toBe('Hello\nworld\n')
-        const ending = await run(['get', '-', 'App.ending'], { input })
-        expect(ending.stdout).toBe('Hello\n')
-        const json = await run(
-            ['get', '-', 'App.message', '--format', 'json'],
-            {
-                input,
-            },
-        )
+    const multilineInput =
+        '^ App\nmessage = """Hello\nworld"""\nending = """Hello\n"""\n'
+
+    it.each([
+        ['App.message', 'Hello\nworld\n'],
+        ['App.ending', 'Hello\n'],
+    ])('prints %s with one final line feed', async (selected, expected) => {
+        const result = await run(['get', '-', selected], {
+            input: multilineInput,
+        })
+        expect(result.stdout).toBe(expected)
+    })
+
+    it('escapes multiline strings in JSON output', async () => {
+        const json = await run(['get', '-', 'App.message', '--format', 'json'], {
+            input: multilineInput,
+        })
         expect(json.stdout).toBe('"Hello\\nworld"\n')
     })
 
-    it('reads UTF-8 stdin, and an empty document follows parser mode policy', async () => {
+    it('reads UTF-8 stdin', async () => {
         const input = '^ App\ncity = "München"\n'
         expect((await run(['get', '-', 'App.city'], { input })).stdout).toBe(
             'München\n',
         )
+    })
+
+    it('accepts an empty document in lenient mode but cannot select a path', async () => {
         const empty = await run(['get', '-'], { input: '' })
         expect(empty.exitCode).toBe(0)
         expect(empty.stdout).toBe('{}\n')
@@ -120,12 +124,15 @@ describe('get command', () => {
         const missing = await run(['get', '-', 'App'], { input: '' })
         expect(missing.exitCode).toBe(1)
         expect(missing.stdout).toBe('')
+    })
+
+    it('rejects an empty document in strict mode', async () => {
         const strict = await run(['--strict', 'get', '-'], { input: '' })
         expect(strict.exitCode).toBe(1)
         expect(strict.stdout).toBe('')
     })
 
-    it('rejects missing paths and controls available-key advice', async () => {
+    it('shows available-key advice for missing paths unless quiet', async () => {
         const missing = await run(['get', values, 'App.hostname'])
         expect(missing.exitCode).toBe(1)
         expect(missing.stdout).toBe('')
@@ -134,6 +141,9 @@ describe('get command', () => {
         const quiet = await run(['--quiet', 'get', values, 'App.hostname'])
         expect(quiet.stderr).toContain('Error: Path not found: App.hostname')
         expect(quiet.stderr).not.toContain('Available keys')
+    })
+
+    it('suppresses missing-path errors in silent mode', async () => {
         const silent = await run(['--silent', 'get', values, 'App.hostname'])
         expect(silent).toMatchObject({ exitCode: 1, stdout: '', stderr: '' })
     })
@@ -186,7 +196,7 @@ describe('get command', () => {
         expect(result.stderr).toContain(message)
     })
 
-    it('rejects recovered parser errors in lenient and strict modes', async () => {
+    it('rejects recovered parser errors in lenient mode', async () => {
         const corrupt = fixture(
             'parse',
             'lenient',
@@ -197,6 +207,9 @@ describe('get command', () => {
         expect(lenient.exitCode).toBe(1)
         expect(lenient.stdout).toBe('')
         expect(lenient.stderr).toContain('Error:')
+    })
+
+    it('rejects invalid input and accepts valid input in strict mode', async () => {
         const strict = await run(['--strict', 'get', values, 'App.name'])
         expect(strict.exitCode).toBe(1)
         expect(strict.stdout).toBe('')
@@ -211,7 +224,7 @@ describe('get command', () => {
         ).toBe('10\n')
     })
 
-    it('handles warnings, mode conflicts, unreadable files, and output controls', async () => {
+    it('shows warnings unless quiet', async () => {
         const warning = fixture(
             'validate',
             'lenient',
@@ -225,12 +238,21 @@ describe('get command', () => {
         expect(quiet.exitCode).toBe(0)
         expect(quiet.stdout).toBe(ordinary.stdout)
         expect(quiet.stderr).toBe('')
+    })
+
+    it('shows file details in verbose mode', async () => {
         const verbose = await run(['--verbose', 'get', values, 'App.name'])
         expect(verbose.stdout).toBe('Demo\n')
         expect(verbose.stderr).toContain('Reading YINI')
+    })
+
+    it('rejects conflicting parser modes', async () => {
         const conflict = await run(['--strict', '--lenient', 'get', values])
         expect(conflict.exitCode).toBe(1)
         expect(conflict.stderr).toContain('cannot be used together')
+    })
+
+    it('rejects unreadable files', async () => {
         const unreadable = await run(['get', `${values}.missing`])
         expect(unreadable.exitCode).toBe(1)
         expect(unreadable.stdout).toBe('')
