@@ -2,7 +2,7 @@
 
 **Changelog** for `yini-cli`.
 
-## Upcoming
+## 1.6.3 - 2026 Oct
 - **Changed:** The minimum supported Node.js version is now 22 (to align with GitHub). Node.js 18 and 20 are no longer supported.
 - **Fixed:** Parse option conflicts now fail cleanly without exposing internal stack traces. The CLI rejects multiple output formats, rejects combining `--overwrite` with `--no-overwrite`, and requires `--max-errors` to be a positive integer without trailing or fractional input.
 - **Fixed:** Strengthened parse output-file protection so alternate paths, symbolic links, and hard links cannot cause the input file to be overwritten.
