@@ -23,7 +23,7 @@ jobs:
                 os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: actions/setup-node@v7
               with:
@@ -55,6 +55,9 @@ jobs:
                   yini --help >/dev/null
                   yini --version
                   yini info
+
+                  VALUE="$(yini get sample.yini Service.Cache.Type)"
+                  test "$VALUE" = 'redis'
 
                   PARSED="$(yini parse sample.yini --compact)"
                   node -e 'JSON.parse(process.argv[1])' "$PARSED"

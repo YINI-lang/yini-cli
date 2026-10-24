@@ -16,7 +16,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Setup Python
               uses: actions/setup-python@v7
@@ -29,9 +29,7 @@ jobs:
                   pip install semgrep
 
             # Run Semgrep, write SARIF to workspace
-            - name: Semgrep scan
-              # Optional: let the job continue so the SARIF still uploads even on findings
-              continue-on-error: true
+            - name: Semgrep scan (report findings through code scanning)
               run: |
                   semgrep scan \
                     --config p/owasp-top-ten \

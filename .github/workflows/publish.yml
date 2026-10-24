@@ -14,31 +14,31 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Set up Node.js
               uses: actions/setup-node@v7
               with:
-                  node-version: '24' # Use your desired Node version
+                  node-version: '24'
                   registry-url: 'https://registry.npmjs.org/'
 
             - name: Install (no scripts)
               run: npm ci --ignore-scripts
 
-            - name: Typecheck
-              run: npm run typecheck --if-present
-
             - name: Lint
-              run: npm run lint --if-present
+              run: npm run lint
 
             - name: Build package
-              run: npm run build # Optional, if you have a build step
+              run: npm run build
 
             - name: Publish to npm
-              # run: npm publish --provenance --tag beta --access public # If making a beta release.
-              # run: npm publish --provenance --access public
               run: |
                   version=$(node -p "require('./package.json').version")
+                  if [[ "$GITHUB_REF_NAME" != "$version" && "$GITHUB_REF_NAME" != "v$version" ]]; then
+                      echo "::error::Release tag $GITHUB_REF_NAME does not match package version $version"
+                      exit 1
+                  fi
+
                   version_without_build="${version%%+*}"
                   tag=latest
 
