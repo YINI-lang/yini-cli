@@ -4,6 +4,7 @@
 
 ## 1.6.4 - 2026 Oct
 - **Updated:** Upgraded `yini-parser` to `1.7.0` giving features like faster parsing, with local benchmarks showing 24–33% faster median parsing across three large workloads. 
+- **Security:** Resolved several significant security vulnerabilities in dependencies; no known dependency vulnerabilities remain.
   
 ## 1.6.4-beta - 2026 Oct
 
