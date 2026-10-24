@@ -1,3 +1,8 @@
+/**
+ * Tests that `parse --output` writes the expected content without changing files
+ * it should protect. Covers overwrite options, unchanged output, parse failures,
+ * and output paths that refer to the input file.
+ */
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -6,6 +11,10 @@ import { yiniCLI } from '../test-helpers'
 const INPUT_FILE = path.resolve(
     __dirname,
     '../fixtures/parse/lenient/valid/simple-config.yini',
+)
+const INVALID_FILE = path.resolve(
+    __dirname,
+    '../fixtures/parse/lenient/invalid/invalid-config-1.yini',
 )
 const TEMP_DIR = path.resolve(__dirname, '../temp')
 
@@ -22,7 +31,7 @@ const expectedOutput = JSON.stringify(
 )
 
 describe('Parse command output-file safety.', () => {
-    it('writes the exact serialized output and nothing to stdout.', async () => {
+    it('Writes the exact serialized output and nothing to stdout.', async () => {
         const outputFile = path.join(TEMP_DIR, 'exact-output.json')
         if (fs.existsSync(outputFile)) fs.unlinkSync(outputFile)
 
@@ -43,7 +52,7 @@ describe('Parse command output-file safety.', () => {
         }
     })
 
-    it('does not modify a destination newer than the input.', async () => {
+    it('Does not modify a destination newer than the input.', async () => {
         const outputFile = path.join(TEMP_DIR, 'newer-output.json')
         const original = 'do not replace'
         fs.writeFileSync(outputFile, original)
@@ -69,7 +78,7 @@ describe('Parse command output-file safety.', () => {
         }
     })
 
-    it('replaces an older destination with the exact output.', async () => {
+    it('Replaces an older destination with the exact output.', async () => {
         const outputFile = path.join(TEMP_DIR, 'older-output.json')
         fs.writeFileSync(outputFile, 'old output')
 
@@ -92,7 +101,7 @@ describe('Parse command output-file safety.', () => {
         }
     })
 
-    it('does not rewrite unchanged output.', async () => {
+    it('Does not rewrite unchanged output.', async () => {
         const outputFile = path.join(TEMP_DIR, 'unchanged-output.json')
         fs.writeFileSync(outputFile, expectedOutput)
 
@@ -116,7 +125,7 @@ describe('Parse command output-file safety.', () => {
         }
     })
 
-    it('leaves existing content unchanged with --no-overwrite.', async () => {
+    it('Leaves existing content unchanged with --no-overwrite.', async () => {
         const outputFile = path.join(TEMP_DIR, 'no-overwrite-output.json')
         const original = 'keep this content'
         fs.writeFileSync(outputFile, original)
@@ -138,7 +147,32 @@ describe('Parse command output-file safety.', () => {
         }
     })
 
-    it('refuses an output hard link that refers to the input file.', async () => {
+    it('Preserves an existing destination when parsing fails with --overwrite.', async () => {
+        const outputFile = path.join(TEMP_DIR, 'failed-parse-output.json')
+        const original = 'keep this content'
+        fs.writeFileSync(outputFile, original)
+        const mtimeBefore = fs.statSync(outputFile).mtimeMs
+
+        try {
+            const { stdout, stderr, exitCode } = await yiniCLI([
+                'parse',
+                INVALID_FILE,
+                '--output',
+                outputFile,
+                '--overwrite',
+            ])
+
+            expect(exitCode).toBe(1)
+            expect(stdout).toBe('')
+            expect(stderr).toMatch(/syntax error/i)
+            expect(fs.readFileSync(outputFile, 'utf8')).toBe(original)
+            expect(fs.statSync(outputFile).mtimeMs).toBe(mtimeBefore)
+        } finally {
+            if (fs.existsSync(outputFile)) fs.unlinkSync(outputFile)
+        }
+    })
+
+    it('Refuses an output hard link that refers to the input file.', async () => {
         const sourceFile = path.join(TEMP_DIR, 'hard-link-source.yini')
         const outputFile = path.join(TEMP_DIR, 'hard-link-output.json')
         const original = fs.readFileSync(INPUT_FILE, 'utf8')
