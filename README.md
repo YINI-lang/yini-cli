@@ -4,9 +4,7 @@ The official command-line tool for reading, validating, and converting YINI conf
 
 [![npm version](https://img.shields.io/npm/v/yini-cli.svg)](https://www.npmjs.com/package/yini-cli)
 [![Full regression tests](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/run-regression-tests.yml)
-[![Post-merge smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/post-merge-smoke.yml)
 [![Package install smoke tests](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/package-install-smoke.yml)
-[![YINI Test Suite Smoke Tests](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml/badge.svg)](https://github.com/YINI-lang/yini-cli/actions/workflows/yini-test-suite-smoke.yml)
 
 ## Quick start
 
