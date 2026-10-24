@@ -2,6 +2,9 @@
 
 **Changelog** for `yini-cli`.
 
+## 1.6.4 - 2026 Oct
+- **Updated:** Upgraded `yini-parser` to `1.7.0` giving features like faster parsing, with local benchmarks showing 24–33% faster median parsing across three large workloads. 
+  
 ## 1.6.4-beta - 2026 Oct
 
 - **Updated:** Upgraded `yini-parser` from `1.6.3` to `1.7.0-beta`.
