@@ -327,6 +327,7 @@ const doParseFile = (
             failLevel: commandOptions.bestEffort ? 'ignore-errors' : 'auto',
             includeMetadata: true,
             includeDiagnostics: true,
+            logDiagnostics: false,
         }
 
         // Check that output and input file are not the same.
