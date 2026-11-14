@@ -71,7 +71,7 @@ See [project setup](./docs/project-setup.md), [contributing](./docs/contributing
 
 YINI uses section markers such as `^` and `^^` for explicit nesting. It supports strings, numbers, booleans, lists, inline objects, and comments. Indentation does not define structure. See the [basic sample](./samples/basic.yini), [larger sample](./samples/config.yini), or their [basic](./samples/basic.yini.png) and [larger](./samples/config.yini.png) previews.
 
-The [YINI specification](https://yini-lang.org/refs/specification) has the full syntax rules. This CLI uses [yini-parser](https://www.npmjs.com/package/yini-parser); the [demo apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) show complete uses.
+The [YINI specification](https://yini-lang.org/refs/specification?utm_source=github&utm_campaign=yini_cli&utm_content=readme_about_yini&utm_medium=referral) has the full syntax rules. This CLI uses [yini-parser](https://www.npmjs.com/package/yini-parser); the [demo apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) show complete uses.
 
 ## Feedback and license
 

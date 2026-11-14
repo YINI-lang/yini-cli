@@ -28,7 +28,7 @@
     "bin": {
         "yini": "dist/index.js"
     },
-    "homepage": "https://yini-lang.org/",
+    "homepage": "https://yini-lang.org/?utm_source=npm&utm_campaign=yini_cli&utm_medium=referral",
     "license": "Apache-2.0",
     "files": [
         "dist/",
