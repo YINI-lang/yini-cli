@@ -2,6 +2,12 @@
 
 **Changelog** for `yini-cli`.
 
+## 2.0.0 - 2026 Oct
+- Updated parsing to align with the YINI Specification RC 7 rules:
+  * **Updated:** Upgraded `yini-parser` from `1.7.0` to `2.0.0`, adding escaped-string prefixes, multiline command strings, and parsing fixes.
+  * **Changed:** Duplicate sections now produce errors in both strict and lenient modes.
+  * **Changed:** Large integers now use JavaScript `bigint` values to preserve their exact values. JSON output currently fails when these values are present.
+
 ## 1.6.4 - 2026 Oct
 - **Updated:** Upgraded `yini-parser` to `1.7.0` giving features like faster parsing, with local benchmarks showing 24–33% faster median parsing across three large workloads. 
 - **Security:** Resolved several significant security vulnerabilities in dependencies; no known dependency vulnerabilities remain.
